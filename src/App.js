@@ -1,17 +1,19 @@
 import './App.css';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Home from './screens/Home';
 import PilotsList from './screens/PilotsList';
+import ConstructorsList from './screens/ConstructorsList';
 import BottomNavigation from "./components/BottomNavigation";
 
 function App() {
+  // Состояние для активной страницы
+  const [activePage, setActivePage] = useState(0); // 0 - Pilots, 1 - Constructors
+
+  // Проверка на наличие Telegram Web App SDK
   useEffect(() => {
-    // Проверка на наличие Telegram Web App SDK
     if (window.Telegram && window.Telegram.WebApp) {
-      // Расширяет Web App на весь экран внутри Telegram
       window.Telegram.WebApp.expand();
 
-      // Вы можете получать данные о пользователе и чате, если нужно
       const user = window.Telegram.WebApp.initDataUnsafe.user;
       const chat = window.Telegram.WebApp.initDataUnsafe.chat;
 
@@ -22,21 +24,20 @@ function App() {
 
   return (
     <div className="App" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: '#F9F9F9' }}>
-      {/* Основной контент вашего приложения */}
-      <PilotsList />
-      
+      {/* Основной контент */}
+      {activePage === 0 ? <PilotsList /> : <ConstructorsList />}
+
       {/* Кнопка для открытия вашего приложения в Telegram Web App */}
       <button
         onClick={() => {
-          // Открывает ваше приложение в Telegram Web App
           window.Telegram.WebApp.openLink('https://pole-cwd8.onrender.com/');
         }}
       >
         Open Mini App
       </button>
-      
+
       {/* Навигация */}
-      <BottomNavigation />
+      <BottomNavigation setActivePage={setActivePage} />
     </div>
   );
 }

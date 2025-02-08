@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const BottomNavigation = () => {
+const BottomNavigation = ({ setActivePage }) => {
   const [activeIndex, setActiveIndex] = useState(0); // Первая кнопка активна по умолчанию
 
   const buttons = [
@@ -35,7 +35,10 @@ const BottomNavigation = () => {
       zIndex: 1000
     }}>
       {buttons.map((button) => (
-        <div key={button.id} onClick={() => setActiveIndex(button.id)} style={{
+        <div key={button.id} onClick={() => {
+          setActivePage(button.id);  // переключаем страницу
+          setActiveIndex(button.id); // изменяем активную кнопку
+        }} style={{
           width: 50,
           height: 50,
           borderRadius: 15,
