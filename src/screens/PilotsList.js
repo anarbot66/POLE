@@ -20,7 +20,7 @@ const PilotsList = () => {
 
   const fetchPilots = async () => {
     try {
-      const response = await fetch('ergast/f1/2024/driverStandings.json');
+      const response = await fetch('https://api.jolpi.ca/ergast/f1/2024/driverStandings.json');
       if (!response.ok) {
         throw new Error("Не удалось получить данные о пилотах");
       }
