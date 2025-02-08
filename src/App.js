@@ -21,7 +21,7 @@ function App() {
   }, []);
 
   return (
-    <div className="App" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <div className="App" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: '#F9F9F9' }}>
       {/* Основной контент вашего приложения */}
       <PilotsList />
       
