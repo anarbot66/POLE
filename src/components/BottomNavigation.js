@@ -32,7 +32,8 @@ const BottomNavigation = () => {
       gap: 30,
       padding: "15px 25px",
       boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-      zIndex: 1000
+      zIndex: 1000,
+      backgroundColor: "#F9F9F9"
     }}>
       {buttons.map((button) => (
         <div key={button.id} onClick={() => setActiveIndex(button.id)} style={{

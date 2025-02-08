@@ -61,7 +61,8 @@ const PilotsList = () => {
       display: "flex",
       flexDirection: "column",
       justifyContent: "flex-start",
-      gap: "15px"
+      gap: "15px",
+      backgroundColor: "#F9F9F9"
     }}>
       {pilots.map((pilot, index) => {
         const teamColor = teamColors[pilot.Constructors[0].name] || "#000000";
