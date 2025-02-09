@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const ConstructorsList = () => {
+const ConstructorsList = ({ onConstructorSelect }) => {
   const [constructors, setConstructors] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [error, setError] = useState(null);
@@ -45,7 +45,6 @@ const ConstructorsList = () => {
     "Valtteri Bottas": "Валттери Боттас",
     "Logan Sargeant": "Логан Сарджент",
     "Jack Doohan": "Джек Дуэн",
-    // Добавьте другие имена по необходимости
   };
 
   // Функция для получения данных по конструкторам
@@ -55,10 +54,8 @@ const ConstructorsList = () => {
       if (!response.ok) {
         throw new Error("Не удалось получить данные о конструкторах");
       }
-
       const data = await response.json();
       const constructorData = data?.MRData?.StandingsTable?.StandingsLists[0]?.ConstructorStandings;
-      
       if (constructorData && Array.isArray(constructorData)) {
         setConstructors(constructorData);
       } else {
@@ -77,10 +74,8 @@ const ConstructorsList = () => {
       if (!response.ok) {
         throw new Error("Не удалось получить данные о пилотах");
       }
-
       const data = await response.json();
       const driverData = data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings;
-      
       if (driverData && Array.isArray(driverData)) {
         setDrivers(driverData);
       } else {
@@ -135,53 +130,56 @@ const ConstructorsList = () => {
         }).join(' & ');
 
         return (
-          <div key={index} style={{
-            width: "100%",
-            background: "white",
-            borderRadius: "20px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "12px",
-            padding: "10px",
-          }}>
+          <div key={index} onClick={() => onConstructorSelect(constructor)}>
             <div style={{
-              width: "65px", height: "65px", borderRadius: "20px",
-              display: "flex", justifyContent: "center", alignItems: "center",
-              background: "white"
+              width: "100%",
+              background: "white",
+              borderRadius: "20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "12px",
+              padding: "10px",
+              cursor: "pointer"
             }}>
               <div style={{
-                color: teamColor,
-                fontSize: "24px", fontWeight: "600"
+                width: "65px", height: "65px", borderRadius: "20px",
+                display: "flex", justifyContent: "center", alignItems: "center",
+                background: "white"
               }}>
-                {constructor.position}
-              </div>
-            </div>
-
-            <div style={{
-              display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ color: "black", fontSize: "16px" }}>
-                  {constructor.Constructor.name}
+                <div style={{
+                  color: teamColor,
+                  fontSize: "24px", fontWeight: "600"
+                }}>
+                  {constructor.position}
                 </div>
               </div>
-              <div style={{
-                color: "#B9B9B9", // Серый цвет для имен пилотов
-                fontSize: "10px"
-              }}>
-                {pilotNames} {/* Имена пилотов, разделённые & */}
-              </div>
-            </div>
 
-            <div style={{ textAlign: "center", minWidth: "60px" }}>
-              <span style={{ color: "black", fontSize: "16px" }}>
-                {constructor.points}
-              </span>
-              <br />
-              <span style={{ color: "black", fontSize: "10px" }}>
-                PTS
-              </span>
+              <div style={{
+                display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div style={{ color: "black", fontSize: "16px" }}>
+                    {constructor.Constructor.name}
+                  </div>
+                </div>
+                <div style={{
+                  color: "#B9B9B9", // Серый цвет для имен пилотов
+                  fontSize: "10px"
+                }}>
+                  {pilotNames} {/* Имена пилотов, разделённые & */}
+                </div>
+              </div>
+
+              <div style={{ textAlign: "center", minWidth: "60px" }}>
+                <span style={{ color: "black", fontSize: "16px" }}>
+                  {constructor.points}
+                </span>
+                <br />
+                <span style={{ color: "black", fontSize: "10px" }}>
+                  PTS
+                </span>
+              </div>
             </div>
           </div>
         );

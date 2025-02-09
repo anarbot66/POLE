@@ -57,6 +57,8 @@ const lastNameTranslations = {
   "Doohan": "Дуэн",
 };
 
+
+
 const PilotDetails = ({ pilot, teamColors, pilotResults, goBack }) => {
   const [biography, setBiography] = useState(""); // Стейт для биографии пилота
   const [fadeIn, setFadeIn] = useState(false); // Для плавного появления страницы
