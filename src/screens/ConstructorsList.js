@@ -19,6 +19,35 @@ const ConstructorsList = () => {
     "Sauber": "#00E701",
   };
 
+  // Словарь для перевода имен пилотов на русский
+  const driverTranslations = {
+    "Max Verstappen": "Макс Ферстаппен",
+    "Lando Norris": "Ландо Норрис",
+    "Charles Leclerc": "Шарль Леклер",
+    "Oscar Piastri": "Оскар Пиастри",
+    "Carlos Sainz": "Карлос Сайнс",
+    "George Russell": "Джордж Расселл",
+    "Lewis Hamilton": "Льюис Хэмилтон",
+    "Sergio Pérez": "Серхио Перес",
+    "Fernando Alonso": "Фернандо Алонсо",
+    "Pierre Gasly": "Пьер Гасли",
+    "Nico Hülkenberg": "Нико Хюлькенберг",
+    "Yuki Tsunoda": "Юки Цунода",
+    "Lance Stroll": "Лэнс Стролл",
+    "Esteban Ocon": "Эстебан Окон",
+    "Kevin Magnussen": "Кевин Магнуссен",
+    "Alexander Albon": "Александер Албон",
+    "Daniel Ricciardo": "Даниэль Риккьярдо",
+    "Oliver Bearman": "Оливер Бирман",
+    "Franco Colapinto": "Франко Колапинто",
+    "Guanyu Zhou": "Гуанью Джоу",
+    "Liam Lawson": "Лиам Лоусон",
+    "Valtteri Bottas": "Валттери Боттас",
+    "Logan Sargeant": "Логан Сарджент",
+    "Jack Doohan": "Джек Дуэн",
+    // Добавьте другие имена по необходимости
+  };
+
   // Функция для получения данных по конструкторам
   const fetchConstructors = async () => {
     try {
@@ -68,12 +97,14 @@ const ConstructorsList = () => {
     fetchDrivers();
   }, []);
 
+  // Возвращаем ошибку, если она возникла
   if (error) {
     return <div>Ошибка: {error}</div>;
   }
 
+  // Убираем "Загрузка...", если данные загружены
   if (!constructors.length || !drivers.length) {
-    return <div> </div>;
+    return null; // Не показываем ничего, пока данные не загружены
   }
 
   return (
@@ -94,11 +125,13 @@ const ConstructorsList = () => {
         // Получаем двух пилотов, принадлежащих этому конструктору
         const pilots = drivers.filter(driver => 
           driver.Constructors.some(c => c.name === constructor.Constructor.name)
-        ).slice(0, 2); // Только два пилота
+        ).slice(0, 2); // Ограничиваем до двух пилотов
 
-        // Объединяем полные имена пилотов через & и делаем их серыми
-        const pilotNames = pilots.map((pilot) => 
-          `${pilot.Driver.familyName} ${pilot.Driver.givenName}`).join(' & ');
+        // Переводим имена пилотов и объединяем их через `&`
+        const pilotNames = pilots.map((pilot) => {
+          const fullName = `${pilot.Driver.givenName} ${pilot.Driver.familyName}`; // Правильный порядок имени
+          return driverTranslations[fullName] || fullName; // Если есть перевод, используем его
+        }).join(' & ');
 
         return (
           <div key={index} style={{

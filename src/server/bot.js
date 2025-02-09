@@ -5,18 +5,21 @@ const bot = new TelegramBot('8117729038:AAF0Ue7su9aYK9-RzTrb1sljHKhj99D5iHI', { 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  const inlineKeyboard = {
-    inline_keyboard: [
+  // Создаем обычную клавиатуру с кнопкой
+  const keyboard = {
+    keyboard: [
       [
         {
-          text: 'Открыть',
-          web_app: { url: 'https://pole-cwd8.onrender.com/' }
+          text: 'Открыть POLE', // Текст кнопки
+          web_app: { url: 'https://pole-cwd8.onrender.com/' } // Ссылка на Mini App
         }
       ]
-    ]
+    ],
+    resize_keyboard: true,
+    one_time_keyboard: false
   };
 
-  bot.sendMessage(chatId, 'Добро пожаловать в POLE! Твой проводник в статистику формулы-1 прямо в телеграмм!', {
-    reply_markup: inlineKeyboard
+  bot.sendMessage(chatId, 'Привет я POLE, покажу тебе всю интересную статистику формулы-1!', {
+    reply_markup: keyboard
   });
 });
