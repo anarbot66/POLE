@@ -170,7 +170,7 @@ const PilotsList = () => {
   }
 
   if (!pilots.length) {
-    return <div>Загрузка...</div>;
+    return <div> </div>;
   }
 
   if (selectedPilot) {

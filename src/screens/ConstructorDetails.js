@@ -38,7 +38,7 @@ const ConstructorDetails = ({ constructor, goBack }) => {
   }
 
   if (!constructorResults) {
-    return <div>Загрузка...</div>;
+    return <div> </div>;
   }
 
   const teamColor = "#00A19C"; // Например, для команды
