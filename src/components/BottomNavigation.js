@@ -33,7 +33,6 @@ const BottomNavigation = ({ setActivePage }) => {
       alignItems: "center",
       gap: 30,
       padding: "15px 25px",
-      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
       zIndex: 1000
     }}>
       {buttons.map((button) => (

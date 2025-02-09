@@ -21,7 +21,6 @@ const PilotsList = () => {
     "Sauber": "#00E701",
   };
 
-  // Словарь для перевода имен пилотов на русский
   const driverTranslations = {
     "Max Verstappen": "Макс Ферстаппен",
     "Lando Norris": "Ландо Норрис",
@@ -33,7 +32,20 @@ const PilotsList = () => {
     "Sergio Pérez": "Серхио Перес",
     "Fernando Alonso": "Фернандо Алонсо",
     "Pierre Gasly": "Пьер Гасли",
+    "Nico Hülkenberg": "Нико Хюлькенберг",
+    "Yuki Tsunoda": "Юки Цунода",
+    "Lance Stroll": "Лэнс Стролл",
+    "Esteban Ocon": "Эстебан Окон",
     "Kevin Magnussen": "Кевин Магнуссен",
+    "Alexander Albon": "Александер Албон",
+    "Daniel Ricciardo": "Даниэль Риккьярдо",
+    "Oliver Bearman": "Оливер Бирман",
+    "Franco Colapinto": "Франко Колапинто",
+    "Guanyu Zhou": "Гуанью Джоу",
+    "Liam Lawson": "Лиам Лоусон",
+    "Valtteri Bottas": "Валттери Боттас",
+    "Logan Sargeant": "Логан Сарджент",
+    "Jack Doohan": "Джек Дуэн",
     // Добавьте другие имена по необходимости
   };
 
@@ -123,18 +135,14 @@ const PilotsList = () => {
 
         const poles = results.filter(result => parseInt(result?.Results?.[0]?.grid, 10) === 1).length; // Поулы
 
-        // Проверяем на DNF
         const dnf = results.filter(result => {
           const status = result?.Results?.[0]?.status;
-          // Если статус не "Finished" и не содержит "lap" (например "+1 lap" или "+2 laps"), то считаем DNF
-          return status !== "Finished" && !status.toLowerCase().includes("lap");
+          // Если статус не "Finished", не "+1 lap" и не "+2 laps", то считаем DNF
+          return status !== "Finished" && !status.toLowerCase().includes("+1 lap") && !status.toLowerCase().includes("+2 laps");
         }).length; // DNF
-
-        console.log(`Победы: ${wins}, Подиумы: ${podiums}, Поулы: ${poles}, DNF: ${dnf}`);
 
         setPilotResults({ wins, podiums, poles, dnf });
       } else {
-        console.error("Ошибка: Результаты пилота отсутствуют или имеют неверный формат");
         setPilotResults({ wins: 0, podiums: 0, poles: 0, dnf: 0 });
       }
     } catch (error) {
@@ -147,30 +155,35 @@ const PilotsList = () => {
     fetchPilots();
   }, []);
 
+  const handlePilotSelect = (pilot) => {
+    setSelectedPilot(pilot);
+    const pilotLastName = normalizeName(pilot.Driver.familyName);
+    fetchPilotResults(pilotLastName);
+  };
+
+  const handleBackToList = () => {
+    setSelectedPilot(null); // Возвращаемся на страницу списка пилотов
+  };
+
   if (error) {
     return <div>Ошибка: {error}</div>;
   }
 
   if (!pilots.length) {
-    return <div> </div>;
+    return <div>Загрузка...</div>;
   }
 
-  const handlePilotClick = (pilot) => {
-    const pilotLastName = normalizeName(pilot.Driver.familyName); // нормализуем фамилию
-    setSelectedPilot(pilot); // обновляем выбранного пилота
-    fetchPilotResults(pilotLastName); // загружаем результаты пилота
-  };
-
   if (selectedPilot) {
-    return <PilotDetails pilot={selectedPilot} teamColors={teamColors} pilotResults={pilotResults} />;
+    return <PilotDetails pilot={selectedPilot} teamColors={teamColors} pilotResults={pilotResults} goBack={handleBackToList} />;
   }
 
   return (
     <div style={{
-      width: "100vw",
+      width: "calc(100% - 40px)", // Убираем отступы по бокам
+      margin: "0 auto", // Центрируем контейнер
       height: "calc(100vh - 100px)",
       overflowY: "auto",
-      padding: "10px",
+      paddingTop: "10px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "flex-start",
@@ -187,7 +200,7 @@ const PilotsList = () => {
         return (
           <div
             key={index}
-            onClick={() => handlePilotClick(pilot)}
+            onClick={() => handlePilotSelect(pilot)} // Переход к деталям пилота
             style={{
               width: "100%",
               background: "white",
@@ -213,7 +226,6 @@ const PilotsList = () => {
               </div>
             </div>
 
-            {/* Блок с именем, флагом и названием команды */}
             <div style={{
               display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
             }}>
@@ -221,7 +233,6 @@ const PilotsList = () => {
                 <div style={{ color: "black", fontSize: "16px" }}>
                   {translatedName}
                 </div>
-                {/* Флаг национальности */}
                 <img src={`https://flagcdn.com/w40/${countryCode}.png`} alt={nationality}
                   style={{ width: "15px", height: "15px", borderRadius: "50%", objectFit: "cover" }} />
               </div>

@@ -109,10 +109,11 @@ const ConstructorsList = () => {
 
   return (
     <div style={{
-      width: "100vw",
+      width: "calc(100% - 40px)", // Убираем отступы по бокам (слева и справа)
+      margin: "0 auto", // Центрируем контейнер
       height: "calc(100vh - 100px)",
       overflowY: "auto",
-      padding: "10px",
+      paddingTop: "10px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "flex-start",

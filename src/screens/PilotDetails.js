@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import biographies from './json/bio'; // подключаем данные о биографиях
 
 // Словарь для перевода имен пилотов на русский
 const firstNameTranslations = {
@@ -56,17 +57,29 @@ const lastNameTranslations = {
   "Doohan": "Дуэн",
 };
 
-const PilotDetails = ({ pilot, teamColors, pilotResults }) => {
+const PilotDetails = ({ pilot, teamColors, pilotResults, goBack }) => {
+  const [biography, setBiography] = useState(""); // Стейт для биографии пилота
   const [fadeIn, setFadeIn] = useState(false); // Для плавного появления страницы
 
   useEffect(() => {
-    // После рендеринга страницы плавно показываем контент
-    setTimeout(() => setFadeIn(true), 100); // Задержка перед началом анимации появления
-  }, []);
+    // Загрузка биографии пилота из объекта
+    const lastNameNormalized = normalizeName(pilot.Driver.familyName);
+    const bio = biographies[lastNameNormalized]?.biography || "Биография не найдена";
+    setBiography(bio); // Устанавливаем биографию
+
+    // Плавное появление контента
+    setTimeout(() => setFadeIn(true), 100);
+  }, [pilot]);
+
+  const normalizeName = (name) => {
+    // Нормализуем фамилию в нижний регистр и удаляем диакритические знаки
+    return name
+      .normalize("NFD") // Нормализация с разделением символов и диакритики
+      .replace(/[\u0300-\u036f]/g, "") // Удаление всех диакритических знаков
+      .toLowerCase(); // Преобразуем в нижний регистр
+  };
 
   const teamColor = teamColors[pilot.Constructors[0].name] || "#000000";
-
-  // Переводим имя и фамилию пилота отдельно
   const pilotFirstName = firstNameTranslations[pilot.Driver.givenName] || pilot.Driver.givenName;
   const pilotLastName = lastNameTranslations[pilot.Driver.familyName] || pilot.Driver.familyName;
 
@@ -74,19 +87,38 @@ const PilotDetails = ({ pilot, teamColors, pilotResults }) => {
     <div
       className={`pilot-details ${fadeIn ? "fade-in" : ""}`}
       style={{
-        width: "calc(100% - 40px)", // Убираем отступы по бокам (слева и справа)
+        width: "calc(100% - 40px)", // Убираем отступы по бокам
         margin: "0 auto", // Центрируем контейнер
         padding: "15px",
         background: "white",
-        borderRadius: "30px",
+        borderRadius: "20px",
         flexDirection: "column",
         justifyContent: "flex-start",
         alignItems: "center",
         gap: "19px",
         display: "inline-flex",
-        marginTop: "20px",
+        marginTop: "10px",
       }}
     >
+      {/* Кнопка "Назад" */}
+      <button
+        onClick={goBack}
+        style={{
+          position: "fixed",
+          left: "25px",
+          bottom: "120px",
+          backgroundColor: "white",
+          color: "black",
+          border: "none",
+          padding: "10px 20px",
+          borderRadius: "10px",
+          cursor: "pointer",
+          zIndex: "1000",
+        }}
+      >
+        Назад
+      </button>
+
       {/* Заголовок с информацией о пилоте и команде */}
       <div style={{
         width: "100%",
@@ -141,12 +173,12 @@ const PilotDetails = ({ pilot, teamColors, pilotResults }) => {
         background: teamColor
       }} />
 
-      {/* Информация о статистике пилота */}
+      {/* Статистика пилота */}
       <div style={{
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center", 
+        alignItems: "center",
         gap: "12px",
         width: "100%"
       }}>
@@ -158,7 +190,7 @@ const PilotDetails = ({ pilot, teamColors, pilotResults }) => {
             fontFamily: "Inter",
             fontWeight: "600",
             wordWrap: "break-word"
-          }} >
+          }}>
             {pilot.position}
           </span>
           <div style={{
@@ -268,7 +300,7 @@ const PilotDetails = ({ pilot, teamColors, pilotResults }) => {
             fontFamily: "Inter",
             fontWeight: "600",
             wordWrap: "break-word"
-          }} >
+          }}>
             {pilotResults?.dnf || 0}
           </span>
           <div style={{
@@ -277,10 +309,25 @@ const PilotDetails = ({ pilot, teamColors, pilotResults }) => {
             fontFamily: "Inter",
             fontWeight: "600",
             wordWrap: "break-word"
-          }} >
+          }}>
             DNF
           </div>
         </div>
+      </div>
+
+      {/* Биография пилота (нижняя часть) */}
+      <div style={{
+        width: "100%",
+        marginTop: "20px",
+        padding: "10px",
+        backgroundColor: "white",
+        borderRadius: "8px",
+        fontSize: "14px",
+        color: "black",
+        fontFamily: "Arial, sans-serif",
+      }}>
+        <strong>Биография:</strong>
+        <p>{biography}</p>
       </div>
     </div>
   );

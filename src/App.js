@@ -27,7 +27,7 @@ function App() {
     // Симуляция загрузки контента
     setTimeout(() => {
       setContentLoaded(true); // Контент загружен
-    }, 300); // Эмулируем задержку в 2 секунды для загрузки данных
+    }, 300); // Эмулируем задержку для загрузки данных
 
     // После 3 секунд начинаем затухание экрана загрузки
     setTimeout(() => {
@@ -37,6 +37,10 @@ function App() {
       }
     }, 600);
   }, [contentLoaded]);
+
+  const handlePageChange = (page) => {
+    setActivePage(page);
+  };
 
   return (
     <div className="App" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: '#F9F9F9' }}>
@@ -51,7 +55,7 @@ function App() {
       {!loading && (
         <>
           {activePage === 0 ? <PilotsList /> : <ConstructorsList />}
-          <BottomNavigation setActivePage={setActivePage} />
+          <BottomNavigation setActivePage={handlePageChange} />
         </>
       )}
     </div>
