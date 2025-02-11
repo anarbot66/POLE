@@ -141,14 +141,16 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
     const pilotSeasons = seasonsData[lastNameNormalized] || [];
     setSeasons(pilotSeasons);
   
+    // Проводим первоначальную загрузку для первого сезона
     if (pilotSeasons.length > 0) {
-      setSelectedYear(pilotSeasons[0]);
-      fetchPilotResults(lastNameNormalized, pilotSeasons[0], false); 
+      setSelectedYear(pilotSeasons[0]); 
+      fetchPilotResults(lastNameNormalized, pilotSeasons[0], false);
       fetchPilotStandings(lastNameNormalized, pilotSeasons[0]); // Загружаем очки и место за выбранный год
     }
   
     fetchPilotResults(lastNameNormalized, "2024", true); // Загружаем текущий сезон (2024)
     fetchPilotStandings(lastNameNormalized, "2024"); // Загружаем текущий сезон (2024)
+  
   }, [pilot]);
   
   
@@ -211,6 +213,13 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+  
+    if (tab === "seasons") {
+      const normalizedLastName = normalizeName(pilot.Driver.familyName);
+      // Загружаем данные о сезонах для текущего выбранного сезона
+      fetchPilotResults(normalizedLastName, selectedYear, false);
+      fetchPilotStandings(normalizedLastName, selectedYear);
+    }
   };
 
   const handleYearChange = async (event) => {
@@ -219,10 +228,7 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
   
     const normalizedLastName = normalizeName(pilot.Driver.familyName);
   
-    // Сначала обновляем состояние как "Загрузка..."
-    setSelectedSeasonStats(prev => ({ ...prev, position: " ", points: " " }));
-  
-    // Затем вызываем fetch для загрузки данных
+    // Загружаем данные с серверов для нового сезона
     await fetchPilotResults(normalizedLastName, selected, false);
     await fetchPilotStandings(normalizedLastName, selected);
   };
