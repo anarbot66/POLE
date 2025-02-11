@@ -86,9 +86,9 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
     try {
       // Устанавливаем временное значение, чтобы не скрывались данные
       if (year !== "2024") {
-        setSelectedSeasonStats(prev => ({ ...prev, position: "Загрузка...", points: "Загрузка..." }));
+        setSelectedSeasonStats(prev => ({ ...prev, position: " ", points: " " }));
       } else {
-        setCurrentSeasonStats(prev => ({ ...prev, position: "Загрузка...", points: "Загрузка..." }));
+        setCurrentSeasonStats(prev => ({ ...prev, position: " ", points: " " }));
       }
   
       const response = await fetch(`https://api.jolpi.ca/ergast/f1/${year}/driverStandings.json`);
@@ -430,7 +430,7 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
             {/* Позиция */}
             <div style={{ width: "65px", textAlign: "center" }}>
               <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
-                {selectedYear === "2024" ? currentSeasonStats.position || "Загрузка..." : selectedSeasonStats.position || "Загрузка..."}
+                {selectedYear === "2024" ? currentSeasonStats.position || " " : selectedSeasonStats.position || " "}
               </span>
               <div style={{ color: "#B9B9B9", fontSize: "10px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
                 ПОЗИЦИЯ
@@ -440,7 +440,7 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
             {/* Очки */}
             <div style={{ width: "65px", textAlign: "center" }}>
               <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
-                {selectedYear === "2024" ? currentSeasonStats.points || "Загрузка..." : selectedSeasonStats.points || "Загрузка..."}
+                {selectedYear === "2024" ? currentSeasonStats.points || " " : selectedSeasonStats.points || " "}
               </span>
               <div style={{ color: "#B9B9B9", fontSize: "10px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
                 ОЧКОВ
