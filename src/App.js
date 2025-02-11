@@ -6,6 +6,7 @@ import ConstructorDetails from './screens/ConstructorDetails';
 import RacesList from './screens/RacesList'; // ✅ Добавили страницу календаря
 import BottomNavigation from "./components/BottomNavigation";
 import logo from './screens/images/logo.png';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 function App() {
   const [activePage, setActivePage] = useState(0); // 0 - Pilots, 1 - Constructors, 2 - Races
@@ -64,15 +65,25 @@ function App() {
 
       {!loading && (
         <>
-          {selectedConstructor ? (
-            <ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />
-          ) : activePage === 0 ? (
-            <PilotsList />
-          ) : activePage === 1 ? (
-            <ConstructorsList onConstructorSelect={handleSelectConstructor} />
-          ) : (
-            <RacesList /> // ✅ Теперь третья кнопка переключает на календарь
-          )}
+          <TransitionGroup>
+            <CSSTransition
+              key={activePage}
+              classNames="page"
+              timeout={500} // Время анимации
+            >
+              <div className="page-container">
+                {selectedConstructor ? (
+                  <ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />
+                ) : activePage === 0 ? (
+                  <PilotsList />
+                ) : activePage === 1 ? (
+                  <ConstructorsList onConstructorSelect={handleSelectConstructor} />
+                ) : (
+                  <RacesList /> // ✅ Теперь третья кнопка переключает на календарь
+                )}
+              </div>
+            </CSSTransition>
+          </TransitionGroup>
 
           <BottomNavigation setActivePage={handlePageChange} />
         </>

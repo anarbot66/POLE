@@ -33,3 +33,22 @@
   height: auto;
 }
 
+/* Стили для плавного появления */
+.page-enter {
+  opacity: 0; /* Начинаем с полной прозрачности */
+}
+
+.page-enter-active {
+  opacity: 1; /* Прозрачность становится 1 */
+  transition: opacity 500ms ease-in-out; /* Плавное изменение прозрачности */
+}
+
+.page-exit {
+  opacity: 1; /* Исходное состояние, когда компонент уходит */
+}
+
+.page-exit-active {
+  opacity: 0; /* Прозрачность становится 0 */
+  transition: opacity 500ms ease-in-out; /* Плавное исчезновение */
+}
+
