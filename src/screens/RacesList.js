@@ -25,7 +25,7 @@ const countryToFlag = {
   "Mexico": "mx",
   "Brazil": "br",
   "Las Vegas": "us",
-  "Abu Dhabi": "ae",
+  "UAE": "ae",
   "Qatar": "qa",
   "Azerbaijan": "az"
 };
@@ -141,7 +141,9 @@ const RacesList = () => {
               background: "white"
             }}>
               <img src={`https://flagcdn.com/w80/${countryCode}.png`} alt={countryName}
-                style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }} />
+                style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover", objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(countryName) 
+                ? "-15px center" 
+                : "center"}} />
             </div>
 
             {/* Название гонки и место проведения */}
