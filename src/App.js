@@ -6,6 +6,7 @@ import ConstructorDetails from './screens/ConstructorDetails';
 import RacesList from './screens/RacesList';
 import BottomNavigation from "./components/BottomNavigation";
 import logo from './screens/images/logo.png';
+import Feed from "./screens/Feed";
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 function App() {
@@ -82,8 +83,10 @@ function App() {
                     <ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />
                   </CSSTransition>
                 ) : activePage === 0 ? (
-                  <PilotsList />
+                  <Feed />
                 ) : activePage === 1 ? (
+                  <PilotsList />
+                ) : activePage === 2 ? (
                   <ConstructorsList onConstructorSelect={handleSelectConstructor} />
                 ) : (
                   <RacesList /> // 3-я кнопка переключает на календарь
