@@ -78,7 +78,7 @@ const RacesList = () => {
   // Функция загрузки данных о гонках
   const fetchRaces = async () => {
     try {
-      const response = await fetch("https://api.jolpi.ca/ergast/f1/2024/races.json");
+      const response = await fetch("https://api.jolpi.ca/ergast/f1/2025/races.json");
       if (!response.ok) throw new Error("Ошибка загрузки гонок");
 
       const data = await response.json();
