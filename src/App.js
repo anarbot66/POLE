@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import PilotsList from './screens/PilotsList';
 import ConstructorsList from './screens/ConstructorsList';
 import ConstructorDetails from './screens/ConstructorDetails';
-import RacesList from './screens/RacesList'; // ✅ Добавили страницу календаря
+import RacesList from './screens/RacesList';
 import BottomNavigation from "./components/BottomNavigation";
 import logo from './screens/images/logo.png';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
@@ -71,7 +71,7 @@ function App() {
               classNames="page"
               timeout={500} // Время анимации
             >
-              <div className="page-container">
+              <div className="content-container">
                 {selectedConstructor ? (
                   <ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />
                 ) : activePage === 0 ? (
