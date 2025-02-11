@@ -10,7 +10,7 @@ import Feed from "./screens/Feed";
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 function App() {
-  const [activePage, setActivePage] = useState(0); // 0 - Pilots, 1 - Constructors, 2 - Races
+  const [activePage, setActivePage] = useState(0);
   const [selectedConstructor, setSelectedConstructor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
