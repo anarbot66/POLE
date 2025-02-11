@@ -39,7 +39,7 @@ function App() {
   }, [contentLoaded]);
 
   const handlePageChange = (page) => {
-    setSelectedConstructor(null); // ✅ Сбрасываем выбранного конструктора при смене страницы
+    setSelectedConstructor(null); // Сбрасываем выбранного конструктора при смене страницы
     setActivePage(page);
   };
 
@@ -67,19 +67,26 @@ function App() {
         <>
           <TransitionGroup>
             <CSSTransition
-              key={activePage}
+              key={activePage} // Ключ обновляется при изменении активной страницы
               classNames="page"
               timeout={500} // Время анимации
             >
               <div className="content-container">
                 {selectedConstructor ? (
-                  <ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />
+                  <CSSTransition
+                    in={selectedConstructor !== null}
+                    timeout={500}
+                    classNames="page"
+                    unmountOnExit
+                  >
+                    <ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />
+                  </CSSTransition>
                 ) : activePage === 0 ? (
                   <PilotsList />
                 ) : activePage === 1 ? (
                   <ConstructorsList onConstructorSelect={handleSelectConstructor} />
                 ) : (
-                  <RacesList /> // ✅ Теперь третья кнопка переключает на календарь
+                  <RacesList /> // 3-я кнопка переключает на календарь
                 )}
               </div>
             </CSSTransition>

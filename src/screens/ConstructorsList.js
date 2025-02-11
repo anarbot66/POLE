@@ -159,7 +159,7 @@ const ConstructorsList = ({ onConstructorSelect }) => {
                 display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ color: "black", fontSize: "16px" }}>
+                  <div style={{ color: "black", fontSize: "14px" }}>
                     {constructor.Constructor.name}
                   </div>
                 </div>

@@ -179,7 +179,7 @@ const PilotsList = () => {
 
   return (
     <div style={{
-      width: "calc(100% - 40px)", // Убираем отступы по бокам
+      width: "calc(100% - 20px)", // Убираем отступы по бокам
       margin: "0 auto", // Центрируем контейнер
       height: "calc(100vh - 100px)",
       overflowY: "auto",
@@ -230,7 +230,7 @@ const PilotsList = () => {
               display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ color: "black", fontSize: "16px" }}>
+                <div style={{ color: "black", fontSize: "12px" }}>
                   {translatedName}
                 </div>
                 <img src={`https://flagcdn.com/w40/${countryCode}.png`} alt={nationality}

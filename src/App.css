@@ -8,6 +8,29 @@
   transition: opacity 0.5s ease-in-out;
 }
 
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Плавная анимация перехода между страницами */
+.page-enter {
+  opacity: 0; /* Начинаем с полной прозрачности */
+}
+
+.page-enter-active {
+  opacity: 1; /* Прозрачность становится 1 */
+  transition: opacity 500ms ease-in-out; /* Плавное изменение прозрачности */
+}
+
+.page-exit {
+  opacity: 1; /* Исходное состояние, когда компонент уходит */
+}
+
+.page-exit-active {
+  opacity: 0; /* Прозрачность становится 0 */
+  transition: opacity 500ms ease-in-out; /* Плавное исчезновение */
+}
+
 /* Эффект для экрана загрузки */
 .loading-screen {
   position: fixed;
@@ -31,23 +54,4 @@
 .logo {
   width: 120px;
   height: auto;
-}
-
-/* Плавная анимация перехода между страницами */
-.page-enter {
-  opacity: 0; /* Начинаем с полной прозрачности */
-}
-
-.page-enter-active {
-  opacity: 1; /* Прозрачность становится 1 */
-  transition: opacity 500ms ease-in-out; /* Плавное изменение прозрачности */
-}
-
-.page-exit {
-  opacity: 1; /* Исходное состояние, когда компонент уходит */
-}
-
-.page-exit-active {
-  opacity: 0; /* Прозрачность становится 0 */
-  transition: opacity 500ms ease-in-out; /* Плавное исчезновение */
 }

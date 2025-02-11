@@ -26,37 +26,36 @@ const countryToFlag = {
   "Brazil": "br",
   "Las Vegas": "us",
   "Abu Dhabi": "ae",
-  "United Arab Emirates": "ae",
   "Qatar": "qa",
   "Azerbaijan": "az"
 };
 
 // Перевод названий гонок
 const raceNameTranslations = {
-  "Bahrain Grand Prix": "Гран-при Бахрейна",
-  "Saudi Arabian Grand Prix": "Гран-при Саудовской Аравии",
-  "Australian Grand Prix": "Гран-при Австралии",
-  "Japanese Grand Prix": "Гран-при Японии",
-  "Chinese Grand Prix": "Гран-при Китая",
-  "Miami Grand Prix": "Гран-при Майами",
-  "Emilia Romagna Grand Prix": "Гран-при Эмилии-Романьи",
-  "Monaco Grand Prix": "Гран-при Монако",
-  "Canadian Grand Prix": "Гран-при Канады",
-  "Spanish Grand Prix": "Гран-при Испании",
-  "Austrian Grand Prix": "Гран-при Австрии",
-  "British Grand Prix": "Гран-при Великобритании",
-  "Hungarian Grand Prix": "Гран-при Венгрии",
-  "Belgian Grand Prix": "Гран-при Бельгии",
-  "Dutch Grand Prix": "Гран-при Нидерландов",
-  "Italian Grand Prix": "Гран-при Италии",
-  "Azerbaijan Grand Prix": "Гран-при Азербайджана",
-  "Singapore Grand Prix": "Гран-при Сингапура",
-  "United States Grand Prix": "Гран-при США",
-  "Mexico City Grand Prix": "Гран-при Мексики",
-  "São Paulo Grand Prix": "Гран-при Бразилии",
-  "Las Vegas Grand Prix": "Гран-при Лас-Вегаса",
-  "Qatar Grand Prix": "Гран-при Катара",
-  "Abu Dhabi Grand Prix": "Гран-при Абу-Даби"
+  "Bahrain Grand Prix": "Бахрейн",
+  "Saudi Arabian Grand Prix": "Саудовская Аравия",
+  "Australian Grand Prix": "Австралия",
+  "Japanese Grand Prix": "Япония",
+  "Chinese Grand Prix": "Китай",
+  "Miami Grand Prix": "Майами",
+  "Emilia Romagna Grand Prix": "Эмилии-Романьи",
+  "Monaco Grand Prix": "Монако",
+  "Canadian Grand Prix": "Канада",
+  "Spanish Grand Prix": "Испания",
+  "Austrian Grand Prix": "Австрия",
+  "British Grand Prix": "Великобритания",
+  "Hungarian Grand Prix": "Венгрия",
+  "Belgian Grand Prix": "Бельгия",
+  "Dutch Grand Prix": "Нидерландов",
+  "Italian Grand Prix": "Италия",
+  "Azerbaijan Grand Prix": "Азербайджан",
+  "Singapore Grand Prix": "Сингапур",
+  "United States Grand Prix": "США",
+  "Mexico City Grand Prix": "Мексика",
+  "São Paulo Grand Prix": "Бразилия",
+  "Las Vegas Grand Prix": "Лас-Вегас",
+  "Qatar Grand Prix": "Катар",
+  "Abu Dhabi Grand Prix": "Абу-Даби"
 };
 
 // Функция форматирования даты в "7 - 9 марта"
@@ -116,7 +115,6 @@ const RacesList = () => {
 
         // Исправляем возможные ошибки в API
         if (countryName === "Great Britain") countryName = "United Kingdom";
-        if (countryName === "Abu Dhabi") countryName = "United Arab Emirates";
 
         const countryCode = countryToFlag[countryName] || "un"; // "un" - заглушка для неизвестных стран
         const weekendDate = formatRaceWeekend(race.FirstPractice.date, race.date);
@@ -150,19 +148,19 @@ const RacesList = () => {
             <div style={{
               display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
             }}>
-              <div style={{ color: "black", fontSize: "16px" }}>
+              <div style={{ color: "black", fontSize: "13px" }}>
                 {translatedRaceName}
               </div>
               <div style={{
-                color: "#B9B9B9", fontSize: "12px"
+                color: "#B9B9B9", fontSize: "10px"
               }}>
-                {race.Circuit.Location.locality}
+                {race.Circuit.circuitName}
               </div>
             </div>
 
             {/* Даты уик-энда */}
             <div style={{ textAlign: "center", minWidth: "80px" }}>
-              <span style={{ color: "black", fontSize: "16px" }}>
+              <span style={{ color: "black", fontSize: "12px" }}>
                 {weekendDate}
               </span>
             </div>
