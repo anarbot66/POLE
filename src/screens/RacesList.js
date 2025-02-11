@@ -99,7 +99,7 @@ const RacesList = () => {
 
   return (
     <div style={{
-      width: "calc(100% - 40px)",
+      width: "calc(100% - 20px)",
       margin: "0 auto",
       height: "calc(100vh - 100px)",
       overflowY: "auto",

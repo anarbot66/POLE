@@ -19,7 +19,7 @@ body {
 
 .page-enter-active {
   opacity: 1; /* Прозрачность становится 1 */
-  transition: opacity 500ms ease-in-out; /* Плавное изменение прозрачности */
+  transition: opacity 300ms ease-in-out; /* Плавное изменение прозрачности */
 }
 
 .page-exit {
@@ -28,7 +28,7 @@ body {
 
 .page-exit-active {
   opacity: 0; /* Прозрачность становится 0 */
-  transition: opacity 500ms ease-in-out; /* Плавное исчезновение */
+  transition: opacity 300ms ease-in-out; /* Плавное исчезновение */
 }
 
 /* Эффект для экрана загрузки */

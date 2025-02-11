@@ -75,7 +75,7 @@ function App() {
                 {selectedConstructor ? (
                   <CSSTransition
                     in={selectedConstructor !== null}
-                    timeout={500}
+                    timeout={200}
                     classNames="page"
                     unmountOnExit
                   >
