@@ -6,7 +6,7 @@ const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
   "China": "cn", "USA": "us", "United States": "us", "Miami": "us",
   "Italy": "it", "Monaco": "mc", "Canada": "ca", "Spain": "es",
-  "Austria": "at", "Great Britain": "gb", "United Kingdom": "gb",
+  "Austria": "at", "Great Britain": "gb", "United Kingdom": "gb", "UK": "uk",
   "Hungary": "hu", "Belgium": "be", "Netherlands": "nl", "Singapore": "sg",
   "Mexico": "mx", "Brazil": "br", "Las Vegas": "us", "UAE": "ae",
   "Qatar": "qa", "Azerbaijan": "az"
@@ -57,8 +57,20 @@ const RaceDetails = ({ race, goBack }) => {
       </button>
 
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <img src={`https://flagcdn.com/w80/${countryCode}.png`} alt={race.Circuit.Location.country}
-          style={{ width: "50px", height: "50px", borderRadius: "50%" }} />
+      <img 
+                src={`https://flagcdn.com/w80/${countryCode}.png`} 
+                alt={race.Circuit.Location.country}
+                style={{ 
+                    width: "50px", 
+                    height: "50px", 
+                    borderRadius: "50%", 
+                    objectFit: "cover",
+                    objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(race.Circuit.Location.country) 
+                    ? "20% center"  // Смещение для выбранных стран
+                    : "center"  // Для всех остальных
+                }} 
+                />
+
         <div>
           <h2 style={{ margin: 0 }}>{race.raceName}</h2>
           <p style={{ margin: 0, color: "gray" }}>{race.Circuit.circuitName}</p>
