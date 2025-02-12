@@ -1,33 +1,15 @@
 import { useState, useEffect } from "react";
+import RaceDetails from "./RaceDetails"; // Импортируем компонент деталей гонки
 
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
-  "Bahrain": "bh",
-  "Saudi Arabia": "sa",
-  "Australia": "au",
-  "Japan": "jp",
-  "China": "cn",
-  "USA": "us",
-  "United States": "us",
-  "Miami": "us",
-  "Italy": "it",
-  "Monaco": "mc",
-  "Canada": "ca",
-  "Spain": "es",
-  "Austria": "at",
-  "Great Britain": "gb",
-  "United Kingdom": "gb",
-  "UK": "gb",
-  "Hungary": "hu",
-  "Belgium": "be",
-  "Netherlands": "nl",
-  "Singapore": "sg",
-  "Mexico": "mx",
-  "Brazil": "br",
-  "Las Vegas": "us",
-  "UAE": "ae",
-  "Qatar": "qa",
-  "Azerbaijan": "az"
+  "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
+  "China": "cn", "USA": "us", "United States": "us", "Miami": "us",
+  "Italy": "it", "Monaco": "mc", "Canada": "ca", "Spain": "es",
+  "Austria": "at", "Great Britain": "gb", "United Kingdom": "gb",
+  "Hungary": "hu", "Belgium": "be", "Netherlands": "nl", "Singapore": "sg",
+  "Mexico": "mx", "Brazil": "br", "Las Vegas": "us", "UAE": "ae",
+  "Qatar": "qa", "Azerbaijan": "az"
 };
 
 // Перевод названий гонок
@@ -38,7 +20,7 @@ const raceNameTranslations = {
   "Japanese Grand Prix": "Япония",
   "Chinese Grand Prix": "Китай",
   "Miami Grand Prix": "Майами",
-  "Emilia Romagna Grand Prix": "Эмилии-Романьи",
+  "Emilia Romagna Grand Prix": "Эмилия-Романья",
   "Monaco Grand Prix": "Монако",
   "Canadian Grand Prix": "Канада",
   "Spanish Grand Prix": "Испания",
@@ -46,7 +28,7 @@ const raceNameTranslations = {
   "British Grand Prix": "Великобритания",
   "Hungarian Grand Prix": "Венгрия",
   "Belgian Grand Prix": "Бельгия",
-  "Dutch Grand Prix": "Нидерландов",
+  "Dutch Grand Prix": "Нидерланды",
   "Italian Grand Prix": "Италия",
   "Azerbaijan Grand Prix": "Азербайджан",
   "Singapore Grand Prix": "Сингапур",
@@ -64,7 +46,6 @@ const formatRaceWeekend = (firstPracticeDate, raceDate) => {
     "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня",
     "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"
   ];
-
   const startDate = new Date(firstPracticeDate);
   const endDate = new Date(raceDate);
 
@@ -73,6 +54,7 @@ const formatRaceWeekend = (firstPracticeDate, raceDate) => {
 
 const RacesList = () => {
   const [races, setRaces] = useState([]);
+  const [selectedRace, setSelectedRace] = useState(null);
   const [error, setError] = useState(null);
 
   // Функция загрузки данных о гонках
@@ -97,6 +79,21 @@ const RacesList = () => {
   if (error) return <div>Ошибка: {error}</div>;
   if (!races.length) return <div>Загрузка...</div>;
 
+  // Функция выбора гонки
+  const handleRaceSelect = (race) => {
+    setSelectedRace(race);
+  };
+
+  // Функция возврата к списку гонок
+  const handleBackToList = () => {
+    setSelectedRace(null);
+  };
+
+  // Если выбрана гонка, показываем детали гонки
+  if (selectedRace) {
+    return <RaceDetails race={selectedRace} goBack={handleBackToList} />;
+  }
+
   return (
     <div style={{
       width: "calc(100% - 20px)",
@@ -112,41 +109,39 @@ const RacesList = () => {
     }}>
       {races.map((race, index) => {
         let countryName = race.Circuit.Location.country;
-
-        // Исправляем возможные ошибки в API
         if (countryName === "Great Britain") countryName = "United Kingdom";
-
-        const countryCode = countryToFlag[countryName] || "un"; // "un" - заглушка для неизвестных стран
+        const countryCode = countryToFlag[countryName] || "un";
         const weekendDate = formatRaceWeekend(race.FirstPractice.date, race.date);
-
-        // Перевод названия гонки
+        
+        // Используем перевод названия гонки, если он есть
         const translatedRaceName = raceNameTranslations[race.raceName] || race.raceName;
 
         return (
-          <div key={index} style={{
-            width: "100%",
-            background: "white",
-            borderRadius: "20px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "12px",
-            padding: "10px",
-            cursor: "pointer"
-          }}>
-            {/* Флаг страны (высокое качество) */}
+          <div key={index} 
+            onClick={() => handleRaceSelect(race)} // Переход к деталям гонки
+            style={{
+              width: "100%",
+              background: "white",
+              borderRadius: "20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "12px",
+              padding: "10px",
+              cursor: "pointer"
+            }}
+          >
+            {/* Флаг страны */} 
             <div style={{
               width: "65px", height: "65px", borderRadius: "20px",
               display: "flex", justifyContent: "center", alignItems: "center",
               background: "white"
             }}>
               <img src={`https://flagcdn.com/w80/${countryCode}.png`} alt={countryName}
-                style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover", objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(countryName) 
-                ? "-15px center" 
-                : "center"}} />
+                style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }} />
             </div>
 
-            {/* Название гонки и место проведения */}
+            {/* Название гонки с переводом */} 
             <div style={{
               display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
             }}>
@@ -160,7 +155,7 @@ const RacesList = () => {
               </div>
             </div>
 
-            {/* Даты уик-энда */}
+            {/* Даты уик-энда */} 
             <div style={{ textAlign: "center", minWidth: "80px" }}>
               <span style={{ color: "black", fontSize: "12px" }}>
                 {weekendDate}

@@ -4,6 +4,7 @@ import PilotsList from './screens/PilotsList';
 import ConstructorsList from './screens/ConstructorsList';
 import ConstructorDetails from './screens/ConstructorDetails';
 import RacesList from './screens/RacesList';
+import RaceDetails from './screens/RaceDetails'; // Добавляем страницу с деталями гонки
 import BottomNavigation from "./components/BottomNavigation";
 import logo from './screens/images/logo.png';
 import Feed from "./screens/Feed";
@@ -11,6 +12,7 @@ import Feed from "./screens/Feed";
 function App() {
   const [activePage, setActivePage] = useState(0);
   const [selectedConstructor, setSelectedConstructor] = useState(null);
+  const [selectedRace, setSelectedRace] = useState(null); // Новое состояние для выбранной гонки
   const [loading, setLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
   const [contentLoaded, setContentLoaded] = useState(false);
@@ -18,12 +20,7 @@ function App() {
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.expand();
-
-      const user = window.Telegram.WebApp.initDataUnsafe.user;
-      const chat = window.Telegram.WebApp.initDataUnsafe.chat;
-
-      console.log(user);
-      console.log(chat);
+      console.log(window.Telegram.WebApp.initDataUnsafe.user);
     }
 
     setTimeout(() => {
@@ -40,6 +37,7 @@ function App() {
 
   const handlePageChange = (page) => {
     setSelectedConstructor(null); // Сбрасываем выбранного конструктора при смене страницы
+    setSelectedRace(null); // Сбрасываем выбранную гонку
     setActivePage(page);
   };
 
@@ -49,6 +47,14 @@ function App() {
       position: constructor.position,
       points: constructor.points,
     });
+  };
+
+  const handleSelectRace = (race) => {
+    setSelectedRace(race);
+  };
+
+  const handleBackToRaces = () => {
+    setSelectedRace(null);
   };
 
   const handleBackToConstructors = () => {
@@ -68,6 +74,8 @@ function App() {
           <div className="content-container">
             {selectedConstructor ? (
               <ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />
+            ) : selectedRace ? (
+              <RaceDetails race={selectedRace} goBack={handleBackToRaces} /> // Отображаем детали гонки
             ) : activePage === 0 ? (
               <Feed />
             ) : activePage === 1 ? (
@@ -75,7 +83,7 @@ function App() {
             ) : activePage === 2 ? (
               <ConstructorsList onConstructorSelect={handleSelectConstructor} />
             ) : (
-              <RacesList /> // 3-я кнопка переключает на календарь
+              <RacesList onRaceSelect={handleSelectRace} /> // Передаем обработчик выбора гонки
             )}
           </div>
 
