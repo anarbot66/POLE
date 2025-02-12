@@ -22,10 +22,39 @@ const sessionTypeTranslations = {
   "Race": "Гонка"
 };
 
+// Перевод названий гонок
+const raceNameTranslations = {
+    "Bahrain Grand Prix": "Бахрейн",
+    "Saudi Arabian Grand Prix": "Саудовская Аравия",
+    "Australian Grand Prix": "Австралия",
+    "Japanese Grand Prix": "Япония",
+    "Chinese Grand Prix": "Китай",
+    "Miami Grand Prix": "Майами",
+    "Emilia Romagna Grand Prix": "Эмилия-Романья",
+    "Monaco Grand Prix": "Монако",
+    "Canadian Grand Prix": "Канада",
+    "Spanish Grand Prix": "Испания",
+    "Austrian Grand Prix": "Австрия",
+    "British Grand Prix": "Великобритания",
+    "Hungarian Grand Prix": "Венгрия",
+    "Belgian Grand Prix": "Бельгия",
+    "Dutch Grand Prix": "Нидерланды",
+    "Italian Grand Prix": "Италия",
+    "Azerbaijan Grand Prix": "Азербайджан",
+    "Singapore Grand Prix": "Сингапур",
+    "United States Grand Prix": "США",
+    "Mexico City Grand Prix": "Мексика",
+    "São Paulo Grand Prix": "Бразилия",
+    "Las Vegas Grand Prix": "Лас-Вегас",
+    "Qatar Grand Prix": "Катар",
+    "Abu Dhabi Grand Prix": "Абу-Даби"
+  };
+  
+
 const convertToMoscowTime = (utcDate, utcTime) => {
   if (!utcDate || !utcTime) return "—";
   const date = new Date(`${utcDate}T${utcTime}`);
-  date.setHours(date.getHours() + 3);
+  date.setHours(date.getHours());
   return date.toLocaleString("ru-RU", {
     day: "numeric", month: "long", hour: "2-digit", minute: "2-digit"
   });
@@ -43,18 +72,31 @@ const RaceDetails = ({ race, goBack }) => {
     { type: "Sprint", date: race.Sprint?.date, time: race.Sprint?.time },
     { type: "Race", date: race.date, time: race.time }
   ].filter(session => session.date);
+  const translatedRaceName = raceNameTranslations[race.raceName] || race.raceName;
 
   return (
     <div style={{
       width: "calc(100% - 20px)", margin: "0 auto", padding: "10px",
       display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#F9F9F9"
     }}>
-      <button onClick={goBack} style={{
-        backgroundColor: "white", color: "black", padding: "10px",
-        borderRadius: "10px", border: "1px solid #ddd", cursor: "pointer", marginBottom: "10px"
-      }}>
+      <button
+        onClick={goBack}
+        style={{
+          position: "fixed",
+          left: "25px",
+          bottom: "120px",
+          backgroundColor: "white",
+          color: "black",
+          border: "none",
+          padding: "10px 20px",
+          borderRadius: "10px",
+          cursor: "pointer",
+          zIndex: "1000",
+        }}
+      >
         Назад
       </button>
+      
 
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <img 
@@ -71,10 +113,18 @@ const RaceDetails = ({ race, goBack }) => {
                 }} 
                 />
 
-        <div>
-          <h2 style={{ margin: 0 }}>{race.raceName}</h2>
-          <p style={{ margin: 0, color: "gray" }}>{race.Circuit.circuitName}</p>
-        </div>
+            <div style={{
+              display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
+            }}>
+              <div style={{ color: "black", fontSize: "13px" }}>
+                {translatedRaceName}
+              </div>
+              <div style={{
+                color: "#B9B9B9", fontSize: "10px"
+              }}>
+                {race.Circuit.circuitName}
+              </div>
+            </div>
       </div>
 
       

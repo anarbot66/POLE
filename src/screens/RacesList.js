@@ -77,7 +77,18 @@ const RacesList = () => {
   }, []);
 
   if (error) return <div>Ошибка: {error}</div>;
-  if (!races.length) return <div>Загрузка...</div>;
+  if (!races.length) return (
+    <div style={{
+      display: "flex",            // Включаем flexbox
+      justifyContent: "center",  // Горизонтальное центрирование
+      alignItems: "center",      // Вертикальное центрирование
+      height: "100vh",           // Задаем высоту 100% от высоты окна
+      textAlign: "center"        // Центрируем текст
+    }}>
+      Загрузка...
+    </div>
+  );
+  
 
   // Функция выбора гонки
   const handleRaceSelect = (race) => {
