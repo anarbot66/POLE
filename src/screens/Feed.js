@@ -110,16 +110,16 @@ const Feed = () => {
           flexDirection: "column"
         }}>
       {/* Заголовок "Добрый день" */}
-      <h2 style={{ fontSize: "24px", fontWeight: "bold", color: "black", textAlign: "left" }}>
+      <h2 style={{ fontSize: "16px", fontWeight: "bold", color: "black", textAlign: "left" }}>
         Добрый день
       </h2>
 
       {/* Подзаголовок "Грядущие события:" */}
-      <h3 style={{ fontSize: "24px", fontWeight: "bold", color: "black", textAlign: "left", marginBottom: "20px" }}>
+      <h3 style={{ fontSize: "16px", fontWeight: "bold", color: "black", textAlign: "left", marginBottom: "20px" }}>
         just an incident?
       </h3>
 
-      <h4 style={{ fontSize: "18px", fontWeight: "regular", color: "gray"}}>
+      <h4 style={{ fontSize: "14px", fontWeight: "regular", color: "gray"}}>
         Грядущие события:
       </h4>
       </div>
@@ -154,7 +154,7 @@ const Feed = () => {
                 {sessionName}
               </div>
               <div style={{ fontSize: "12px", color: "#999" }}>
-                {event.race.Circuit.Location.country}: {event.race.Circuit.circuitName}
+                {event.race.Circuit.Location.country}
               </div>
             </div>
 
