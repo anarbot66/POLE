@@ -95,7 +95,9 @@ const Feed = () => {
   return (
     <div style={{
       width: "calc(100% - 20px)",
+      height: "calc(100vh - 100px)",
       margin: "0 auto",
+      overflowY: "auto",
       paddingTop: "10px",
       display: "flex",
       flexDirection: "column",
@@ -110,12 +112,12 @@ const Feed = () => {
           flexDirection: "column"
         }}>
       {/* Заголовок "Добрый день" */}
-      <h2 style={{ fontSize: "16px", fontWeight: "bold", color: "black", textAlign: "left" }}>
+      <h2 style={{ fontSize: "16px", fontWeight: "regular", color: "black", textAlign: "left" }}>
         Добрый день
       </h2>
 
       {/* Подзаголовок "Грядущие события:" */}
-      <h3 style={{ fontSize: "16px", fontWeight: "bold", color: "black", textAlign: "left", marginBottom: "20px" }}>
+      <h3 style={{ fontSize: "24px", fontWeight: "bold", color: "black", textAlign: "left", marginBottom: "20px" }}>
         just an incident?
       </h3>
 
@@ -150,7 +152,7 @@ const Feed = () => {
 
             {/* Название сессии и место проведения */}
             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-              <div style={{ fontSize: "14px", fontWeight: "600", color: "black" }}>
+              <div style={{ fontSize: "12px", fontWeight: "600", color: "black" }}>
                 {sessionName}
               </div>
               <div style={{ fontSize: "12px", color: "#999" }}>
