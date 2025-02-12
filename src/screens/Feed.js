@@ -30,6 +30,34 @@ const countryToFlag = {
   "Azerbaijan": "az"
 };
 
+// Перевод названий гонок
+const raceNameTranslations = {
+  "Bahrain Grand Prix": "Бахрейн",
+  "Saudi Arabian Grand Prix": "Саудовская Аравия",
+  "Australian Grand Prix": "Австралия",
+  "Japanese Grand Prix": "Япония",
+  "Chinese Grand Prix": "Китай",
+  "Miami Grand Prix": "Майами",
+  "Emilia Romagna Grand Prix": "Эмилия-Романья",
+  "Monaco Grand Prix": "Монако",
+  "Canadian Grand Prix": "Канада",
+  "Spanish Grand Prix": "Испания",
+  "Austrian Grand Prix": "Австрия",
+  "British Grand Prix": "Великобритания",
+  "Hungarian Grand Prix": "Венгрия",
+  "Belgian Grand Prix": "Бельгия",
+  "Dutch Grand Prix": "Нидерланды",
+  "Italian Grand Prix": "Италия",
+  "Azerbaijan Grand Prix": "Азербайджан",
+  "Singapore Grand Prix": "Сингапур",
+  "United States Grand Prix": "США",
+  "Mexico City Grand Prix": "Мексика",
+  "São Paulo Grand Prix": "Бразилия",
+  "Las Vegas Grand Prix": "Лас-Вегас",
+  "Qatar Grand Prix": "Катар",
+  "Abu Dhabi Grand Prix": "Абу-Даби"
+};
+
 // Перевод названий сессий
 const sessionTypeTranslations = {
   "FirstPractice": "Свободная практика 1",
@@ -54,6 +82,7 @@ const convertToMoscowTime = (utcDate, utcTime) => {
 const Feed = () => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
+  
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -88,6 +117,7 @@ const Feed = () => {
 
     fetchEvents();
   }, []);
+  
 
   if (error) return <div>Ошибка: {error}</div>;
   if (!events.length) return <div>Загрузка...</div>;
@@ -129,7 +159,7 @@ const Feed = () => {
       {events.map((event, index) => {
         let countryName = event.race.Circuit.Location.country;
         if (countryName === "Great Britain") countryName = "United Kingdom";
-
+        const translatedRaceName = raceNameTranslations[event.race.raceName] || event.race.raceName;
         const countryCode = countryToFlag[countryName] || "un"; // "un" - заглушка для неизвестных стран
         const sessionName = sessionTypeTranslations[event.type] || event.type;
         const formattedTime = convertToMoscowTime(event.date, event.time);
@@ -156,7 +186,7 @@ const Feed = () => {
                 {sessionName}
               </div>
               <div style={{ fontSize: "12px", color: "#999" }}>
-                {event.race.Circuit.Location.country}
+                {translatedRaceName}
               </div>
             </div>
 
