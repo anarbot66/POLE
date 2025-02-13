@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import RaceDetails from "./RaceDetails";
 
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
@@ -16,7 +17,7 @@ const countryToFlag = {
   "Spain": "es",
   "Austria": "at",
   "Great Britain": "gb",
-  "United Kingdom": "gb",
+  "United Kingdom": "us",
   "UK": "gb",
   "Hungary": "hu",
   "Belgium": "be",
@@ -28,34 +29,6 @@ const countryToFlag = {
   "UAE": "ae",
   "Qatar": "qa",
   "Azerbaijan": "az"
-};
-
-// Перевод названий гонок
-const raceNameTranslations = {
-  "Bahrain Grand Prix": "Бахрейн",
-  "Saudi Arabian Grand Prix": "Саудовская Аравия",
-  "Australian Grand Prix": "Австралия",
-  "Japanese Grand Prix": "Япония",
-  "Chinese Grand Prix": "Китай",
-  "Miami Grand Prix": "Майами",
-  "Emilia Romagna Grand Prix": "Эмилия-Романья",
-  "Monaco Grand Prix": "Монако",
-  "Canadian Grand Prix": "Канада",
-  "Spanish Grand Prix": "Испания",
-  "Austrian Grand Prix": "Австрия",
-  "British Grand Prix": "Великобритания",
-  "Hungarian Grand Prix": "Венгрия",
-  "Belgian Grand Prix": "Бельгия",
-  "Dutch Grand Prix": "Нидерланды",
-  "Italian Grand Prix": "Италия",
-  "Azerbaijan Grand Prix": "Азербайджан",
-  "Singapore Grand Prix": "Сингапур",
-  "United States Grand Prix": "США",
-  "Mexico City Grand Prix": "Мексика",
-  "São Paulo Grand Prix": "Бразилия",
-  "Las Vegas Grand Prix": "Лас-Вегас",
-  "Qatar Grand Prix": "Катар",
-  "Abu Dhabi Grand Prix": "Абу-Даби"
 };
 
 // Перевод названий сессий
@@ -75,14 +48,18 @@ const convertToMoscowTime = (utcDate, utcTime) => {
   const date = new Date(`${utcDate}T${utcTime}`);
   date.setHours(date.getHours() + 3); // Москва = UTC+3
   return date.toLocaleString("ru-RU", {
-    day: "numeric", month: "long", hour: "2-digit", minute: "2-digit"
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit"
   });
 };
 
-const Feed = () => {
+const Feed = ({ userName }) => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
-  
+  // Состояние для выбранной гонки
+  const [selectedRace, setSelectedRace] = useState(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -117,10 +94,19 @@ const Feed = () => {
 
     fetchEvents();
   }, []);
-  
 
   if (error) return <div>Ошибка: {error}</div>;
   if (!events.length) return <div>Загрузка...</div>;
+
+  // Если выбрана гонка, показываем ее детали
+  if (selectedRace) {
+    return (
+      <RaceDetails 
+        race={selectedRace} 
+        goBack={() => setSelectedRace(null)} 
+      />
+    );
+  }
 
   return (
     <div style={{
@@ -133,64 +119,73 @@ const Feed = () => {
       flexDirection: "column",
       gap: "15px"
     }}>
-
-    <div style={{
+      <div style={{
           width: "calc(100% - 20px)",
           margin: "0 auto",
           paddingTop: "10px",
           display: "flex",
           flexDirection: "column"
         }}>
-      {/* Заголовок "Добрый день" */}
-      <h2 style={{ fontSize: "16px", fontWeight: "regular", color: "black", textAlign: "left" }}>
-        Добрый день
-      </h2>
-
-      {/* Подзаголовок "Грядущие события:" */}
-      <h3 style={{ fontSize: "24px", fontWeight: "bold", color: "black", textAlign: "left", marginBottom: "20px" }}>
-        just an incident?
-      </h3>
-
-      <h4 style={{ fontSize: "14px", fontWeight: "regular", color: "gray"}}>
-        Грядущие события:
-      </h4>
+        {/* Заголовки */}
+        <h2 style={{ fontSize: "16px", color: "black", textAlign: "left" }}>
+          Добрый день
+        </h2>
+        <h3 style={{ fontSize: "24px", fontWeight: "bold", color: "black", textAlign: "left", marginBottom: "20px" }}>
+        {`Привет, ${userName || "Гость"}!`}
+        </h3>
+        <h4 style={{ fontSize: "14px", color: "gray" }}>
+          Грядущие события:
+        </h4>
       </div>
 
       {events.map((event, index) => {
         let countryName = event.race.Circuit.Location.country;
         if (countryName === "Great Britain") countryName = "United Kingdom";
-        const translatedRaceName = raceNameTranslations[event.race.raceName] || event.race.raceName;
-        const countryCode = countryToFlag[countryName] || "un"; // "un" - заглушка для неизвестных стран
+        const countryCode = countryToFlag[countryName] || "un"; // "un" для неизвестных стран
         const sessionName = sessionTypeTranslations[event.type] || event.type;
         const formattedTime = convertToMoscowTime(event.date, event.time);
 
         return (
-          <div key={index} style={{
-            width: "100%", background: "white", borderRadius: "20px",
-            display: "flex", alignItems: "center", gap: "12px",
-            padding: "10px", cursor: "pointer"
-          }}>
+          <div key={index} 
+               onClick={() => setSelectedRace(event.race)} // При клике сохраняем выбранную гонку
+               style={{
+                  width: "100%",
+                  background: "white",
+                  borderRadius: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  padding: "10px",
+                  cursor: "pointer"
+               }}>
             {/* Флаг страны */}
             <div style={{
-              width: "55px", height: "55px", borderRadius: "50%",
-              display: "flex", justifyContent: "center", alignItems: "center",
+              width: "55px",
+              height: "55px",
+              borderRadius: "50%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               background: "white"
             }}>
-              <img src={`https://flagcdn.com/w80/${countryCode}.png`} alt={countryName}
-                style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }} />
+              <img 
+                src={`https://flagcdn.com/w80/${countryCode}.png`} 
+                alt={countryName}
+                style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }} 
+              />
             </div>
 
-            {/* Название сессии и место проведения */}
+            {/* Название сессии и название гонки */}
             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
               <div style={{ fontSize: "12px", fontWeight: "600", color: "black" }}>
                 {sessionName}
               </div>
               <div style={{ fontSize: "12px", color: "#999" }}>
-                {translatedRaceName}
+                {event.race.raceName}
               </div>
             </div>
 
-            {/* Дата и время в Москве */}
+            {/* Время сессии */}
             <div style={{ textAlign: "right", minWidth: "100px" }}>
               <span style={{ fontSize: "12px", color: "#555", fontWeight: "500" }}>
                 {formattedTime}
