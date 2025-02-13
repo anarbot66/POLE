@@ -55,11 +55,42 @@ const convertToMoscowTime = (utcDate, utcTime) => {
   });
 };
 
+const getFormattedDate = () => {
+  const now = new Date();
+  const day = now.getDate();
+  const monthNames = [
+    "января", "февраля", "марта", "апреля", "мая", "июня", 
+    "июля", "августа", "сентября", "октября", "ноября", "декабря"
+  ];
+  const month = monthNames[now.getMonth()]; // Используем правильный месяц
+  const year = now.getFullYear();
+  
+  return `${day} ${month} ${year}`;
+};
+
+
+
+const randomNames = [
+  "Не сбавляй обороты!", 
+  "Привет, что сегодня посмотрим?", 
+  "Не будь как сарджент!", 
+  "Всем тифози привет!", 
+  "Какой ты сегодня? Софт или Хард?"
+];
+
+const getRandomName = () => {
+  const randomIndex = Math.floor(Math.random() * randomNames.length);
+  return randomNames[randomIndex];
+};
+
+
 const Feed = ({ userName }) => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
   // Состояние для выбранной гонки
   const [selectedRace, setSelectedRace] = useState(null);
+  const formattedDate = getFormattedDate();
+  const randomName = getRandomName();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -127,11 +158,11 @@ const Feed = ({ userName }) => {
           flexDirection: "column"
         }}>
         {/* Заголовки */}
-        <h2 style={{ fontSize: "16px", color: "black", textAlign: "left" }}>
-          Добрый день
+        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
+        {randomName}
         </h2>
-        <h3 style={{ fontSize: "24px", fontWeight: "bold", color: "black", textAlign: "left", marginBottom: "20px" }}>
-        {`Привет, ${userName || "Гость"}!`}
+        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
+        {`Сегодня: ${formattedDate}`}
         </h3>
         <h4 style={{ fontSize: "14px", color: "gray" }}>
           Грядущие события:
