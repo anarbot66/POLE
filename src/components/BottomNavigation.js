@@ -52,7 +52,6 @@ const BottomNavigation = ({ setActivePage }) => {
     justifyContent: "center",
     alignItems: "center",
     gap: 10,
-    paddingBottom: "50px",
     zIndex: 1000,
     backdropFilter: "blur(3px)", // Эффект размытия на фоне
     boxShadow: "none", // Убираем тень
