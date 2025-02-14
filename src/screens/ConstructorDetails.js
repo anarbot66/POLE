@@ -92,7 +92,7 @@ const ConstructorDetails = ({ constructor, goBack }) => {
   }, [constructor]);
 
   if (!constructor) {
-    return <div>Ошибка: данные о конструкторе отсутствуют</div>;
+    return <div> </div>;
   }
 
   const teamColor = teamColors[constructor.Constructor.name] || "#000000";
@@ -101,8 +101,8 @@ const ConstructorDetails = ({ constructor, goBack }) => {
     <div
       className="constructor-details"
       style={{
-        width: "calc(100% - 40px)",
-        margin: "0 auto",
+        width: "calc(100% - 20px)",
+        margin: "10px 10px 100px",
         padding: "15px",
         background: "white",
         borderRadius: "20px",

@@ -44,19 +44,19 @@ const BottomNavigation = ({ setActivePage }) => {
     bottom: 0,
     left: "50%",
     transform: "translateX(-50%)",
-    width: 340,
+    width: "100%",
     height: 80,
-    background: "transparent", // Полностью прозрачный фон
+    background: "transparent", // Фон прозрачный для контейнера
     borderRadius: 30,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     gap: 10,
     paddingBottom: "50px",
-    padding: "10px 0", // Уменьшенный padding
     zIndex: 1000,
-    backdropFilter: "blur(2px)", // Размытие заднего фона (если нужно)
-    boxShadow: "none" // Убираем тень, если была
+    backdropFilter: "blur(3px)", // Эффект размытия на фоне
+    boxShadow: "none", // Убираем тень
+    backgroundImage: "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 100%)", // Градиент от прозрачного белого к белому с прозрачностью
   }}
 >
 

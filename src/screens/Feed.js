@@ -84,7 +84,7 @@ const getRandomName = () => {
 };
 
 
-const Feed = ({ userName }) => {
+const Feed = () => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
   // Состояние для выбранной гонки

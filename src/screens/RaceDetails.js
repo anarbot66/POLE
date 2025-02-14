@@ -75,8 +75,10 @@ const RaceDetails = ({ race, goBack }) => {
   const translatedRaceName = raceNameTranslations[race.raceName] || race.raceName;
 
   return (
-    <div style={{
-      width: "calc(100% - 20px)", margin: "0 auto", padding: "10px",
+    
+    <div className="race-details" style={{
+      width: "calc(100% - 20px)",
+        margin: "10px 10px 100px", padding: "10px",
       display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#F9F9F9"
     }}>
       <button

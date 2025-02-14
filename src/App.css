@@ -1,7 +1,5 @@
 /* Общие стили для контента */
 .content-container {
-  display: flex;
-  justify-content: center;
   width: 100%;
   height: 100%;
 }
@@ -19,27 +17,6 @@ body {
   background-color: #F9F9F9;
 }
 
-
-
-/* Плавная анимация перехода между страницами */
-.page-enter {
-  opacity: 0; /* Начинаем с полной прозрачности */
-}
-
-.page-enter-active {
-  opacity: 1; /* Прозрачность становится 1 */
-  transition: opacity 300ms ease-in-out; /* Плавное изменение прозрачности */
-}
-
-.page-exit {
-  opacity: 1; /* Исходное состояние, когда компонент уходит */
-}
-
-.page-exit-active {
-  opacity: 0; /* Прозрачность становится 0 */
-  transition: opacity 300ms ease-in-out; /* Плавное исчезновение */
-}
-
 /* Эффект для экрана загрузки */
 .loading-screen {
   position: fixed;
@@ -55,9 +32,28 @@ body {
   z-index: 1000;
 }
 
-.fade-out {
+.page-enter {
   opacity: 0;
-  pointer-events: none;
+}
+
+.page-enter-active {
+  opacity: 1;
+  transition: opacity 700ms ease-in-out;
+}
+
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 700ms ease-in-out;
+}
+
+.page-exit-done {
+  /* Можно скрыть элемент или изменить его состояние после исчезновения */
+  display: none;
 }
 
 .logo {

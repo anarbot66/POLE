@@ -1,6 +1,19 @@
 import { useState, useEffect } from "react";
 import RaceDetails from "./RaceDetails"; // Импортируем компонент деталей гонки
 
+const getFormattedDate = () => {
+  const now = new Date();
+  const day = now.getDate();
+  const monthNames = [
+    "января", "февраля", "марта", "апреля", "мая", "июня", 
+    "июля", "августа", "сентября", "октября", "ноября", "декабря"
+  ];
+  const month = monthNames[now.getMonth()]; // Используем правильный месяц
+  const year = now.getFullYear();
+  
+  return `${day} ${month} ${year}`;
+};
+
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
@@ -49,13 +62,14 @@ const formatRaceWeekend = (firstPracticeDate, raceDate) => {
   const startDate = new Date(firstPracticeDate);
   const endDate = new Date(raceDate);
 
-  return `${startDate.getDate()} - ${endDate.getDate()} ${months[endDate.getMonth()]}`;
+  return `${startDate.getDate()} ${months[endDate.getMonth()]}`;
 };
 
 const RacesList = () => {
   const [races, setRaces] = useState([]);
   const [selectedRace, setSelectedRace] = useState(null);
   const [error, setError] = useState(null);
+  const formattedDate = getFormattedDate();
 
   // Функция загрузки данных о гонках
   const fetchRaces = async () => {
@@ -118,7 +132,25 @@ const RacesList = () => {
       justifyContent: "flex-start",
       gap: "15px",
       backgroundColor: "#F9F9F9"
-    }}>
+    }} >
+      <div style={{
+          width: "calc(100% - 20px)",
+          margin: "0 auto",
+          paddingTop: "10px",
+          display: "flex",
+          flexDirection: "column"
+        }}>
+        {/* Заголовки */}
+        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
+        {'Календарь F1 2025'}
+        </h2>
+        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
+        {`Сегодня: ${formattedDate}`}
+        </h3>
+        <h4 style={{ fontSize: "12px", color: "gray" }}>
+          Клинки на гонку чтобы узнать расписание
+        </h4>
+      </div>
       {races.map((race, index) => {
         let countryName = race.Circuit.Location.country;
         if (countryName === "Great Britain") countryName = "United Kingdom";

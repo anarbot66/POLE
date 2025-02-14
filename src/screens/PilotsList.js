@@ -1,11 +1,25 @@
 import { useState, useEffect } from "react";
 import PilotDetails from './PilotDetails'; // импортируем новый компонент для отображения детальной информации о пилоте
 
+const getFormattedDate = () => {
+  const now = new Date();
+  const day = now.getDate();
+  const monthNames = [
+    "января", "февраля", "марта", "апреля", "мая", "июня", 
+    "июля", "августа", "сентября", "октября", "ноября", "декабря"
+  ];
+  const month = monthNames[now.getMonth()]; // Используем правильный месяц
+  const year = now.getFullYear();
+  
+  return `${day} ${month} ${year}`;
+};
+
 const PilotsList = () => {
   const [pilots, setPilots] = useState([]);
   const [error, setError] = useState(null);
   const [selectedPilot, setSelectedPilot] = useState(null); // для выбранного пилота
   const [pilotResults, setPilotResults] = useState(null); // для результатов пилота
+  const formattedDate = getFormattedDate();
 
   // Цвета команд
   const teamColors = {
@@ -181,8 +195,8 @@ const PilotsList = () => {
     <div style={{
       width: "calc(100% - 20px)", // Убираем отступы по бокам
       margin: "0 auto", // Центрируем контейнер
-      height: "100%",
       marginBottom: "100px",
+      height: "100%",
       overflowY: "auto",
       paddingTop: "10px",
       display: "flex",
@@ -191,6 +205,24 @@ const PilotsList = () => {
       gap: "15px",
       backgroundColor: "#F9F9F9"
     }}>
+      <div style={{
+          width: "calc(100% - 20px)",
+          margin: "0 auto",
+          paddingTop: "10px",
+          display: "flex",
+          flexDirection: "column"
+        }}>
+        {/* Заголовки */}
+        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
+        {'Таблица пилотов'}
+        </h2>
+        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
+        {`Сегодня: ${formattedDate}`}
+        </h3>
+        <h4 style={{ fontSize: "12px", color: "gray" }}>
+          Кликни по пилоту чтобы узнать подробнее
+        </h4>
+      </div>
       {pilots.map((pilot, index) => {
         const teamColor = teamColors[pilot.Constructors[0].name] || "#000000";
         const pilotFullName = `${pilot.Driver.givenName} ${pilot.Driver.familyName}`;

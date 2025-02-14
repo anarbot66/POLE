@@ -1,9 +1,24 @@
 import { useState, useEffect } from "react";
 
+const getFormattedDate = () => {
+  const now = new Date();
+  const day = now.getDate();
+  const monthNames = [
+    "января", "февраля", "марта", "апреля", "мая", "июня", 
+    "июля", "августа", "сентября", "октября", "ноября", "декабря"
+  ];
+  const month = monthNames[now.getMonth()]; // Используем правильный месяц
+  const year = now.getFullYear();
+  
+  return `${day} ${month} ${year}`;
+};
+
 const ConstructorsList = ({ onConstructorSelect }) => {
   const [constructors, setConstructors] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [error, setError] = useState(null);
+  const formattedDate = getFormattedDate();
+  
 
   // Цвета команд
   const teamColors = {
@@ -116,6 +131,24 @@ const ConstructorsList = ({ onConstructorSelect }) => {
       gap: "15px",
       backgroundColor: "#F9F9F9"
     }}>
+      <div style={{
+          width: "calc(100% - 20px)",
+          margin: "0 auto",
+          paddingTop: "10px",
+          display: "flex",
+          flexDirection: "column"
+        }}>
+        {/* Заголовки */}
+        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
+        {'Таблица конструкторов'}
+        </h2>
+        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
+        {`Сегодня: ${formattedDate}`}
+        </h3>
+        <h4 style={{ fontSize: "12px", color: "gray" }}>
+          Кликни по конструктору чтобы узнать подробнее
+        </h4>
+      </div>
       {constructors.map((constructor, index) => {
         const teamColor = teamColors[constructor.Constructor.name] || "#000000";
         

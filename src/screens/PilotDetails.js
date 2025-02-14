@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import biographies from './json/bio'; // подключаем данные о биографиях
 import seasonsData from './json/seasons'; // подключаем данные о сезонах
 
@@ -60,7 +60,6 @@ const lastNameTranslations = {
 
 const PilotDetails = ({ pilot, teamColors, goBack }) => {
   const [biography, setBiography] = useState(""); // Стейт для биографии пилота
-  const [fadeIn, setFadeIn] = useState(false); // Для плавного появления страницы
   const [activeTab, setActiveTab] = useState("biography"); // Состояние для активной вкладки
   const [selectedYear, setSelectedYear] = useState(""); // Состояние для выбранного года
   const [seasons, setSeasons] = useState([]); // Состояние для списка сезонов пилота
@@ -82,7 +81,7 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
       .toLowerCase();  // Преобразует все в нижний регистр
   };
 
-  const fetchPilotStandings = async (name, year) => {
+  const fetchPilotStandings = useCallback(async (name, year) => {
     try {
       // Устанавливаем временное значение, чтобы не скрывались данные
       if (year !== "2024") {
@@ -123,20 +122,13 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
         setSelectedSeasonStats(prev => ({ ...prev, position: "-", points: "-" }));
       }
     }
-  };
+  }, []);  // Передаем пустой массив зависимостей для стабильности функции
   
-  
-  
-  
-  
-
-
   useEffect(() => {
     const lastNameNormalized = normalizeName(pilot.Driver.familyName);
     const bio = biographies[lastNameNormalized]?.biography || "Биография не найдена";
     setBiography(bio);
   
-    setTimeout(() => setFadeIn(true), 100);
   
     const pilotSeasons = seasonsData[lastNameNormalized] || [];
     setSeasons(pilotSeasons);
@@ -150,8 +142,8 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
   
     fetchPilotResults(lastNameNormalized, "2024", true); // Загружаем текущий сезон (2024)
     fetchPilotStandings(lastNameNormalized, "2024"); // Загружаем текущий сезон (2024)
+  }, [pilot, fetchPilotStandings]);  // Теперь хук useEffect стабилизирован
   
-  }, [pilot]);
   
   
 
@@ -239,10 +231,10 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
 
   return (
     <div
-      className={`pilot-details ${fadeIn ? "fade-in" : ""}`}
+    
       style={{
-        width: "calc(100% - 40px)", // Убираем отступы по бокам
-        margin: "0 auto", // Центрируем контейнер
+        width: "calc(100% - 20px)",
+        margin: "10px 10px 100px",
         padding: "15px",
         background: "white",
         height: "100%",
