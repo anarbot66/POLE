@@ -245,7 +245,8 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
         margin: "0 auto", // Центрируем контейнер
         padding: "15px",
         background: "white",
-        height: "calc(100vh - 100px)",
+        height: "100%",
+        marginBottom: "100px",
         overflowY: "auto",
         borderRadius: "20px",
         flexDirection: "column",

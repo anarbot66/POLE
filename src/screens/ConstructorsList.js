@@ -106,7 +106,8 @@ const ConstructorsList = ({ onConstructorSelect }) => {
     <div style={{
       width: "calc(100% - 20px)", // Убираем отступы по бокам (слева и справа)
       margin: "0 auto", // Центрируем контейнер
-      height: "calc(100vh - 100px)",
+      height: "100%",
+      marginBottom: "100px",
       overflowY: "auto",
       paddingTop: "10px",
       display: "flex",

@@ -1,7 +1,24 @@
-import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+
+
+
 
 const BottomNavigation = ({ setActivePage }) => {
-  const [activeIndex, setActiveIndex] = useState(0); // Первая кнопка активна по умолчанию
+  const location = useLocation();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setActiveIndex(0);
+    } else if (location.pathname === "/pilots") {
+      setActiveIndex(1);
+    } else if (location.pathname === "/constructors") {
+      setActiveIndex(2);
+    } else if (location.pathname === "/races") {
+      setActiveIndex(3);
+    }
+  }, [location.pathname]);
 
   const buttons = [
     { id: 0, icon: <svg width="29" height="30" viewBox="0 0 29 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.7383 2.56937C12.8924 2.25891 13.2325 2.08705 13.5738 2.14723L19.7289 3.23253C19.9762 3.27614 20.1874 3.43597 20.2967 3.6621C20.4059 3.88823 20.3998 4.15308 20.2802 4.37391L16.0908 12.1107L21.9478 13.1434C22.2417 13.1952 22.4803 13.4099 22.5629 13.6966C22.6455 13.9834 22.5575 14.2921 22.3362 14.4922L9.12291 26.4418C8.84319 26.6948 8.42267 26.7118 8.12342 26.4823C7.82416 26.2527 7.7316 25.8422 7.90343 25.5065L12.2627 16.9888L7.14932 16.0872C6.90684 16.0444 6.69871 15.8898 6.58768 15.6701C6.47665 15.4503 6.47571 15.1911 6.58514 14.9705L12.7383 2.56937Z"/></svg> },
@@ -21,58 +38,63 @@ const BottomNavigation = ({ setActivePage }) => {
   ];
 
   return (
-    <div style={{
-      position: "fixed",
-      bottom: 20,
-      left: "50%",
-      transform: "translateX(-50%)",
-      width: 340,
-      height: 80,
-      background: "white",
-      borderRadius: 30,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      gap: 10,
-      padding: "15px 25px",
-      zIndex: 1000
-    }}>
-      {buttons.map((button) => (
-  <div
-    key={button.id}
-    onClick={() => {
-      setActivePage(button.id);
-      setActiveIndex(button.id);
-    }}
-    style={{
-      width: 50,
-      height: 50,
-      borderRadius: 15,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      background: activeIndex === button.id ? "black" : "transparent",
-      border: activeIndex === button.id ? "none" : "1px solid #D8D8D8",
-      cursor: "pointer",
-      transition: "background 0.3s ease, border 0.3s ease, transform 0.2s ease"
-    }}
-  >
-    <span
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: 30,
-        height: 30,
-        color: activeIndex === button.id ? "white" : "#D8D8D8",
-        transition: "color 0.3s ease"
-      }}
-    >
-      {button.icon}
-    </span>
-  </div>
-))}
+    <div
+  style={{
+    position: "fixed",
+    bottom: 0,
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: 340,
+    height: 80,
+    background: "transparent", // Полностью прозрачный фон
+    borderRadius: 30,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+    paddingBottom: "50px",
+    padding: "10px 0", // Уменьшенный padding
+    zIndex: 1000,
+    backdropFilter: "blur(2px)", // Размытие заднего фона (если нужно)
+    boxShadow: "none" // Убираем тень, если была
+  }}
+>
 
+      {buttons.map((button) => (
+        <div
+          key={button.id}
+          onClick={() => {
+            setActivePage(button.id);
+            setActiveIndex(button.id);
+          }}
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 15,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            background: activeIndex === button.id ? "black" : "transparent",
+            border: activeIndex === button.id ? "none" : "1px solid #D8D8D8",
+            cursor: "pointer",
+            transition: "background 0.3s ease, border 0.3s ease, transform 0.2s ease",
+          }}
+        >
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: 30,
+              height: 30,
+              color: activeIndex === button.id ? "white" : "#D8D8D8",
+              transition: "color 0.3s ease",
+            }}
+          >
+            {button.icon}
+          </span>
+        </div>
+      ))}
     </div>
   );
 };
