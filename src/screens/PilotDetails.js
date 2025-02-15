@@ -243,29 +243,28 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
         borderRadius: "20px",
         flexDirection: "column",
         justifyContent: "flex-start",
-        alignItems: "center",
         gap: "19px",
         display: "inline-flex",
         marginTop: "10px",
       }}
     >
       {/* Кнопка "Назад" */}
+      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
       <button
         onClick={goBack}
         style={{
-          position: "fixed",
           left: "25px",
           bottom: "120px",
           backgroundColor: "white",
           color: "black",
           border: "none",
-          padding: "10px 20px",
+          padding: "5px 10px",
           borderRadius: "10px",
           cursor: "pointer",
           zIndex: "1000",
         }}
       >
-        Назад
+        ✕
       </button>
 
       {/* Заголовок с информацией о пилоте и команде */}
@@ -280,6 +279,7 @@ const PilotDetails = ({ pilot, teamColors, goBack }) => {
         </div>
         <div style={{ color: teamColor, fontSize: "12px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
           {pilot.Constructors[0].name}
+        </div>
         </div>
       </div>
 

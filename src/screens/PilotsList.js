@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import PilotDetails from './PilotDetails'; // импортируем компонент для отображения подробностей пилота
 
 const getFormattedDate = () => {
@@ -14,12 +15,15 @@ const getFormattedDate = () => {
   return `${day} ${month} ${year}`;
 };
 
-const PilotsList = ({}) => {
+const PilotsList = () => {
   const [pilots, setPilots] = useState([]);
   const [error, setError] = useState(null);
   const [selectedPilot, setSelectedPilot] = useState(null); // для выбранного пилота
   const [pilotResults, setPilotResults] = useState(null); // для результатов пилота
   const formattedDate = getFormattedDate();
+  const navigate = useNavigate();
+
+  
 
   // Цвета команд
   const teamColors = {
@@ -185,8 +189,8 @@ const PilotsList = ({}) => {
   }
 
   if (selectedPilot) {
-    return <PilotDetails pilot={selectedPilot} teamColors={teamColors} pilotResults={pilotResults} goBack={handleBackToList} />;
-  }
+      return <PilotDetails pilot={selectedPilot} teamColors={teamColors} pilotResults={pilotResults} goBack={handleBackToList} />;
+    }
 
   return (
     <div style={{
@@ -227,8 +231,6 @@ const PilotsList = ({}) => {
         const countryCode = nationalityToFlag[nationality] || "un";
 
         return (
-
-
           <div
             key={index}
             onClick={() => handlePilotSelect(pilot)} 

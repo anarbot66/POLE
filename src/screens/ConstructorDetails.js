@@ -108,29 +108,27 @@ const ConstructorDetails = ({ constructor, goBack }) => {
         borderRadius: "20px",
         flexDirection: "column",
         justifyContent: "flex-start",
-        alignItems: "center",
         gap: "19px",
         display: "inline-flex",
         marginTop: "10px",
       }}
     >
-      {/* Кнопка "Назад" */}
+      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
       <button
         onClick={goBack}
         style={{
-          position: "fixed",
           left: "25px",
           bottom: "120px",
           backgroundColor: "white",
           color: "black",
           border: "none",
-          padding: "10px 20px",
+          padding: "5px 10px",
           borderRadius: "10px",
           cursor: "pointer",
           zIndex: "1000",
         }}
       >
-        Назад
+        ✕
       </button>
 
       {/* Заголовок с информацией о конструкторе */}
@@ -140,6 +138,7 @@ const ConstructorDetails = ({ constructor, goBack }) => {
             {constructor.Constructor.name}
           </div>
         </div>
+      </div>
       </div>
 
       {/* Полоска в цвет команды */}
