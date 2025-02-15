@@ -4,6 +4,9 @@
   height: 100%;
 }
 
+.fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
 
 .App {
   display: flex;

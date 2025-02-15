@@ -1,18 +1,6 @@
 import { useState, useEffect } from "react";
 import RaceDetails from "./RaceDetails"; // Импортируем компонент деталей гонки
 
-const getFormattedDate = () => {
-  const now = new Date();
-  const day = now.getDate();
-  const monthNames = [
-    "января", "февраля", "марта", "апреля", "мая", "июня", 
-    "июля", "августа", "сентября", "октября", "ноября", "декабря"
-  ];
-  const month = monthNames[now.getMonth()]; // Используем правильный месяц
-  const year = now.getFullYear();
-  
-  return `${day} ${month} ${year}`;
-};
 
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
@@ -69,7 +57,6 @@ const RacesList = () => {
   const [races, setRaces] = useState([]);
   const [selectedRace, setSelectedRace] = useState(null);
   const [error, setError] = useState(null);
-  const formattedDate = getFormattedDate();
 
   // Функция загрузки данных о гонках
   const fetchRaces = async () => {
@@ -119,14 +106,16 @@ const RacesList = () => {
     return <RaceDetails race={selectedRace} goBack={handleBackToList} />;
   }
 
+  const today = new Date();
+  const nextRace = races.find(race => new Date(race.FirstPractice.date) > today);
+  const daysUntilNextRace = nextRace ? Math.ceil((new Date(nextRace.FirstPractice.date) - today) / (1000 * 60 * 60 * 24)) : null;
+
   return (
-    <div style={{
-      width: "calc(100% - 20px)",
-      margin: "0 auto",
+    <div className="fade-in" style={{
+      width: "100%",
       height: "100%",
       marginBottom: "100px",
       overflowY: "auto",
-      paddingTop: "10px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "flex-start",
@@ -135,21 +124,37 @@ const RacesList = () => {
     }} >
       <div style={{
           width: "calc(100% - 20px)",
-          margin: "0 auto",
+          margin: "0px 10px",
           paddingTop: "10px",
           display: "flex",
           flexDirection: "column"
         }}>
-        {/* Заголовки */}
-        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
-        {'Календарь F1 2025'}
-        </h2>
-        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
-        {`Сегодня: ${formattedDate}`}
-        </h3>
-        <h4 style={{ fontSize: "12px", color: "gray" }}>
-          Клинки на гонку чтобы узнать расписание
-        </h4>
+
+{nextRace && (
+              <div style={{ width: "100%", height: 250, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
+                <div style={{ width: "100%", height: "100%", padding: 20, background: 'white', borderRadius: 30, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  
+                  <div style={{ color: '#8C8C8C', fontSize: 13 }}>Следующее гран-при:</div>
+                  <div>
+                    <span style={{ color: 'black', fontSize: 20 }}>{nextRace.raceName}</span><br />
+                    <span style={{ color: '#5F5F5F', fontSize: 16 }}>{nextRace.Circuit.Location.locality}</span>
+                  </div>
+
+                  <div style={{ flexDirection: 'column', gap: 0, display: 'flex' }}>
+                    <div style={{ fontSize: 14 }}>Начало через:</div>
+                    <div style={{ fontSize: 28 }}>{daysUntilNextRace} дней</div>
+                  </div>
+
+                  <div 
+                    style={{ width: 121, height: 80, background: 'black', borderRadius: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }}
+                    onClick={() => handleRaceSelect(nextRace)}
+                  >
+                    <span style={{ color: 'white', fontSize: 12 }}>Подробнее</span>
+                  </div>
+
+                </div>
+              </div>
+            )}
       </div>
       {races.map((race, index) => {
         let countryName = race.Circuit.Location.country;
@@ -164,10 +169,11 @@ const RacesList = () => {
           <div key={index} 
             onClick={() => handleRaceSelect(race)} // Переход к деталям гонки
             style={{
-              width: "100%",
+              width: "calc(100% - 20px)",
+              margin: "0px 10px",
+              display: "flex",
               background: "white",
               borderRadius: "20px",
-              display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               gap: "12px",

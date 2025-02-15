@@ -1,6 +1,4 @@
-import React from "react";
-
-
+import React, { useState, useEffect } from "react";
 
 const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
@@ -60,7 +58,26 @@ const convertToMoscowTime = (utcDate, utcTime) => {
   });
 };
 
+
 const RaceDetails = ({ race, goBack }) => {
+  const [imageSrc, setImageSrc] = useState(null);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      const circuitName = race.Circuit.Location.locality; // Преобразуем в правильный формат
+
+      try {
+        // Динамический импорт изображения
+        const image = await import(`./images/circuits/${circuitName}.png`);
+        setImageSrc(image.default); // Для динамического импорта используем .default
+      } catch (error) {
+        console.error("Ошибка загрузки изображения", error);
+        setImageSrc(null); // В случае ошибки изображения не будет
+      }
+    };
+
+    loadImage();
+  }, [race]);
   if (!race) return <div style={{ padding: "20px", textAlign: "center" }}>Загрузка...</div>;
 
   const countryCode = countryToFlag[race.Circuit.Location.country] || "un";
@@ -74,39 +91,37 @@ const RaceDetails = ({ race, goBack }) => {
   ].filter(session => session.date);
   const translatedRaceName = raceNameTranslations[race.raceName] || race.raceName;
 
+
   return (
     
     <div className="race-details" style={{
       width: "calc(100% - 20px)",
         margin: "10px 10px 100px", padding: "10px",
-      display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#F9F9F9"
+      display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#F9F9F9", marginBottom: "100px"
     }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <button
         onClick={goBack}
         style={{
-          position: "fixed",
           left: "25px",
           bottom: "120px",
           backgroundColor: "white",
           color: "black",
           border: "none",
-          padding: "10px 20px",
+          padding: "5px 10px",
           borderRadius: "10px",
           cursor: "pointer",
           zIndex: "1000",
         }}
       >
-        Назад
+        ✕
       </button>
-      
-
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <img 
                 src={`https://flagcdn.com/w80/${countryCode}.png`} 
                 alt={race.Circuit.Location.country}
                 style={{ 
-                    width: "50px", 
-                    height: "50px", 
+                    width: "30px", 
+                    height: "30px", 
                     borderRadius: "50%", 
                     objectFit: "cover",
                     objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(race.Circuit.Location.country) 
@@ -129,16 +144,26 @@ const RaceDetails = ({ race, goBack }) => {
             </div>
       </div>
 
+      {/* Добавляем изображение трассы */}
+      <div style={{ marginBottom: "20px", textAlign: "center" }}>
+        <img
+        
+          src={imageSrc}
+          alt={`Трасса ${race.Circuit.Location.locality}`}
+          style={{ width: "100%", maxHeight: "100px", objectFit: "contain" }}
+        />
+      </div>
+
       
 
       <h3>Расписание уик-энда</h3>
       {sessions.map((session, index) => (
         <div key={index} style={{
-          background: "white", padding: "10px", borderRadius: "10px",
+          background: "white", padding: "15px", borderRadius: "10px",
           display: "flex", justifyContent: "space-between", alignItems: "center"
         }}>
-          <span>{sessionTypeTranslations[session.type] || session.type}</span>
-          <span style={{ color: "gray" }}>{convertToMoscowTime(session.date, session.time)}</span>
+          <span style={{fontSize: "12px"}}>{sessionTypeTranslations[session.type] || session.type}</span>
+          <span style={{ color: "gray",fontSize: "12px" }}>{convertToMoscowTime(session.date, session.time)}</span>
         </div>
       ))}
     </div>

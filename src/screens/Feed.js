@@ -142,8 +142,9 @@ const Feed = () => {
   return (
     <div style={{
       width: "calc(100% - 20px)",
-      height: "calc(100vh - 100px)",
+      height: "100%",
       margin: "0 auto",
+      marginBottom: "100px",
       overflowY: "auto",
       paddingTop: "10px",
       display: "flex",

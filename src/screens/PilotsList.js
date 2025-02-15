@@ -84,7 +84,7 @@ const PilotsList = () => {
     "Austrian": "at",
     "Swiss": "ch",
     "New Zealander": "nz",
-    "Argentine": "ar",
+    "Argentinian": "ar",
     "South African": "za",
   };
 
