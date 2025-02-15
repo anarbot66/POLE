@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import RaceDetails from "./RaceDetails"; // Импортируем компонент деталей гонки
 
-
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
@@ -41,7 +40,7 @@ const raceNameTranslations = {
   "Abu Dhabi Grand Prix": "Абу-Даби"
 };
 
-// Функция форматирования даты в "7 - 9 марта"
+// Функция форматирования даты в "7 марта"
 const formatRaceWeekend = (firstPracticeDate, raceDate) => {
   const months = [
     "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня",
@@ -49,7 +48,6 @@ const formatRaceWeekend = (firstPracticeDate, raceDate) => {
   ];
   const startDate = new Date(firstPracticeDate);
   const endDate = new Date(raceDate);
-
   return `${startDate.getDate()} ${months[endDate.getMonth()]}`;
 };
 
@@ -78,18 +76,20 @@ const RacesList = () => {
   }, []);
 
   if (error) return <div>Ошибка: {error}</div>;
-  if (!races.length) return (
-    <div style={{
-      display: "flex",            // Включаем flexbox
-      justifyContent: "center",  // Горизонтальное центрирование
-      alignItems: "center",      // Вертикальное центрирование
-      height: "100vh",           // Задаем высоту 100% от высоты окна
-      textAlign: "center"        // Центрируем текст
-    }}>
-      Загрузка...
-    </div>
-  );
-  
+  if (!races.length)
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          textAlign: "center"
+        }}
+      >
+        Загрузка...
+      </div>
+    );
 
   // Функция выбора гонки
   const handleRaceSelect = (race) => {
@@ -107,67 +107,147 @@ const RacesList = () => {
   }
 
   const today = new Date();
-  const nextRace = races.find(race => new Date(race.FirstPractice.date) > today);
-  const daysUntilNextRace = nextRace ? Math.ceil((new Date(nextRace.FirstPractice.date) - today) / (1000 * 60 * 60 * 24)) : null;
+  // Находим следующую гонку (первая, у которой дата первого заезда больше текущей даты)
+  const nextRace = races.find((race) => new Date(race.FirstPractice.date) > today);
+  const daysUntilNextRace = nextRace
+    ? Math.ceil((new Date(nextRace.FirstPractice.date) - today) / (1000 * 60 * 60 * 24))
+    : null;
+
+  // Данные для флага следующей гонки
+  let nextRaceCountry = "";
+  let nextRaceCountryCode = "";
+  if (nextRace) {
+    nextRaceCountry = nextRace.Circuit.Location.country;
+    if (nextRaceCountry === "Great Britain") nextRaceCountry = "United Kingdom";
+    nextRaceCountryCode = countryToFlag[nextRaceCountry] || "un";
+  }
+
+  // Исключаем следующую гонку из общего списка
+  const filteredRaces = races.filter((race) => race !== nextRace);
 
   return (
-    <div className="fade-in" style={{
-      width: "100%",
-      height: "100%",
-      marginBottom: "100px",
-      overflowY: "auto",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      gap: "15px",
-      backgroundColor: "#F9F9F9"
-    }} >
-      <div style={{
+    <div
+      className="fade-in"
+      style={{
+        width: "100%",
+        height: "100%",
+        marginBottom: "100px",
+        overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        gap: "15px",
+        backgroundColor: "#F9F9F9"
+      }}
+    >
+      <div
+        style={{
           width: "calc(100% - 20px)",
           margin: "0px 10px",
           paddingTop: "10px",
           display: "flex",
           flexDirection: "column"
-        }}>
-
-{nextRace && (
-              <div style={{ width: "100%", height: 250, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
-                <div style={{ width: "100%", height: "100%", padding: 20, background: 'white', borderRadius: 30, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  
-                  <div style={{ color: '#8C8C8C', fontSize: 13 }}>Следующее гран-при:</div>
-                  <div>
-                    <span style={{ color: 'black', fontSize: 20 }}>{nextRace.raceName}</span><br />
-                    <span style={{ color: '#5F5F5F', fontSize: 16 }}>{nextRace.Circuit.Location.locality}</span>
-                  </div>
-
-                  <div style={{ flexDirection: 'column', gap: 0, display: 'flex' }}>
-                    <div style={{ fontSize: 14 }}>Начало через:</div>
-                    <div style={{ fontSize: 28 }}>{daysUntilNextRace} дней</div>
-                  </div>
-
-                  <div 
-                    style={{ width: 121, height: 80, background: 'black', borderRadius: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }}
-                    onClick={() => handleRaceSelect(nextRace)}
-                  >
-                    <span style={{ color: 'white', fontSize: 12 }}>Подробнее</span>
-                  </div>
-
+        }}
+      >
+        {/* Блок с информацией о следующей гонке */}
+        {nextRace && (
+          <div
+            style={{
+              width: "100%",
+              height: 250,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: 10
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                padding: 20,
+                background: "white",
+                borderRadius: 30,
+                display: "flex",
+                flexDirection: "column",
+                gap: 10
+              }}
+            >
+              <div style={{ color: "#8C8C8C", fontSize: 13 }}>Следующее гран-при:</div>
+              {/* Флаг и название гонки в одной строке */}
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "20px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    background: "white"
+                  }}
+                >
+                  <img
+                    src={`https://flagcdn.com/w80/${nextRaceCountryCode}.png`}
+                    alt={nextRace.Circuit.Location.country}
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(
+                        nextRace.Circuit.Location.country
+                      )
+                        ? "20% center"
+                        : "center"
+                    }}
+                  />
                 </div>
+                <span style={{ color: "black", fontSize: 20 }}>
+                  {raceNameTranslations[nextRace.raceName] || nextRace.raceName}
+                </span>
               </div>
-            )}
+              <div>
+                <span style={{ color: "#5F5F5F", fontSize: 16 }}>
+                  {nextRace.Circuit.circuitName}
+                </span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                <div style={{ fontSize: 14 }}>Начало через:</div>
+                <div style={{ fontSize: 28 }}>{daysUntilNextRace} дней</div>
+              </div>
+              <div
+                style={{
+                  width: 121,
+                  height: 80,
+                  background: "black",
+                  borderRadius: 10,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  cursor: "pointer"
+                }}
+                onClick={() => handleRaceSelect(nextRace)}
+              >
+                <span style={{ color: "white", fontSize: 12 }}>Подробнее</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      {races.map((race, index) => {
+
+      {/* Список остальных гонок (без следующей) */}
+      {filteredRaces.map((race, index) => {
         let countryName = race.Circuit.Location.country;
         if (countryName === "Great Britain") countryName = "United Kingdom";
         const countryCode = countryToFlag[countryName] || "un";
         const weekendDate = formatRaceWeekend(race.FirstPractice.date, race.date);
-        
-        // Используем перевод названия гонки, если он есть
         const translatedRaceName = raceNameTranslations[race.raceName] || race.raceName;
 
         return (
-          <div key={index} 
-            onClick={() => handleRaceSelect(race)} // Переход к деталям гонки
+          <div
+            key={index}
+            onClick={() => handleRaceSelect(race)}
             style={{
               width: "calc(100% - 20px)",
               margin: "0px 10px",
@@ -181,47 +261,52 @@ const RacesList = () => {
               cursor: "pointer"
             }}
           >
-            {/* Флаг страны */} 
-            <div style={{
-              width: "65px", height: "65px", borderRadius: "20px",
-              display: "flex", justifyContent: "center", alignItems: "center",
-              background: "white"
-            }}>
-              <img 
-                src={`https://flagcdn.com/w80/${countryCode}.png`} 
+            {/* Флаг страны */}
+            <div
+              style={{
+                width: "65px",
+                height: "65px",
+                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "white"
+              }}
+            >
+              <img
+                src={`https://flagcdn.com/w80/${countryCode}.png`}
                 alt={race.Circuit.Location.country}
-                style={{ 
-                    width: "50px", 
-                    height: "50px", 
-                    borderRadius: "50%", 
-                    objectFit: "cover",
-                    objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(race.Circuit.Location.country) 
-                    ? "20% center"  // Смещение для выбранных стран
-                    : "center"  // Для всех остальных
-                }} 
-                />
-
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(
+                    race.Circuit.Location.country
+                  )
+                    ? "20% center"
+                    : "center"
+                }}
+              />
             </div>
-
-            {/* Название гонки с переводом */} 
-            <div style={{
-              display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
-            }}>
-              <div style={{ color: "black", fontSize: "13px" }}>
-                {translatedRaceName}
-              </div>
-              <div style={{
-                color: "#B9B9B9", fontSize: "10px"
-              }}>
+            {/* Название гонки с переводом */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: "4px",
+                flex: 1
+              }}
+            >
+              <div style={{ color: "black", fontSize: "13px" }}>{translatedRaceName}</div>
+              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>
                 {race.Circuit.circuitName}
               </div>
             </div>
-
-            {/* Даты уик-энда */} 
+            {/* Даты уик-энда */}
             <div style={{ textAlign: "center", minWidth: "80px" }}>
-              <span style={{ color: "black", fontSize: "12px" }}>
-                {weekendDate}
-              </span>
+              <span style={{ color: "black", fontSize: "12px" }}>{weekendDate}</span>
             </div>
           </div>
         );
