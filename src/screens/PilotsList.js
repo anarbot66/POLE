@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import PilotDetails from './PilotDetails'; // импортируем новый компонент для отображения детальной информации о пилоте
+import PilotDetails from './PilotDetails'; // импортируем компонент для отображения подробностей пилота
 
 const getFormattedDate = () => {
   const now = new Date();
@@ -14,7 +14,7 @@ const getFormattedDate = () => {
   return `${day} ${month} ${year}`;
 };
 
-const PilotsList = () => {
+const PilotsList = ({}) => {
   const [pilots, setPilots] = useState([]);
   const [error, setError] = useState(null);
   const [selectedPilot, setSelectedPilot] = useState(null); // для выбранного пилота
@@ -90,7 +90,6 @@ const PilotsList = () => {
 
   // Функция нормализации фамилии
   const normalizeName = (name) => {
-    // Специальная замена для двух пилотов
     if (name === "Magnussen") {
       return "kevin_magnussen";
     } else if (name === "Verstappen") {
@@ -140,7 +139,6 @@ const PilotsList = () => {
       console.log("Полученные результаты гонок:", results);
 
       if (results && Array.isArray(results)) {
-        // Подсчитываем победы (position === 1), подиумы (position <= 3) и поулы (grid === 1)
         const wins = results.filter(result => parseInt(result?.Results?.[0]?.position, 10) === 1).length; // Победы
         const podiums = results.filter(result => {
           const position = parseInt(result?.Results?.[0]?.position, 10);
@@ -151,7 +149,6 @@ const PilotsList = () => {
 
         const dnf = results.filter(result => {
           const status = result?.Results?.[0]?.status;
-          // Если статус не "Finished", не "+1 lap" и не "+2 laps", то считаем DNF
           return status !== "Finished" && !status.toLowerCase().includes("+1 lap") && !status.toLowerCase().includes("+2 laps");
         }).length; // DNF
 
@@ -176,7 +173,7 @@ const PilotsList = () => {
   };
 
   const handleBackToList = () => {
-    setSelectedPilot(null); // Возвращаемся на страницу списка пилотов
+    setSelectedPilot(null);
   };
 
   if (error) {
@@ -184,7 +181,7 @@ const PilotsList = () => {
   }
 
   if (!pilots.length) {
-    return <div> </div>;
+    return <div>Загрузка...</div>;
   }
 
   if (selectedPilot) {
@@ -193,31 +190,30 @@ const PilotsList = () => {
 
   return (
     <div style={{
-      width: "calc(100% - 20px)", // Убираем отступы по бокам
-      margin: "0 auto", // Центрируем контейнер
-      marginBottom: "100px",
-      height: "100%",
-      overflowY: "auto",
-      paddingTop: "10px",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      gap: "15px",
+      width: "calc(100% - 20px)", 
+      margin: "0 auto", 
+      marginBottom: "100px", 
+      height: "100%", 
+      overflowY: "auto", 
+      paddingTop: "10px", 
+      display: "flex", 
+      flexDirection: "column", 
+      justifyContent: "flex-start", 
+      gap: "15px", 
       backgroundColor: "#F9F9F9"
     }}>
       <div style={{
-          width: "calc(100% - 20px)",
-          margin: "0 auto",
-          paddingTop: "10px",
-          display: "flex",
-          flexDirection: "column"
-        }}>
-        {/* Заголовки */}
+        width: "calc(100% - 20px)", 
+        margin: "0 auto", 
+        paddingTop: "10px", 
+        display: "flex", 
+        flexDirection: "column"
+      }}>
         <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
-        {'Таблица пилотов'}
+          Таблица пилотов
         </h2>
         <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
-        {`Сегодня: ${formattedDate}`}
+          {`Сегодня: ${formattedDate}`}
         </h3>
         <h4 style={{ fontSize: "12px", color: "gray" }}>
           Кликни по пилоту чтобы узнать подробнее
@@ -231,9 +227,11 @@ const PilotsList = () => {
         const countryCode = nationalityToFlag[nationality] || "un";
 
         return (
+
+
           <div
             key={index}
-            onClick={() => handlePilotSelect(pilot)} // Переход к деталям пилота
+            onClick={() => handlePilotSelect(pilot)} 
             style={{
               width: "100%",
               background: "white",

@@ -10,6 +10,7 @@ import RaceDetails from "./screens/RaceDetails";
 import BottomNavigation from "./components/BottomNavigation";
 import logo from "./screens/images/logo.png";
 import Feed from "./screens/Feed";
+import PilotDetails from "./screens/PilotDetails";
 
 function App() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ function App() {
   // Сохраняем существующие состояния
   const [activePage, setActivePage] = useState(0);
   const [selectedConstructor, setSelectedConstructor] = useState(null);
+  const [selectedPilot, setSelectedPilot] = useState(null); // для выбранного пилота
   const [selectedRace, setSelectedRace] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
@@ -60,6 +62,7 @@ function App() {
   const handlePageChange = (page) => {
     setSelectedConstructor(null);
     setSelectedRace(null);
+    setSelectedPilot(null);
     setActivePage(page);
     if (page === 0) {
       navigate("/");
@@ -98,6 +101,11 @@ function App() {
     navigate("/constructors");
   };
 
+  const handleBackToPilots = () => {
+    setSelectedPilot(null);
+    navigate("/pilots");
+  };
+
   return (
     <div
       className="App"
@@ -120,6 +128,12 @@ function App() {
             <Routes>
               <Route path="/" element={<Feed userName={userName} />} />
               <Route path="/pilots" element={<PilotsList />} />
+              <Route
+                path="/pilot-details"
+                element={
+                  <PilotDetails pilot={selectedPilot} goBack={handleBackToPilots}/>
+                }
+              />
               <Route
                 path="/constructors"
                 element={<ConstructorsList onConstructorSelect={handleSelectConstructor} />}

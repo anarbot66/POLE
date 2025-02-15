@@ -149,7 +149,7 @@ const RaceDetails = ({ race, goBack }) => {
         <img
         
           src={imageSrc}
-          alt={`Трасса ${race.Circuit.Location.locality}`}
+          alt={`Изображения для ${race.Circuit.Location.locality}, не найдено, следите за обновлениями`}
           style={{ width: "100%", maxHeight: "100px", objectFit: "contain" }}
         />
       </div>
