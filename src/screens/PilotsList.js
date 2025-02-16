@@ -1,6 +1,6 @@
+// PilotsList.js
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PilotDetails from './PilotDetails'; // импортируем компонент для отображения подробностей пилота
 
 const getFormattedDate = () => {
   const now = new Date();
@@ -9,21 +9,16 @@ const getFormattedDate = () => {
     "января", "февраля", "марта", "апреля", "мая", "июня", 
     "июля", "августа", "сентября", "октября", "ноября", "декабря"
   ];
-  const month = monthNames[now.getMonth()]; // Используем правильный месяц
+  const month = monthNames[now.getMonth()];
   const year = now.getFullYear();
-  
   return `${day} ${month} ${year}`;
 };
 
 const PilotsList = () => {
   const [pilots, setPilots] = useState([]);
   const [error, setError] = useState(null);
-  const [selectedPilot, setSelectedPilot] = useState(null); // для выбранного пилота
-  const [pilotResults, setPilotResults] = useState(null); // для результатов пилота
   const formattedDate = getFormattedDate();
   const navigate = useNavigate();
-
-  
 
   // Цвета команд
   const teamColors = {
@@ -64,7 +59,6 @@ const PilotsList = () => {
     "Valtteri Bottas": "Валттери Боттас",
     "Logan Sargeant": "Логан Сарджент",
     "Jack Doohan": "Джек Дуэн",
-    // Добавьте другие имена по необходимости
   };
 
   const nationalityToFlag = {
@@ -92,7 +86,7 @@ const PilotsList = () => {
     "South African": "za",
   };
 
-  // Функция нормализации фамилии
+  // Нормализация фамилии
   const normalizeName = (name) => {
     if (name === "Magnussen") {
       return "kevin_magnussen";
@@ -100,22 +94,19 @@ const PilotsList = () => {
       return "max_verstappen";
     }
     return name
-      .normalize("NFD")  // Разделяет символы на базовые и диакритики
-      .replace(/[\u0300-\u036f]/g, "")  // Убирает все диакритические знаки
-      .toLowerCase();  // Преобразует все в нижний регистр
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
   };
 
-  // Функция для получения данных о пилотах
+  // Загружаем данные о пилотах
   const fetchPilots = async () => {
     try {
       const response = await fetch('https://api.jolpi.ca/ergast/f1/2024/driverStandings.json');
-      if (!response.ok) {
-        throw new Error("Не удалось получить данные о пилотах");
-      }
+      if (!response.ok) throw new Error("Не удалось получить данные о пилотах");
 
       const data = await response.json();
       const drivers = data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings;
-
       if (drivers && Array.isArray(drivers)) {
         setPilots(drivers);
       } else {
@@ -127,70 +118,18 @@ const PilotsList = () => {
     }
   };
 
-  // Функция для получения результатов пилота
-  const fetchPilotResults = async (lastName) => {
-    try {
-      console.log(`Запрос на результаты для пилота с фамилией: ${lastName}`);
-
-      const response = await fetch(`https://api.jolpi.ca/ergast/f1/2024/drivers/${lastName}/results.json`);
-      if (!response.ok) {
-        throw new Error("Не удалось получить данные о результатах пилота");
-      }
-
-      const data = await response.json();
-      const results = data?.MRData?.RaceTable?.Races;
-
-      console.log("Полученные результаты гонок:", results);
-
-      if (results && Array.isArray(results)) {
-        const wins = results.filter(result => parseInt(result?.Results?.[0]?.position, 10) === 1).length; // Победы
-        const podiums = results.filter(result => {
-          const position = parseInt(result?.Results?.[0]?.position, 10);
-          return position >= 1 && position <= 3; // Подиумы
-        }).length;
-
-        const poles = results.filter(result => parseInt(result?.Results?.[0]?.grid, 10) === 1).length; // Поулы
-
-        const dnf = results.filter(result => {
-          const status = result?.Results?.[0]?.status;
-          return status !== "Finished" && !status.toLowerCase().includes("+1 lap") && !status.toLowerCase().includes("+2 laps");
-        }).length; // DNF
-
-        setPilotResults({ wins, podiums, poles, dnf });
-      } else {
-        setPilotResults({ wins: 0, podiums: 0, poles: 0, dnf: 0 });
-      }
-    } catch (error) {
-      console.error("Ошибка при получении данных о результатах пилота:", error);
-      setPilotResults({ wins: 0, podiums: 0, poles: 0, dnf: 0 });
-    }
-  };
-
   useEffect(() => {
     fetchPilots();
   }, []);
 
+  // При клике переходим на страницу деталей, передавая в URL нормализованную фамилию
   const handlePilotSelect = (pilot) => {
-    setSelectedPilot(pilot);
     const pilotLastName = normalizeName(pilot.Driver.familyName);
-    fetchPilotResults(pilotLastName);
+    navigate(`/pilot-details/${pilotLastName}`);
   };
 
-  const handleBackToList = () => {
-    setSelectedPilot(null);
-  };
-
-  if (error) {
-    return <div>Ошибка: {error}</div>;
-  }
-
-  if (!pilots.length) {
-    return <div>Загрузка...</div>;
-  }
-
-  if (selectedPilot) {
-      return <PilotDetails pilot={selectedPilot} teamColors={teamColors} pilotResults={pilotResults} goBack={handleBackToList} />;
-    }
+  if (error) return <div>Ошибка: {error}</div>;
+  if (!pilots.length) return <div> </div>;
 
   return (
     <div style={{
@@ -202,7 +141,6 @@ const PilotsList = () => {
       paddingTop: "10px", 
       display: "flex", 
       flexDirection: "column", 
-      justifyContent: "flex-start", 
       gap: "15px", 
       backgroundColor: "#F9F9F9"
     }}>
@@ -213,11 +151,11 @@ const PilotsList = () => {
         display: "flex", 
         flexDirection: "column"
       }}>
-        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
+        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left" }}>
           Таблица пилотов
         </h2>
-        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
-          {`Сегодня: ${formattedDate}`}
+        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px" }}>
+          {`Сегодня: ${getFormattedDate()}`}
         </h3>
         <h4 style={{ fontSize: "12px", color: "gray" }}>
           Кликни по пилоту чтобы узнать подробнее
@@ -233,7 +171,7 @@ const PilotsList = () => {
         return (
           <div
             key={index}
-            onClick={() => handlePilotSelect(pilot)} 
+            onClick={() => handlePilotSelect(pilot)}
             style={{
               width: "100%",
               background: "white",
@@ -258,7 +196,6 @@ const PilotsList = () => {
                 {pilot.position}
               </div>
             </div>
-
             <div style={{
               display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
             }}>
@@ -276,7 +213,6 @@ const PilotsList = () => {
                 {pilot.Constructors[0].name}
               </div>
             </div>
-
             <div style={{ textAlign: "center", minWidth: "60px" }}>
               <span style={{ color: "black", fontSize: "16px" }}>
                 {pilot.points}

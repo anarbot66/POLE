@@ -1,7 +1,7 @@
-// App.jsx
 import "./App.css";
 import React, { useState, useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import PilotsList from "./screens/PilotsList";
 import ConstructorsList from "./screens/ConstructorsList";
 import ConstructorDetails from "./screens/ConstructorDetails";
@@ -14,22 +14,21 @@ import PilotDetails from "./screens/PilotDetails";
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Сохраняем существующие состояния
+  // Состояния
   const [activePage, setActivePage] = useState(0);
   const [selectedConstructor, setSelectedConstructor] = useState(null);
-  const [selectedPilot, setSelectedPilot] = useState(null); // для выбранного пилота
   const [selectedRace, setSelectedRace] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
   const [contentLoaded, setContentLoaded] = useState(false);
-  const [userName, setUserName] = useState(""); // Для имени пользователя
+  const [userName, setUserName] = useState("");
 
-  // Эффект для получения данных пользователя из Telegram
+  // Получаем данные пользователя из Telegram
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.expand();
-      console.log("Telegram WebApp object:", window.Telegram.WebApp);
       const userData = window.Telegram.WebApp.initDataUnsafe.user;
       if (userData) {
         const name = userData.username
@@ -44,7 +43,7 @@ function App() {
     }
   }, []);
 
-  // Эффект для анимации загрузки
+  // Анимация загрузки
   useEffect(() => {
     setTimeout(() => {
       setContentLoaded(true);
@@ -58,24 +57,17 @@ function App() {
     }, 600);
   }, [contentLoaded]);
 
-  // Метод перехода между главными экранами (Feed, PilotsList, ConstructorsList, RacesList)
+  // Функция для навигации
   const handlePageChange = (page) => {
     setSelectedConstructor(null);
     setSelectedRace(null);
-    setSelectedPilot(null);
     setActivePage(page);
-    if (page === 0) {
-      navigate("/");
-    } else if (page === 1) {
-      navigate("/pilots");
-    } else if (page === 2) {
-      navigate("/constructors");
-    } else if (page === 3) {
-      navigate("/races");
-    }
+    if (page === 0) navigate("/");
+    if (page === 1) navigate("/pilots");
+    if (page === 2) navigate("/constructors");
+    if (page === 3) navigate("/races");
   };
 
-  // При выборе конструктора переходим на страницу деталей
   const handleSelectConstructor = (constructor) => {
     setSelectedConstructor({
       ...constructor,
@@ -85,7 +77,6 @@ function App() {
     navigate("/constructor-details");
   };
 
-  // При выборе гонки переходим на страницу деталей
   const handleSelectRace = (race) => {
     setSelectedRace(race);
     navigate("/race-details");
@@ -102,7 +93,6 @@ function App() {
   };
 
   const handleBackToPilots = () => {
-    setSelectedPilot(null);
     navigate("/pilots");
   };
 
@@ -125,31 +115,31 @@ function App() {
       {!loading && (
         <>
           <div className="content-container">
-            <Routes>
-              <Route path="/" element={<Feed userName={userName} />} />
-              <Route path="/pilots" element={<PilotsList />} />
-              <Route
-                path="/pilot-details"
-                element={
-                  <PilotDetails pilot={selectedPilot} goBack={handleBackToPilots}/>
-                }
-              />
-              <Route
-                path="/constructors"
-                element={<ConstructorsList onConstructorSelect={handleSelectConstructor} />}
-              />
-              <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
-              <Route
-                path="/constructor-details"
-                element={
-                  <ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />
-                }
-              />
-              <Route
-                path="/race-details"
-                element={<RaceDetails race={selectedRace} goBack={handleBackToRaces} />}
-              />
-            </Routes>
+          <TransitionGroup>
+  <CSSTransition key={location.pathname} classNames="page" timeout={300}>
+    <div key={location.pathname}>  {/* ✅ Добавили div с key */}
+      <Routes location={location}>
+        <Route path="/" element={<Feed userName={userName} />} />
+        <Route path="/pilots" element={<PilotsList />} />
+        <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
+        <Route
+          path="/constructors"
+          element={<ConstructorsList onConstructorSelect={handleSelectConstructor} />}
+        />
+        <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
+        <Route
+          path="/constructor-details"
+          element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
+        />
+        <Route
+          path="/race-details"
+          element={<RaceDetails race={selectedRace} goBack={handleBackToRaces} />}
+        />
+      </Routes>
+    </div>
+  </CSSTransition>
+</TransitionGroup>
+
           </div>
 
           <BottomNavigation setActivePage={handlePageChange} />

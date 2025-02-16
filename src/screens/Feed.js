@@ -127,7 +127,7 @@ const Feed = () => {
   }, []);
 
   if (error) return <div>Ошибка: {error}</div>;
-  if (!events.length) return <div>Загрузка...</div>;
+  if (!events.length) return <div> </div>;
 
   // Если выбрана гонка, показываем ее детали
   if (selectedRace) {

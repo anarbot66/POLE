@@ -1,4 +1,84 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import seasonsData from "./json/seasons"; // Загружаем данные о сезонах конструктора
+
+const pointsSystem = {
+  2024: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2023: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2022: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2021: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2020: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2019: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2018: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2017: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2016: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2015: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2014: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2013: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2012: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2011: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2010: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2009: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
+  2008: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
+  2007: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
+  2006: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
+  2005: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
+  2004: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
+  2003: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
+  2002: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
+  2001: [6, 5, 4, 3, 2, 1],                 // 1-6 места
+  2000: [6, 5, 4, 3, 2, 1],                 // 1-6 места
+  1999: [6, 5, 4, 3, 2, 1],                 // 1-6 места
+  1998: [6, 5, 4, 3, 2, 1],                 // 1-6 места
+  1997: [6, 5, 4, 3, 2, 1],                 // 1-6 места
+  1996: [6, 5, 4, 3, 2, 1],                 // 1-6 места
+  1995: [6, 5, 4, 3, 2, 1],                 // 1-6 места
+  1994: [6, 5, 4, 3, 2, 1],                 // 1-6 места
+  1993: [6, 5, 4, 3, 2, 1],                 // 1-6 места
+  1992: [10, 6, 4, 3, 2, 1],                // 1-6 места
+  1991: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1990: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1989: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1988: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1987: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1986: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1985: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1984: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1983: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1982: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1981: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1980: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1979: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1978: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1977: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1976: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1975: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1974: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1973: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1972: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1971: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1970: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1969: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1968: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1967: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1966: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1965: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1964: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1963: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1962: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1961: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1960: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1959: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1958: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1957: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1956: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1955: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1954: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1953: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1952: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1951: [9, 6, 4, 3, 2, 1],                 // 1-6 места
+  1950: [8, 6, 4, 3, 2, 1],                 // 1-6 места
+};
 
 // Словарь для преобразования имен конструкторов в API-формат
 const constructorApiNames = {
@@ -46,54 +126,136 @@ const ConstructorDetails = ({ constructor, goBack }) => {
   const [wins, setWins] = useState(0);
   const [podiums, setPodiums] = useState(0);
   const [poles, setPoles] = useState(0);
+  const [position, setPosition] = useState(""); // Позиция конструктора в чемпионате
+  const [points, setPoints] = useState(""); // Очки конструктора
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [biography, setBiography] = useState(""); // Стейт для биографии команды
+  const [activeTab, setActiveTab] = useState("biography"); // Стейт для активной вкладки
+  const [seasons, setSeasons] = useState([]);
+  const [selectedSeason, setSelectedSeason] = useState("2023");
+  const [seasonStats, setSeasonStats] = useState({ wins: 0, podiums: 0, poles: 0 });
+  const navigate = useNavigate();
 
+  // Загружаем данные о сезонах конструктора из JSON
   useEffect(() => {
     if (!constructor) return;
 
+    const formattedConstructorName = constructorApiNames[constructor.Constructor.name] || constructor.Constructor.name.toLowerCase().replace(/\s+/g, "");
+    setSeasons(seasonsData[formattedConstructorName] || []);
+    setBiography(teamBiographies[constructor.Constructor.name] || "Биография команды не найдена.");
+
+    // Загружаем статистику за текущий сезон (2024)
+    fetchCurrentSeasonStats();
+  }, [constructor]);
+
+  // Функция для загрузки статистики за текущий сезон (2024)
+  const fetchCurrentSeasonStats = async () => {
+    try {
+      const formattedConstructorName =
+        constructorApiNames[constructor.Constructor.name] ||
+        constructor.Constructor.name.toLowerCase().replace(/\s+/g, "");
+
+      const response = await fetch(`https://api.jolpi.ca/ergast/f1/2024/constructors/${formattedConstructorName}/results.json?limit=100`);
+      const data = await response.json();
+      const racesData = data.MRData?.RaceTable?.Races || [];
+      let winCount = 0;
+      let podiumCount = 0;
+      let poleCount = 0;
+
+      racesData.forEach((race) => {
+        const top3Finishers = race.Results?.filter((driver) => parseInt(driver.position) <= 3) || [];
+        const poleFinishers = race.Results?.filter((driver) => driver.grid === "1") || [];
+
+        if (top3Finishers.some((driver) => parseInt(driver.position) === 1)) winCount++;
+        if (top3Finishers.length > 0) podiumCount++;
+        if (poleFinishers.length > 0) poleCount++;
+      });
+
+      setWins(winCount);
+      setPodiums(podiumCount);
+      setPoles(poleCount);
+      setLoading(false);
+    } catch (error) {
+      console.error("Ошибка загрузки данных текущего сезона:", error);
+      setError("Ошибка при получении данных о текущем сезоне");
+      setLoading(false);
+    }
+  };
+
+// Функция для загрузки статистики по выбранному сезону
+// Функция для загрузки статистики по выбранному сезону
+const fetchSeasonStats = async (season) => {
+  try {
     const formattedConstructorName =
       constructorApiNames[constructor.Constructor.name] ||
       constructor.Constructor.name.toLowerCase().replace(/\s+/g, "");
 
-    fetch(`https://api.jolpi.ca/ergast/f1/2024/constructors/${formattedConstructorName}/results.json?limit=100`)
-      .then((response) => response.json())
-      .then((data) => {
-        const racesData = data.MRData?.RaceTable?.Races || [];
-        let winCount = 0;
-        let podiumCount = 0;
-        let poleCount = 0;
+    // 1. Запрос для получения результатов гонок
+    const responseResults = await fetch(`https://api.jolpi.ca/ergast/f1/${season}/constructors/${formattedConstructorName}/results.json?limit=100`);
+    const dataResults = await responseResults.json();
+    const racesData = dataResults.MRData?.RaceTable?.Races || [];
 
-        racesData.forEach((race) => {
-          const top3Finishers = race.Results?.filter((driver) => parseInt(driver.position) <= 3) || [];
-          const poleFinishers = race.Results?.filter((driver) => driver.grid === "1") || [];
+    let winCount = 0;
+    let podiumCount = 0;
+    let poleCount = 0;
 
-          if (top3Finishers.some((driver) => parseInt(driver.position) === 1)) winCount++;
-          if (top3Finishers.length > 0) podiumCount++;
-          if (poleFinishers.length > 0) poleCount++;
-        });
+    // Обрабатываем данные по гонкам
+    racesData.forEach((race) => {
+      const top3Finishers = race.Results?.filter((driver) => parseInt(driver.position) <= 3) || [];
+      const poleFinishers = race.Results?.filter((driver) => driver.grid === "1") || [];
 
-        setWins(winCount);
-        setPodiums(podiumCount);
-        setPoles(poleCount);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Ошибка загрузки данных:", error);
-        setError("Ошибка при получении данных");
-        setLoading(false);
-      });
+      if (top3Finishers.some((driver) => parseInt(driver.position) === 1)) winCount++;
+      if (top3Finishers.length > 0) podiumCount++;
+      if (poleFinishers.length > 0) poleCount++;
+    });
 
-    // Загружаем биографию команды
-    const teamBio = teamBiographies[constructor.Constructor.name] || "Биография команды не найдена.";
-    setBiography(teamBio);
+    // 2. Запрос для получения текущих данных о позиции и очках конструктора
+    const responseStandings = await fetch(`https://api.jolpi.ca/ergast/f1/${season}/constructorstandings.json`);
+    const dataStandings = await responseStandings.json();
+    const constructorData = dataStandings?.MRData?.StandingsTable?.StandingsLists[0]?.ConstructorStandings || [];
+    
+    // Найдем данные о нужном конструкторе
+    const constructorInfo = constructorData.find(item => item.Constructor?.name === constructor.Constructor.name);
+    let constructorPosition = "-"; // Изначально пустая позиция
+    let constructorPoints = "-";  // Изначально пустые очки
 
-  }, [constructor]);
+    if (constructorInfo) {
+      constructorPosition = constructorInfo.position || "-";  // Позиция конструктора
+      constructorPoints = constructorInfo.points || "-";     // Очки конструктора
+    }
 
-  if (!constructor) {
-    return <div> </div>;
+    // Обновляем стейты
+    setSeasonStats({ wins: winCount, podiums: podiumCount, poles: poleCount });
+    setPosition(constructorPosition);
+    setPoints(constructorPoints);  // Обновляем очки конструктора
+  } catch (error) {
+    console.error("Ошибка загрузки статистики сезона:", error);
+    setSeasonStats({ wins: 0, podiums: 0, poles: 0 });
+    setPosition("-");
+    setPoints("-");  // Если произошла ошибка, ставим дефолтные значения
   }
+};
+
+
+
+
+
+
+
+
+  
+
+  useEffect(() => {
+    fetchSeasonStats(selectedSeason);
+  }, [selectedSeason]);
+
+  // Обработка переключения вкладок
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
+  if (!constructor) return <div> </div>;
 
   const teamColor = teamColors[constructor.Constructor.name] || "#000000";
 
@@ -113,94 +275,169 @@ const ConstructorDetails = ({ constructor, goBack }) => {
         marginTop: "10px",
       }}
     >
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-      <button
-        onClick={goBack}
-        style={{
-          left: "25px",
-          bottom: "120px",
-          backgroundColor: "white",
-          color: "black",
-          border: "none",
-          padding: "5px 10px",
-          borderRadius: "10px",
-          cursor: "pointer",
-          zIndex: "1000",
-        }}
-      >
-        ✕
-      </button>
+      {/* Родительский контейнер с display: flex */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        {/* Кнопка назад */}
+        <button
+          onClick={goBack}
+          style={{
+            backgroundColor: "white",
+            color: "black",
+            border: "none",
+            padding: "5px 10px",
+            borderRadius: "10px",
+            cursor: "pointer",
+            zIndex: "1000",
+          }}
+        >
+          ✕
+        </button>
 
-      {/* Заголовок с информацией о конструкторе */}
-      <div style={{ width: "100%", height: "20px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
-        <div style={{ width: "100%", height: "10px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
-          <div style={{ color: "teamColor", fontSize: "16px", fontFamily: "Inter", fontWeight: "400", wordWrap: "break-word" }}>
+        {/* Заголовок с информацией о конструкторе */}
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start" }}>
+          <div style={{ color: teamColor, fontSize: "16px", fontFamily: "Inter", fontWeight: "400" }}>
             {constructor.Constructor.name}
           </div>
         </div>
       </div>
-      </div>
+
 
       {/* Полоска в цвет команды */}
       <div style={{ width: "100%", height: "5px", background: teamColor }} />
 
-      {/* Статистика конструктора */}
+      {/* Статистика конструктора (для текущего сезона) */}
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: "12px", width: "100%" }}>
-        {/* Позиция */}
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
+          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {constructor.position}
           </span>
-          <div style={{ color: "#B9B9B9", fontSize: "10px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>ПОЗИЦИЯ</div>
+          <div style={{ color: "#B9B9B9", fontSize: "10px", fontFamily: "Inter", fontWeight: "600" }}>ПОЗИЦИЯ</div>
         </div>
-
-        {/* Очки */}
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
+          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {constructor.points}
           </span>
-          <div style={{ color: "#B9B9B9", fontSize: "10px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>ОЧКОВ</div>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
         </div>
-
-        {/* Победы */}
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
-            {loading ? " " : error ? error : wins}
+          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+            {wins}
           </span>
-          <div style={{ color: "#B9B9B9", fontSize: "10px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>ПОБЕД</div>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
         </div>
-
-        {/* Подиумы */}
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
-            {loading ? " " : error ? error : podiums}
+          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+            {podiums}
           </span>
-          <div style={{ color: "#B9B9B9", fontSize: "10px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>ПОДИУМОВ</div>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
         </div>
-
-        {/* Поулы */}
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>
-            {loading ? " " : error ? error : poles}
+          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+            {poles}
           </span>
-          <div style={{ color: "#B9B9B9", fontSize: "10px", fontFamily: "Inter", fontWeight: "600", wordWrap: "break-word" }}>ПОУЛОВ</div>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>
         </div>
       </div>
 
-      {/* Биография команды */}
-      <div style={{
-        width: "100%",
-        marginTop: "20px",
-        padding: "10px",
-        backgroundColor: "white",
-        borderRadius: "8px",
-        fontSize: "14px",
-        color: "black",
-        fontFamily: "Arial, sans-serif",
-      }}>
-        <strong>Биография команды:</strong>
-        <p>{biography}</p>
+      {/* Переключение вкладок */}
+      <div style={{ width: "100%", display: "flex", justifyContent: "space-around", marginTop: "20px" }}>
+        <button
+          onClick={() => handleTabChange("biography")}
+          style={{
+            padding: "10px",
+            width: "100%",
+            margin: "5px",
+            backgroundColor: activeTab === "biography" ? teamColor : "#f0f0f0",
+            color: activeTab === "biography" ? "white" : "black",
+            border: "none",
+            borderRadius: "10px",
+            cursor: "pointer",
+          }}
+        >
+          Биография
+        </button>
+        <button
+          onClick={() => handleTabChange("seasons")}
+          style={{
+            padding: "10px",
+            width: "100%",
+            margin: "5px",
+            backgroundColor: activeTab === "seasons" ? teamColor : "#f0f0f0",
+            color: activeTab === "seasons" ? "white" : "black",
+            border: "none",
+            borderRadius: "10px",
+            cursor: "pointer",
+          }}
+        >
+          Сезоны
+        </button>
       </div>
+
+      {/* Контент вкладки */}
+      {activeTab === "biography" ? (
+        <div style={{ marginTop: "20px", padding: "10px", backgroundColor: "white", borderRadius: "8px" }}>
+          <strong>Биография команды:</strong>
+          <p>{biography}</p>
+        </div>
+      ) : (
+        <div style={{ marginTop: "20px" }}>
+          <select
+            value={selectedSeason}
+            onChange={(e) => setSelectedSeason(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "8px",
+              border: `2px solid ${teamColor}`,
+              backgroundColor: "#f0f0f0",
+              fontSize: "14px",
+              color: "black",
+              cursor: "pointer",
+              marginTop: "10px",
+            }}
+          >
+            {seasons.map((season) => (
+              <option key={season} value={season}>
+                {season}
+              </option>
+            ))}
+          </select>
+
+          {/* Статистика для выбранного сезона */}
+          <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: "12px", marginTop: "20px" }}>
+            <div style={{ width: "65px", textAlign: "center" }}>
+              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                {position}
+              </span>
+              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОЗИЦИЯ</div>
+            </div>
+            <div style={{ width: "65px", textAlign: "center" }}>
+              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                {points}
+              </span>
+              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
+            </div>
+            <div style={{ width: "65px", textAlign: "center" }}>
+              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                {seasonStats.wins}
+              </span>
+              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
+            </div>
+            <div style={{ width: "65px", textAlign: "center" }}>
+              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                {seasonStats.podiums}
+              </span>
+              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
+            </div>
+            <div style={{ width: "65px", textAlign: "center" }}>
+              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                {seasonStats.poles}
+              </span>
+              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

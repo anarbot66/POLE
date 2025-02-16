@@ -37,27 +37,34 @@ body {
 
 .page-enter {
   opacity: 0;
+  position: absolute; /* ✅ Теперь предыдущая страница не будет перекрываться */
+  width: 100%;
 }
 
 .page-enter-active {
   opacity: 1;
-  transition: opacity 700ms ease-in-out;
+  position: absolute;
+  width: 100%;
+  transition: opacity 300ms ease-in-out;
 }
-
 
 .page-exit {
   opacity: 1;
+  position: absolute;
+  width: 100%;
 }
 
 .page-exit-active {
   opacity: 0;
-  transition: opacity 700ms ease-in-out;
+  position: absolute;
+  width: 100%;
+  transition: opacity 300ms ease-in-out;
 }
 
 .page-exit-done {
-  /* Можно скрыть элемент или изменить его состояние после исчезновения */
   display: none;
 }
+
 
 .logo {
   width: 120px;
