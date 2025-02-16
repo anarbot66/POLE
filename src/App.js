@@ -116,7 +116,7 @@ function App() {
         <>
           <div className="content-container">
           <TransitionGroup>
-  <CSSTransition key={location.pathname} classNames="page" timeout={300}>
+      <CSSTransition key={location.pathname} classNames="page" timeout={500}>
     <div key={location.pathname}>  {/* ✅ Добавили div с key */}
       <Routes location={location}>
         <Route path="/" element={<Feed userName={userName} />} />

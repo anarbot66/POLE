@@ -223,7 +223,7 @@ const PilotDetails = () => {
   };
 
   // Если еще не загрузились данные о пилоте, ничего не рендерим
-  if (loading || !pilot) return <div> </div>;
+  if (loading || !pilot) return <div></div>;
   if (error) return <div>{error}</div>;
 
   // Словарь цветов команд

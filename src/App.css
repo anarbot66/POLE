@@ -66,6 +66,7 @@ body {
   opacity: 0;
   position: absolute; /* ✅ Теперь предыдущая страница не будет перекрываться */
   width: 100%;
+  pointer-events: none;
 }
 
 .page-enter-active {
@@ -73,12 +74,14 @@ body {
   position: absolute;
   width: 100%;
   transition: opacity 300ms ease-in-out;
+  pointer-events: none;
 }
 
 .page-exit {
   opacity: 1;
   position: absolute;
   width: 100%;
+  pointer-events: none;
 }
 
 .page-exit-active {
@@ -86,6 +89,7 @@ body {
   position: absolute;
   width: 100%;
   transition: opacity 300ms ease-in-out;
+  pointer-events: none;
 }
 
 .page-exit-done {
