@@ -1,34 +1,15 @@
 import React, { useState, useEffect } from "react";
-import RaceDetails from "./RaceDetails";
+import { useNavigate } from "react-router-dom"; // Импортируем navigate
 
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
-  "Bahrain": "bh",
-  "Saudi Arabia": "sa",
-  "Australia": "au",
-  "Japan": "jp",
-  "China": "cn",
-  "USA": "us",
-  "United States": "us",
-  "Miami": "us",
-  "Italy": "it",
-  "Monaco": "mc",
-  "Canada": "ca",
-  "Spain": "es",
-  "Austria": "at",
-  "Great Britain": "gb",
-  "United Kingdom": "us",
-  "UK": "gb",
-  "Hungary": "hu",
-  "Belgium": "be",
-  "Netherlands": "nl",
-  "Singapore": "sg",
-  "Mexico": "mx",
-  "Brazil": "br",
-  "Las Vegas": "us",
-  "UAE": "ae",
-  "Qatar": "qa",
-  "Azerbaijan": "az"
+  "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
+  "China": "cn", "USA": "us", "United States": "us", "Miami": "us",
+  "Italy": "it", "Monaco": "mc", "Canada": "ca", "Spain": "es",
+  "Austria": "at", "Great Britain": "gb", "United Kingdom": "us", "UK": "gb",
+  "Hungary": "hu", "Belgium": "be", "Netherlands": "nl", "Singapore": "sg",
+  "Mexico": "mx", "Brazil": "br", "Las Vegas": "us", "UAE": "ae",
+  "Qatar": "qa", "Azerbaijan": "az"
 };
 
 // Перевод названий сессий
@@ -68,8 +49,6 @@ const getFormattedDate = () => {
   return `${day} ${month} ${year}`;
 };
 
-
-
 const randomNames = [
   "Не сбавляй обороты!", 
   "Привет, что сегодня посмотрим?", 
@@ -83,7 +62,6 @@ const getRandomName = () => {
   return randomNames[randomIndex];
 };
 
-
 const Feed = () => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
@@ -91,6 +69,8 @@ const Feed = () => {
   const [selectedRace, setSelectedRace] = useState(null);
   const formattedDate = getFormattedDate();
   const randomName = getRandomName();
+
+  const navigate = useNavigate(); // Хук для навигации
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -129,15 +109,10 @@ const Feed = () => {
   if (error) return <div>Ошибка: {error}</div>;
   if (!events.length) return <div> </div>;
 
-  // Если выбрана гонка, показываем ее детали
-  if (selectedRace) {
-    return (
-      <RaceDetails 
-        race={selectedRace} 
-        goBack={() => setSelectedRace(null)} 
-      />
-    );
-  }
+  // Функция для перехода на страницу с деталями гонки
+  const handleRaceSelect = (race) => {
+    navigate(`/races/${race.round}`, { state: { race } });
+  };
 
   return (
     <div style={{
@@ -152,18 +127,18 @@ const Feed = () => {
       gap: "15px"
     }}>
       <div style={{
-          width: "calc(100% - 20px)",
-          margin: "0 auto",
-          paddingTop: "10px",
-          display: "flex",
-          flexDirection: "column"
-        }}>
+        width: "calc(100% - 20px)",
+        margin: "0 auto",
+        paddingTop: "10px",
+        display: "flex",
+        flexDirection: "column"
+      }}>
         {/* Заголовки */}
         <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
-        {randomName}
+          {randomName}
         </h2>
         <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
-        {`Сегодня: ${formattedDate}`}
+          {`Сегодня: ${formattedDate}`}
         </h3>
         <h4 style={{ fontSize: "14px", color: "gray" }}>
           Грядущие события:
@@ -179,7 +154,7 @@ const Feed = () => {
 
         return (
           <div key={index} 
-               onClick={() => setSelectedRace(event.race)} // При клике сохраняем выбранную гонку
+               onClick={() => handleRaceSelect(event.race)} // При клике переходим к деталям гонки
                style={{
                   width: "100%",
                   background: "white",

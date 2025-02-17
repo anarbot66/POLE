@@ -11,6 +11,7 @@ import BottomNavigation from "./components/BottomNavigation";
 import logo from "./screens/images/logo.png";
 import Feed from "./screens/Feed";
 import PilotDetails from "./screens/PilotDetails";
+import LegendDetails from "./screens/LegendDetails";
 
 function App() {
   const navigate = useNavigate();
@@ -131,10 +132,11 @@ function App() {
           path="/constructor-details"
           element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
         />
-        <Route
-          path="/race-details"
-          element={<RaceDetails race={selectedRace} goBack={handleBackToRaces} />}
-        />
+        // Новый маршрут для деталей гонки в App.js:
+        <Route path="/races/:raceId" element={<RaceDetails />} />
+        <Route path="/legend-details/:lastName" element={<LegendDetails />} />
+
+
       </Routes>
     </div>
   </CSSTransition>

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import RaceDetails from "./RaceDetails"; // Импортируем компонент деталей гонки
+import { useLocation, useNavigate } from "react-router-dom";
+
 
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
@@ -55,6 +57,7 @@ const RacesList = () => {
   const [races, setRaces] = useState([]);
   const [selectedRace, setSelectedRace] = useState(null);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Функция загрузки данных о гонках
   const fetchRaces = async () => {
@@ -93,7 +96,7 @@ const RacesList = () => {
 
   // Функция выбора гонки
   const handleRaceSelect = (race) => {
-    setSelectedRace(race);
+    navigate(`/races/${race.round}`, { state: { race } });
   };
 
   // Функция возврата к списку гонок

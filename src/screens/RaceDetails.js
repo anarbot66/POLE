@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
 
 const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
@@ -59,8 +61,11 @@ const convertToMoscowTime = (utcDate, utcTime) => {
 };
 
 
-const RaceDetails = ({ race, goBack }) => {
+const RaceDetails = ({ }) => {
   const [imageSrc, setImageSrc] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const race = location.state?.race;
 
   useEffect(() => {
     const loadImage = async () => {
@@ -101,7 +106,7 @@ const RaceDetails = ({ race, goBack }) => {
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <button
-        onClick={goBack}
+        onClick={() => navigate(-1)}
         style={{
           left: "25px",
           bottom: "120px",
