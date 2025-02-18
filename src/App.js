@@ -30,12 +30,16 @@ function App() {
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.expand();
-      const userData = window.Telegram.WebApp.initDataUnsafe.user;
+      const userData = window.Telegram.WebApp.initDataUnsafe?.user;
+  
       if (userData) {
         const name = userData.username
           ? userData.username
           : `${userData.first_name}${userData.last_name ? " " + userData.last_name : ""}`;
-        setUserName(name);
+  
+        console.log("Имя пользователя:", name); // ✅ Проверяем значение в консоли
+  
+        setUserName(name); // 👈 Здесь точно строка, а не объект
       } else {
         setUserName("Гость");
       }
@@ -43,6 +47,7 @@ function App() {
       setUserName("TestUser");
     }
   }, []);
+  
 
   // Анимация загрузки
   useEffect(() => {
