@@ -62,7 +62,7 @@ const getRandomName = () => {
   return randomNames[randomIndex];
 };
 
-const Feed = () => {
+const Feed = ( userName  ) => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
   // Состояние для выбранной гонки
@@ -135,7 +135,7 @@ const Feed = () => {
       }}>
         {/* Заголовки */}
         <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
-          {randomName}
+          Привет, {userName}!
         </h2>
         <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
           {`Сегодня: ${formattedDate}`}

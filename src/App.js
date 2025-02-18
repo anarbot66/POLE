@@ -118,26 +118,24 @@ function App() {
           <div className="content-container">
           <TransitionGroup>
       <CSSTransition key={location.pathname} classNames="page" timeout={500}>
-    <div key={location.pathname}>  {/* ✅ Добавили div с key */}
-      <Routes location={location}>
-        <Route path="/" element={<Feed userName={userName} />} />
-        <Route path="/pilots" element={<PilotsList />} />
-        <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
-        <Route
-          path="/constructors"
-          element={<ConstructorsList onConstructorSelect={handleSelectConstructor} />}
-        />
-        <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
-        <Route
-          path="/constructor-details"
-          element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
-        />
-        // Новый маршрут для деталей гонки в App.js:
-        <Route path="/races/:raceId" element={<RaceDetails />} />
-        <Route path="/legend-details/:lastName" element={<LegendDetails />} />
+    <div key={location.pathname}>
+    <Routes location={location}>
+      <Route path="/" element={<Feed userName={userName} />} />
+      <Route path="/pilots" element={<PilotsList />} />
+      <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
+      <Route
+        path="/constructors"
+        element={<ConstructorsList onConstructorSelect={handleSelectConstructor} />}
+      />
+      <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
+      <Route
+        path="/constructor-details"
+        element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
+      />
+      <Route path="/races/:raceId" element={<RaceDetails />} />
+      <Route path="/legend-details/:lastName" element={<LegendDetails />} />
+    </Routes>
 
-
-      </Routes>
     </div>
   </CSSTransition>
 </TransitionGroup>
