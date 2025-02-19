@@ -29,7 +29,6 @@ function App() {
   const [contentLoaded, setContentLoaded] = useState(false);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(true);
 
   // Получаем данные пользователя из Telegram
   useEffect(() => {
@@ -71,28 +70,19 @@ function App() {
 
         if (!querySnapshot.empty) {
           setIsAuthenticated(true);
-          if (initialLoad) {
-            navigate("/feed");
-            setInitialLoad(false);
-          }
+          navigate("/feed"); // Перенаправление на страницу Feed при первой загрузке
         } else {
           setIsAuthenticated(false);
-          if (initialLoad) {
-            navigate("/");
-            setInitialLoad(false);
-          }
+          navigate("/");
         }
       } else {
         setIsAuthenticated(false);
-        if (initialLoad) {
-          navigate("/");
-          setInitialLoad(false);
-        }
+        navigate("/");
       }
     };
 
     checkUserInDB();
-  }, [user, navigate, initialLoad]);
+  }, [user, navigate]);
 
   // Анимация загрузки
   useEffect(() => {
