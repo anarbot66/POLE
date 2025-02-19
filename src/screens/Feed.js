@@ -49,9 +49,7 @@ const getFormattedDate = () => {
   return `${day} ${month} ${year}`;
 };
 
-
-
-const Feed = ( {userName}  ) => {
+const Feed = ({ userName }) => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
   const formattedDate = getFormattedDate();
@@ -121,7 +119,7 @@ const Feed = ( {userName}  ) => {
       }}>
         {/* Заголовки */}
         <h2 style={{ fontSize: "16px", fontWeight: "bold", color: "black", textAlign: "left"}}>
-          Привет, {String(userName)}!
+          Привет, {userName}!
         </h2>
         <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
           {`Сегодня: ${formattedDate}`}

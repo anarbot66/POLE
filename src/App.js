@@ -70,19 +70,16 @@ function App() {
 
         if (!querySnapshot.empty) {
           setIsAuthenticated(true);
-          navigate("/feed");
         } else {
           setIsAuthenticated(false);
-          navigate("/");
         }
       } else {
         setIsAuthenticated(false);
-        navigate("/");
       }
     };
 
     checkUserInDB();
-  }, [user, navigate]);
+  }, [user]);
 
   // Анимация загрузки
   useEffect(() => {
@@ -103,7 +100,7 @@ function App() {
     setSelectedConstructor(null);
     setSelectedRace(null);
     setActivePage(page);
-    if (page === 0) navigate("/");
+    if (page === 0) navigate(isAuthenticated ? "/feed" : "/");
     if (page === 1) navigate("/pilots");
     if (page === 2) navigate("/constructors");
     if (page === 3) navigate("/races");
@@ -161,7 +158,7 @@ function App() {
                 <div key={location.pathname}>
                   <Routes location={location}>
                     <Route path="/" element={<Auth user={user} />} />
-                    <Route path="/feed" element={<Feed />} />
+                    <Route path="/feed" element={<Feed userName={user?.name} />} />
                     <Route path="/pilots" element={<PilotsList />} />
                     <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
                     <Route
