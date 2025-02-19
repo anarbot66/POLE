@@ -13,7 +13,6 @@ import Feed from "./screens/Feed";
 import PilotDetails from "./screens/PilotDetails";
 import LegendDetails from "./screens/LegendDetails";
 import Auth from "./screens/Auth";
-import Profile from "./screens/Profile";
 import { db } from "./firebase"; // Импорт Firestore
 import { collection, query, where, getDocs } from "firebase/firestore"; // Импорт методов Firestore
 
@@ -71,16 +70,19 @@ function App() {
 
         if (!querySnapshot.empty) {
           setIsAuthenticated(true);
+          navigate("/feed");
         } else {
           setIsAuthenticated(false);
+          navigate("/");
         }
       } else {
         setIsAuthenticated(false);
+        navigate("/");
       }
     };
 
     checkUserInDB();
-  }, [user]);
+  }, [user, navigate]);
 
   // Анимация загрузки
   useEffect(() => {
@@ -159,11 +161,7 @@ function App() {
                 <div key={location.pathname}>
                   <Routes location={location}>
                     <Route path="/" element={<Auth user={user} />} />
-                    {isAuthenticated ? (
-                      <Route path="/profile" element={<Profile user={user} />} />
-                    ) : (
-                      <Route path="/profile" element={<Auth user={user} />} />
-                    )}
+                    <Route path="/feed" element={<Feed />} />
                     <Route path="/pilots" element={<PilotsList />} />
                     <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
                     <Route

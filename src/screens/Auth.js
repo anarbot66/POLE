@@ -47,7 +47,7 @@ const Auth = ({ user }) => {
             console.log("Пользователь уже существует в Firestore");
           }
         }
-        navigate("/profile");
+        navigate("/feed");
       } catch (error) {
         console.error("Ошибка аутентификации или сохранения пользователя в Firestore: ", error);
         setErrorMessage(`Ошибка: ${error.message}`);
