@@ -62,25 +62,19 @@ function App() {
     }
   }, []);
 
-  // Проверка наличия пользователя в базе данных и первичное перенаправление
+  // Проверка наличия пользователя в базе данных (ожидаем, пока user не станет != null)
   useEffect(() => {
-    const checkUserInDB = async () => {
-      if (user && user.name) {
-        const q = query(collection(db, "users"), where("username", "==", user.name));
-        const querySnapshot = await getDocs(q);
+    if (!user) return; // Не выполняем, пока нет данных пользователя
 
-        if (!querySnapshot.empty) {
-          setIsAuthenticated(true);
-          if (initialLoad) {
-            setInitialLoad(false);
-            navigate("/feed");
-          }
-        } else {
-          setIsAuthenticated(false);
-          if (initialLoad) {
-            setInitialLoad(false);
-            navigate("/");
-          }
+    const checkUserInDB = async () => {
+      const q = query(collection(db, "users"), where("username", "==", user.name));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setIsAuthenticated(true);
+        if (initialLoad) {
+          setInitialLoad(false);
+          navigate("/feed");
         }
       } else {
         setIsAuthenticated(false);
@@ -114,7 +108,7 @@ function App() {
     setSelectedRace(null);
     setActivePage(page);
     if (page === 0) {
-      // Если пользователь авторизован, перенаправляем на "/feed", иначе — на страницу авторизации
+      // Если пользователь авторизован, переходим на Feed, иначе на страницу авторизации
       navigate(isAuthenticated ? "/feed" : "/");
     } else if (page === 1) {
       navigate("/pilots");
