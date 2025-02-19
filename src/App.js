@@ -15,7 +15,7 @@ import LegendDetails from "./screens/LegendDetails";
 import Auth from "./screens/Auth";
 import Profile from "./screens/Profile";
 import { db } from "./firebase"; // Импорт Firestore
-import { doc, getDoc } from "firebase/firestore"; // Импорт методов Firestore
+import { collection, query, where, getDocs } from "firebase/firestore"; // Импорт методов Firestore
 
 function App() {
   const navigate = useNavigate();
@@ -63,11 +63,11 @@ function App() {
   // Проверка наличия пользователя в базе данных
   useEffect(() => {
     const checkUserInDB = async () => {
-      if (user && user.id) {
-        const userDocRef = doc(db, "users", user.id.toString());
-        const userDoc = await getDoc(userDocRef);
+      if (user && user.name) {
+        const q = query(collection(db, "users"), where("username", "==", user.name));
+        const querySnapshot = await getDocs(q);
 
-        if (userDoc.exists()) {
+        if (!querySnapshot.empty) {
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);

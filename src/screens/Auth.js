@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from "./images/logo.png";
 import { db } from '../firebase'; // Импортируем Firestore
-import { doc, setDoc } from 'firebase/firestore'; // Импортируем необходимые методы Firestore
+import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore'; // Импортируем необходимые методы Firestore
 import { getAuth, signInAnonymously } from 'firebase/auth'; // Импортируем Firebase Auth
 
 const Auth = ({ user }) => {
@@ -22,21 +22,37 @@ const Auth = ({ user }) => {
         const userCredential = await signInAnonymously(auth);
         const firebaseUser = userCredential.user;
 
+        // Проверка данных пользователя перед сохранением
+        console.log("User data before saving:", user);
+
         // Сохраняем данные пользователя в Firestore
-        if (user && user.id) {
-          await setDoc(doc(db, "users", user.id.toString()), {
-            username: user.username || '',
-            firstName: user.first_name || '',
-            lastName: user.last_name || '',
-            uid: firebaseUser.uid
-          });
-          console.log("Пользователь сохранен в Firestore");
+        if (user && user.name) {
+          console.log("Начинаем проверку и сохранение данных в Firestore");
+
+          // Проверка наличия пользователя в Firestore
+          const q = query(collection(db, "users"), where("username", "==", user.name));
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot.empty) {
+            await setDoc(doc(db, "users", firebaseUser.uid), {
+              username: user.name,
+              firstName: user.first_name || '',
+              lastName: user.last_name || '',
+              uid: firebaseUser.uid
+            });
+            console.log("Пользователь сохранен в Firestore");
+            console.log(`Данные сохранены для пользователя с именем: ${user.name}`);
+          } else {
+            console.log("Пользователь уже существует в Firestore");
+          }
         }
         navigate("/profile");
       } catch (error) {
         console.error("Ошибка аутентификации или сохранения пользователя в Firestore: ", error);
-        setErrorMessage("Ошибка аутентификации или сохранения данных. Попробуйте снова.");
+        setErrorMessage(`Ошибка: ${error.message}`);
       }
+    } else {
+      console.log("Checkbox не отмечен, данные не сохраняются.");
     }
   };
 
