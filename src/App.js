@@ -44,8 +44,8 @@ function App() {
 
         setUser({
           name: name,
-          first_name: userData.first_name || '',
-          last_name: userData.last_name || '',
+          first_name: userData.first_name || "",
+          last_name: userData.last_name || "",
           id: userData.id,
         });
       } else {
@@ -62,7 +62,7 @@ function App() {
     }
   }, []);
 
-  // Проверка наличия пользователя в базе данных и перенаправление на страницу Feed при первой загрузке
+  // Проверка наличия пользователя в базе данных и первичное перенаправление
   useEffect(() => {
     const checkUserInDB = async () => {
       if (user && user.name) {
@@ -113,10 +113,16 @@ function App() {
     setSelectedConstructor(null);
     setSelectedRace(null);
     setActivePage(page);
-    if (page === 0) navigate(isAuthenticated ? "/feed" : "/");
-    if (page === 1) navigate("/pilots");
-    if (page === 2) navigate("/constructors");
-    if (page === 3) navigate("/races");
+    if (page === 0) {
+      // Если пользователь авторизован, перенаправляем на "/feed", иначе — на страницу авторизации
+      navigate(isAuthenticated ? "/feed" : "/");
+    } else if (page === 1) {
+      navigate("/pilots");
+    } else if (page === 2) {
+      navigate("/constructors");
+    } else if (page === 3) {
+      navigate("/races");
+    }
   };
 
   const handleSelectConstructor = (constructor) => {
