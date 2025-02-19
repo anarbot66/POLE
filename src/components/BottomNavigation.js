@@ -1,15 +1,12 @@
 import { useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-
-
-
 const BottomNavigation = ({ setActivePage }) => {
   const location = useLocation();
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    if (location.pathname === "/") {
+    if (location.pathname === "/feed") {
       setActiveIndex(0);
     } else if (location.pathname === "/pilots") {
       setActiveIndex(1);
@@ -17,6 +14,8 @@ const BottomNavigation = ({ setActivePage }) => {
       setActiveIndex(2);
     } else if (location.pathname === "/races") {
       setActiveIndex(3);
+    } else {
+      setActiveIndex(-1); // Для всех остальных путей
     }
   }, [location.pathname]);
 

@@ -29,6 +29,7 @@ function App() {
   const [contentLoaded, setContentLoaded] = useState(false);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   // Получаем данные пользователя из Telegram
   useEffect(() => {
@@ -61,7 +62,7 @@ function App() {
     }
   }, []);
 
-  // Проверка наличия пользователя в базе данных и перенаправление
+  // Проверка наличия пользователя в базе данных и перенаправление на страницу Feed при первой загрузке
   useEffect(() => {
     const checkUserInDB = async () => {
       if (user && user.name) {
@@ -70,19 +71,28 @@ function App() {
 
         if (!querySnapshot.empty) {
           setIsAuthenticated(true);
-          navigate("/feed"); // Перенаправление на страницу Feed при первой загрузке
+          if (initialLoad) {
+            navigate("/feed");
+            setInitialLoad(false);
+          }
         } else {
           setIsAuthenticated(false);
-          navigate("/");
+          if (initialLoad) {
+            navigate("/");
+            setInitialLoad(false);
+          }
         }
       } else {
         setIsAuthenticated(false);
-        navigate("/");
+        if (initialLoad) {
+          navigate("/");
+          setInitialLoad(false);
+        }
       }
     };
 
     checkUserInDB();
-  }, [user, navigate]);
+  }, [user, navigate, initialLoad]);
 
   // Анимация загрузки
   useEffect(() => {
@@ -103,7 +113,7 @@ function App() {
     setSelectedConstructor(null);
     setSelectedRace(null);
     setActivePage(page);
-    if (page === 0) navigate("/feed");
+    if (page === 0) navigate(isAuthenticated ? "/feed" : "/");
     if (page === 1) navigate("/pilots");
     if (page === 2) navigate("/constructors");
     if (page === 3) navigate("/races");
