@@ -7,6 +7,7 @@ import { getAuth, signInAnonymously } from 'firebase/auth'; // Импортир�
 
 const Auth = ({ user }) => {
   const [isChecked, setIsChecked] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -24,9 +25,9 @@ const Auth = ({ user }) => {
         // Сохраняем данные пользователя в Firestore
         if (user && user.id) {
           await setDoc(doc(db, "users", user.id.toString()), {
-            username: user.username,
-            firstName: user.first_name,
-            lastName: user.last_name,
+            username: user.username || '',
+            firstName: user.first_name || '',
+            lastName: user.last_name || '',
             uid: firebaseUser.uid
           });
           console.log("Пользователь сохранен в Firestore");
@@ -34,6 +35,7 @@ const Auth = ({ user }) => {
         navigate("/profile");
       } catch (error) {
         console.error("Ошибка аутентификации или сохранения пользователя в Firestore: ", error);
+        setErrorMessage("Ошибка аутентификации или сохранения данных. Попробуйте снова.");
       }
     }
   };
@@ -90,6 +92,18 @@ const Auth = ({ user }) => {
           >
             Авторизация
           </div>
+          {errorMessage && (
+            <div
+              style={{
+                color: 'red',
+                fontSize: 12,
+                textAlign: 'center',
+                marginBottom: 10,
+              }}
+            >
+              {errorMessage}
+            </div>
+          )}
           <div
             style={{
               height: 33,
