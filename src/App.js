@@ -44,6 +44,8 @@ function App() {
 
         setUser({
           name: name,
+          first_name: userData.first_name || '',
+          last_name: userData.last_name || '',
           id: userData.id,
         });
       } else {
@@ -157,7 +159,11 @@ function App() {
                 <div key={location.pathname}>
                   <Routes location={location}>
                     <Route path="/" element={<Auth user={user} />} />
-                    <Route path="/profile" element={<Profile user={user} />} />
+                    {isAuthenticated ? (
+                      <Route path="/profile" element={<Profile user={user} />} />
+                    ) : (
+                      <Route path="/profile" element={<Auth user={user} />} />
+                    )}
                     <Route path="/pilots" element={<PilotsList />} />
                     <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
                     <Route

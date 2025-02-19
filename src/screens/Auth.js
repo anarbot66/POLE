@@ -38,6 +38,7 @@ const Auth = ({ user }) => {
               username: user.name,
               firstName: user.first_name || '',
               lastName: user.last_name || '',
+              photoUrl: user.photo_url || '',
               uid: firebaseUser.uid
             });
             console.log("Пользователь сохранен в Firestore");
@@ -202,7 +203,6 @@ const Auth = ({ user }) => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };

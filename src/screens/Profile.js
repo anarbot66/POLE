@@ -37,7 +37,7 @@ const Profile = ({ user }) => {
       <div
         style={{
           width: 340,
-          height: 180,
+          height: 200,
           padding: 20,
           background: 'white',
           borderRadius: 15,
@@ -50,7 +50,7 @@ const Profile = ({ user }) => {
         }}
       >
         <img
-          src={user?.photo || 'https://placehold.co/58x58'}
+          src={profileData.photoUrl || 'https://placehold.co/58x58'}
           alt="User"
           style={{ width: 58, height: 58, background: '#D9D9D9', borderRadius: 5 }}
         />
@@ -76,7 +76,7 @@ const Profile = ({ user }) => {
             textAlign: 'center'
           }}
         >
-          {profileData.firstName || 'First Name'}
+          {profileData.firstName || 'Not found'}
         </div>
         <div
           style={{
@@ -88,7 +88,7 @@ const Profile = ({ user }) => {
             textAlign: 'center'
           }}
         >
-          {profileData.lastName || 'Last Name'}
+          {profileData.lastName || 'Not found'}
         </div>
       </div>
     </div>
