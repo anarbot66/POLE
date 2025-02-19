@@ -55,7 +55,6 @@ const BottomNavigation = ({ setActivePage }) => {
     alignItems: "center",
     gap: 10,
     zIndex: 1000,
-    backdropFilter: "blur(3px)", // Эффект размытия на фоне
     boxShadow: "none", // Убираем тень
     backgroundImage: "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 100%)", // Градиент от прозрачного белого к белому с прозрачностью
   }}

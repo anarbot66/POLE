@@ -12,6 +12,10 @@ import logo from "./screens/images/logo.png";
 import Feed from "./screens/Feed";
 import PilotDetails from "./screens/PilotDetails";
 import LegendDetails from "./screens/LegendDetails";
+import Auth from "./screens/Auth";
+import Profile from "./screens/Profile";
+import { db } from "./firebase"; // Импорт Firestore
+import { doc, getDoc } from "firebase/firestore"; // Импорт методов Firestore
 
 function App() {
   const navigate = useNavigate();
@@ -24,30 +28,57 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
   const [contentLoaded, setContentLoaded] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Получаем данные пользователя из Telegram
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.expand();
       const userData = window.Telegram.WebApp.initDataUnsafe?.user;
-  
+
       if (userData) {
         const name = userData.username
           ? userData.username
           : `${userData.first_name}${userData.last_name ? " " + userData.last_name : ""}`;
-  
-        console.log("Имя пользователя:", name); // ✅ Проверяем значение в консоли
-  
-        setUserName(name); // 👈 Здесь точно строка, а не объект
+
+        setUser({
+          name: name,
+          id: userData.id,
+        });
       } else {
-        setUserName("Гость");
+        setUser({
+          name: "Гость",
+          id: null,
+        });
       }
     } else {
-      setUserName("TestUser");
+      setUser({
+        name: "TestUser",
+        id: null,
+      });
     }
   }, []);
-  
+
+  // Проверка наличия пользователя в базе данных
+  useEffect(() => {
+    const checkUserInDB = async () => {
+      if (user && user.id) {
+        const userDocRef = doc(db, "users", user.id.toString());
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkUserInDB();
+  }, [user]);
 
   // Анимация загрузки
   useEffect(() => {
@@ -121,30 +152,29 @@ function App() {
       {!loading && (
         <>
           <div className="content-container">
-          <TransitionGroup>
-      <CSSTransition key={location.pathname} classNames="page" timeout={500}>
-    <div key={location.pathname}>
-    <Routes location={location}>
-      <Route path="/" element={<Feed userName={userName} />} />
-      <Route path="/pilots" element={<PilotsList />} />
-      <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
-      <Route
-        path="/constructors"
-        element={<ConstructorsList onConstructorSelect={handleSelectConstructor} />}
-      />
-      <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
-      <Route
-        path="/constructor-details"
-        element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
-      />
-      <Route path="/races/:raceId" element={<RaceDetails />} />
-      <Route path="/legend-details/:lastName" element={<LegendDetails />} />
-    </Routes>
-
-    </div>
-  </CSSTransition>
-</TransitionGroup>
-
+            <TransitionGroup>
+              <CSSTransition key={location.pathname} classNames="page" timeout={500}>
+                <div key={location.pathname}>
+                  <Routes location={location}>
+                    <Route path="/" element={<Auth user={user} />} />
+                    <Route path="/profile" element={<Profile user={user} />} />
+                    <Route path="/pilots" element={<PilotsList />} />
+                    <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
+                    <Route
+                      path="/constructors"
+                      element={<ConstructorsList onConstructorSelect={handleSelectConstructor} />}
+                    />
+                    <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
+                    <Route
+                      path="/constructor-details"
+                      element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
+                    />
+                    <Route path="/races/:raceId" element={<RaceDetails />} />
+                    <Route path="/legend-details/:lastName" element={<LegendDetails />} />
+                  </Routes>
+                </div>
+              </CSSTransition>
+            </TransitionGroup>
           </div>
 
           <BottomNavigation setActivePage={handlePageChange} />

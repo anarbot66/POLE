@@ -49,26 +49,12 @@ const getFormattedDate = () => {
   return `${day} ${month} ${year}`;
 };
 
-const randomNames = [
-  "Не сбавляй обороты!", 
-  "Привет, что сегодня посмотрим?", 
-  "Не будь как сарджент!", 
-  "Всем тифози привет!", 
-  "Какой ты сегодня? Софт или Хард?"
-];
 
-const getRandomName = () => {
-  const randomIndex = Math.floor(Math.random() * randomNames.length);
-  return randomNames[randomIndex];
-};
 
 const Feed = ( {userName}  ) => {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
-  // Состояние для выбранной гонки
-  const [selectedRace, setSelectedRace] = useState(null);
   const formattedDate = getFormattedDate();
-  const randomName = getRandomName();
 
   const navigate = useNavigate(); // Хук для навигации
 
@@ -134,7 +120,7 @@ const Feed = ( {userName}  ) => {
         flexDirection: "column"
       }}>
         {/* Заголовки */}
-        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
+        <h2 style={{ fontSize: "16px", fontWeight: "bold", color: "black", textAlign: "left"}}>
           Привет, {String(userName)}!
         </h2>
         <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>

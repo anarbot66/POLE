@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import RaceDetails from "./RaceDetails"; // Импортируем компонент деталей гонки
 import { useLocation, useNavigate } from "react-router-dom";
 
-
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
@@ -191,7 +190,7 @@ const RacesList = () => {
                   }}
                 >
                   <img
-                    src={`https://flagcdn.com/w80/${nextRaceCountryCode}.png`}
+                    src={`https://flagcdn.com/w320/${nextRaceCountryCode}.png`}
                     alt={nextRace.Circuit.Location.country}
                     style={{
                       width: "20px",
@@ -277,7 +276,7 @@ const RacesList = () => {
               }}
             >
               <img
-                src={`https://flagcdn.com/w80/${countryCode}.png`}
+                src={`https://flagcdn.com/w320/${countryCode}.png`}
                 alt={race.Circuit.Location.country}
                 style={{
                   width: "50px",
