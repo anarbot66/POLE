@@ -29,6 +29,7 @@ function App() {
   const [contentLoaded, setContentLoaded] = useState(false);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   // Получаем данные пользователя из Telegram
   useEffect(() => {
@@ -70,19 +71,28 @@ function App() {
 
         if (!querySnapshot.empty) {
           setIsAuthenticated(true);
-          navigate("/feed");
+          if (initialLoad) {
+            navigate("/feed");
+            setInitialLoad(false);
+          }
         } else {
           setIsAuthenticated(false);
-          navigate("/");
+          if (initialLoad) {
+            navigate("/");
+            setInitialLoad(false);
+          }
         }
       } else {
         setIsAuthenticated(false);
-        navigate("/");
+        if (initialLoad) {
+          navigate("/");
+          setInitialLoad(false);
+        }
       }
     };
 
     checkUserInDB();
-  }, [user, navigate]);
+  }, [user, navigate, initialLoad]);
 
   // Анимация загрузки
   useEffect(() => {
