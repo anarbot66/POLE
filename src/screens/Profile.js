@@ -1,22 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { db } from '../firebase'; // Импорт Firestore
+import { collection, query, where, getDocs } from 'firebase/firestore'; // Импорт методов Firestore
 
 const Profile = ({ user }) => {
+  const [profileData, setProfileData] = useState({});
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (user && user.name) {
+        const q = query(collection(db, "users"), where("username", "==", user.name));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach((doc) => {
+            setProfileData(doc.data());
+          });
+        }
+      }
+    };
+
+    fetchProfileData();
+  }, [user]);
+
   return (
     <div
       style={{
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'white', // Белый фон для всего контейнера
+        backgroundColor: 'white',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'flex-start', // Выравнивание блока с данными сверху
-        paddingTop: '20px' // Отступ сверху для блока с данными
+        alignItems: 'flex-start',
+        paddingTop: '20px'
       }}
     >
       <div
         style={{
           width: 340,
-          height: 128,
+          height: 180,
           padding: 20,
           background: 'white',
           borderRadius: 15,
@@ -39,10 +60,35 @@ const Profile = ({ user }) => {
             fontSize: 15,
             fontFamily: 'Inter',
             fontWeight: '500',
-            wordWrap: 'break-word'
+            wordWrap: 'break-word',
+            textAlign: 'center'
           }}
         >
-          {user?.name || 'Name Surname'}
+          {profileData.username || 'Username'}
+        </div>
+        <div
+          style={{
+            color: 'black',
+            fontSize: 15,
+            fontFamily: 'Inter',
+            fontWeight: '500',
+            wordWrap: 'break-word',
+            textAlign: 'center'
+          }}
+        >
+          {profileData.firstName || 'First Name'}
+        </div>
+        <div
+          style={{
+            color: 'black',
+            fontSize: 15,
+            fontFamily: 'Inter',
+            fontWeight: '500',
+            wordWrap: 'break-word',
+            textAlign: 'center'
+          }}
+        >
+          {profileData.lastName || 'Last Name'}
         </div>
       </div>
     </div>

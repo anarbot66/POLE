@@ -44,6 +44,8 @@ function App() {
 
         setUser({
           name: name,
+          first_name: userData.first_name || '',
+          last_name: userData.last_name || '',
           id: userData.id,
         });
       } else {
@@ -69,6 +71,7 @@ function App() {
 
         if (!querySnapshot.empty) {
           setIsAuthenticated(true);
+          navigate("/profile");
         } else {
           setIsAuthenticated(false);
         }
@@ -78,7 +81,7 @@ function App() {
     };
 
     checkUserInDB();
-  }, [user]);
+  }, [user, navigate]);
 
   // Анимация загрузки
   useEffect(() => {
