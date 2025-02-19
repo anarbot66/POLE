@@ -72,21 +72,21 @@ function App() {
         if (!querySnapshot.empty) {
           setIsAuthenticated(true);
           if (initialLoad) {
-            navigate("/feed");
             setInitialLoad(false);
+            navigate("/feed");
           }
         } else {
           setIsAuthenticated(false);
           if (initialLoad) {
-            navigate("/");
             setInitialLoad(false);
+            navigate("/");
           }
         }
       } else {
         setIsAuthenticated(false);
         if (initialLoad) {
-          navigate("/");
           setInitialLoad(false);
+          navigate("/");
         }
       }
     };
