@@ -61,7 +61,7 @@ function App() {
     }
   }, []);
 
-  // Проверка наличия пользователя в базе данных
+  // Проверка наличия пользователя в базе данных и перенаправление
   useEffect(() => {
     const checkUserInDB = async () => {
       if (user && user.name) {
@@ -70,16 +70,19 @@ function App() {
 
         if (!querySnapshot.empty) {
           setIsAuthenticated(true);
+          navigate("/feed");
         } else {
           setIsAuthenticated(false);
+          navigate("/");
         }
       } else {
         setIsAuthenticated(false);
+        navigate("/");
       }
     };
 
     checkUserInDB();
-  }, [user]);
+  }, [user, navigate]);
 
   // Анимация загрузки
   useEffect(() => {
@@ -100,7 +103,7 @@ function App() {
     setSelectedConstructor(null);
     setSelectedRace(null);
     setActivePage(page);
-    if (page === 0) navigate(isAuthenticated ? "/feed" : "/");
+    if (page === 0) navigate("/feed");
     if (page === 1) navigate("/pilots");
     if (page === 2) navigate("/constructors");
     if (page === 3) navigate("/races");
