@@ -23,6 +23,7 @@
   height: 100vh;
   background-color: white;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: opacity 0.6s ease-in-out;
@@ -99,3 +100,19 @@ body {
   width: 120px;
   height: auto;
 }
+
+.progress-container {
+  width: 80%;           /* Ширину можно настроить под ваш дизайн */
+  height: 14px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px auto 0;  /* Центрирование и отступ сверху */
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: black;
+  transition: width 0.4s ease-in-out;
+}
+

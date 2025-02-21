@@ -14,7 +14,8 @@ import PilotDetails from "./screens/PilotDetails";
 import LegendDetails from "./screens/LegendDetails";
 import Auth from "./screens/Auth";
 import { db } from "./firebase"; // Импорт Firestore
-import { collection, query, where, getDocs } from "firebase/firestore"; // Импорт методов Firestore
+import { collection, query, where, getDocs } from "firebase/firestore"; // Методы Firestore
+import ProgressBar from "./components/ProgressBar"; // Компонент прогресс-бара
 
 function App() {
   const navigate = useNavigate();
@@ -31,18 +32,17 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
   const [dbCheckCompleted, setDbCheckCompleted] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   // Получаем данные пользователя из Telegram
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.expand();
       const userData = window.Telegram.WebApp.initDataUnsafe?.user;
-
       if (userData) {
         const name = userData.username
           ? userData.username
           : `${userData.first_name}${userData.last_name ? " " + userData.last_name : ""}`;
-
         setUser({
           name: name,
           first_name: userData.first_name || "",
@@ -63,14 +63,12 @@ function App() {
     }
   }, []);
 
-  // Проверка наличия пользователя в базе данных (ожидаем, пока user не станет != null)
+  // Проверка наличия пользователя в базе данных (асинхронно)
   useEffect(() => {
     if (!user) return; // Не выполняем, пока нет данных пользователя
-
     const checkUserInDB = async () => {
       const q = query(collection(db, "users"), where("username", "==", user.name));
       const querySnapshot = await getDocs(q);
-
       if (!querySnapshot.empty) {
         setIsAuthenticated(true);
         if (initialLoad) {
@@ -84,35 +82,45 @@ function App() {
           navigate("/");
         }
       }
+      // Как только поиск завершился, помечаем, что БД проверена
       setDbCheckCompleted(true);
     };
-
     checkUserInDB();
   }, [user, navigate, initialLoad]);
 
-  // Анимация загрузки
+  // Обновление progress bar во время загрузки (параллельно с запросом к БД)
+  useEffect(() => {
+    if (loading) {
+      const interval = setInterval(() => {
+        // Увеличиваем progress до 90%, оставляя место для завершающего этапа
+        setProgress((prev) => (prev < 90 ? prev + 2 : prev));
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [loading]);
+
+  // Как только поиск в БД завершен, завершаем progress bar и запускаем fade-out
   useEffect(() => {
     if (dbCheckCompleted) {
+      // Устанавливаем progress в 100% после небольшой задержки
       setTimeout(() => {
         setContentLoaded(true);
+        setProgress(100);
       }, 300);
-
+      // Запускаем анимацию скрытия экрана загрузки
       setTimeout(() => {
-        if (contentLoaded) {
-          setFadeOut(true);
-          setTimeout(() => setLoading(false), 600);
-        }
-      }, 600);
+        setFadeOut(true);
+        setTimeout(() => setLoading(false), 600);
+      }, 900);
     }
-  }, [contentLoaded, dbCheckCompleted]);
+  }, [dbCheckCompleted]);
 
-  // Функция для навигации
+  // Функция для навигации между страницами
   const handlePageChange = (page) => {
     setSelectedConstructor(null);
     setSelectedRace(null);
     setActivePage(page);
     if (page === 0) {
-      // Если пользователь авторизован, переходим на Feed, иначе на страницу авторизации
       navigate(isAuthenticated ? "/feed" : "/");
     } else if (page === 1) {
       navigate("/pilots");
@@ -168,6 +176,7 @@ function App() {
       {loading && (
         <div className={`loading-screen ${fadeOut ? "fade-out" : ""}`}>
           <img src={logo} alt="Логотип" className="logo" />
+          <ProgressBar progress={progress} />
         </div>
       )}
 
@@ -198,7 +207,6 @@ function App() {
               </CSSTransition>
             </TransitionGroup>
           </div>
-
           <BottomNavigation setActivePage={handlePageChange} />
         </>
       )}
