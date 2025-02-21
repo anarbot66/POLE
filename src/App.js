@@ -30,6 +30,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
+  const [dbCheckCompleted, setDbCheckCompleted] = useState(false);
 
   // Получаем данные пользователя из Telegram
   useEffect(() => {
@@ -83,6 +84,7 @@ function App() {
           navigate("/");
         }
       }
+      setDbCheckCompleted(true);
     };
 
     checkUserInDB();
@@ -90,17 +92,19 @@ function App() {
 
   // Анимация загрузки
   useEffect(() => {
-    setTimeout(() => {
-      setContentLoaded(true);
-    }, 300);
+    if (dbCheckCompleted) {
+      setTimeout(() => {
+        setContentLoaded(true);
+      }, 300);
 
-    setTimeout(() => {
-      if (contentLoaded) {
-        setFadeOut(true);
-        setTimeout(() => setLoading(false), 600);
-      }
-    }, 600);
-  }, [contentLoaded]);
+      setTimeout(() => {
+        if (contentLoaded) {
+          setFadeOut(true);
+          setTimeout(() => setLoading(false), 600);
+        }
+      }, 600);
+    }
+  }, [contentLoaded, dbCheckCompleted]);
 
   // Функция для навигации
   const handlePageChange = (page) => {
@@ -146,6 +150,10 @@ function App() {
   const handleBackToPilots = () => {
     navigate("/pilots");
   };
+
+  if (!dbCheckCompleted) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div

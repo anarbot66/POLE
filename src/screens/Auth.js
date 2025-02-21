@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from "./images/logo.png";
+import logo from "./images/logo-250.png";
 import { db } from '../firebase'; // Импортируем Firestore
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore'; // Импортируем необходимые методы Firestore
 import { getAuth, signInAnonymously } from 'firebase/auth'; // Импортируем Firebase Auth
@@ -81,7 +81,7 @@ const Auth = ({ user }) => {
         <div
           style={{
             width: 250,
-            height: 420,
+            height: 300,
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
@@ -93,7 +93,7 @@ const Auth = ({ user }) => {
           }}
         >
           <img
-            style={{ alignSelf: 'fill', height: "100%" }}
+            style={{ alignSelf: 'fill', height: "120px" }}
             src={logo}
             alt="Placeholder"
           />
