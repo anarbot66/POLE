@@ -2,84 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import seasonsData from "./json/seasons"; // Загружаем данные о сезонах конструктора
 
-const pointsSystem = {
-  2024: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2023: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2022: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2021: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2020: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2019: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2018: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2017: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2016: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2015: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2014: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2013: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2012: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2011: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2010: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2009: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],  // 1-10 места
-  2008: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
-  2007: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
-  2006: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
-  2005: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
-  2004: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
-  2003: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
-  2002: [10, 8, 6, 5, 4, 3, 2, 1],           // 1-8 места
-  2001: [6, 5, 4, 3, 2, 1],                 // 1-6 места
-  2000: [6, 5, 4, 3, 2, 1],                 // 1-6 места
-  1999: [6, 5, 4, 3, 2, 1],                 // 1-6 места
-  1998: [6, 5, 4, 3, 2, 1],                 // 1-6 места
-  1997: [6, 5, 4, 3, 2, 1],                 // 1-6 места
-  1996: [6, 5, 4, 3, 2, 1],                 // 1-6 места
-  1995: [6, 5, 4, 3, 2, 1],                 // 1-6 места
-  1994: [6, 5, 4, 3, 2, 1],                 // 1-6 места
-  1993: [6, 5, 4, 3, 2, 1],                 // 1-6 места
-  1992: [10, 6, 4, 3, 2, 1],                // 1-6 места
-  1991: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1990: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1989: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1988: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1987: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1986: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1985: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1984: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1983: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1982: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1981: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1980: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1979: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1978: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1977: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1976: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1975: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1974: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1973: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1972: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1971: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1970: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1969: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1968: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1967: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1966: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1965: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1964: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1963: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1962: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1961: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1960: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1959: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1958: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1957: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1956: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1955: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1954: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1953: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1952: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1951: [9, 6, 4, 3, 2, 1],                 // 1-6 места
-  1950: [8, 6, 4, 3, 2, 1],                 // 1-6 места
-};
-
 // Словарь для преобразования имен конструкторов в API-формат
 const constructorApiNames = {
   "Red Bull": "red_bull",
@@ -266,7 +188,7 @@ const fetchSeasonStats = async (season) => {
         width: "calc(100% - 20px)",
         margin: "10px 10px 100px",
         padding: "15px",
-        background: "white",
+        background: "#212124",
         borderRadius: "20px",
         flexDirection: "column",
         justifyContent: "flex-start",
@@ -281,8 +203,8 @@ const fetchSeasonStats = async (season) => {
         <button
           onClick={goBack}
           style={{
-            backgroundColor: "white",
-            color: "black",
+            backgroundColor: "#212124",
+            color: "white",
             border: "none",
             padding: "5px 10px",
             borderRadius: "10px",
@@ -308,31 +230,31 @@ const fetchSeasonStats = async (season) => {
       {/* Статистика конструктора (для текущего сезона) */}
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: "12px", width: "100%" }}>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {constructor.position}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px", fontFamily: "Inter", fontWeight: "600" }}>ПОЗИЦИЯ</div>
         </div>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {constructor.points}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
         </div>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {wins}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
         </div>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {podiums}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
         </div>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {poles}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>
@@ -347,11 +269,12 @@ const fetchSeasonStats = async (season) => {
             padding: "10px",
             width: "100%",
             margin: "5px",
-            backgroundColor: activeTab === "biography" ? teamColor : "#f0f0f0",
-            color: activeTab === "biography" ? "white" : "black",
+            backgroundColor: activeTab === "biography" ? teamColor : "#1D1D1F",
+            color: activeTab === "biography" ? "white" : "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
+            fontSize: 12
           }}
         >
           Биография
@@ -362,11 +285,12 @@ const fetchSeasonStats = async (season) => {
             padding: "10px",
             width: "100%",
             margin: "5px",
-            backgroundColor: activeTab === "seasons" ? teamColor : "#f0f0f0",
-            color: activeTab === "seasons" ? "white" : "black",
+            backgroundColor: activeTab === "seasons" ? teamColor : "#1D1D1F",
+            color: activeTab === "seasons" ? "white" : "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
+            fontSize: 12
           }}
         >
           Сезоны
@@ -375,12 +299,12 @@ const fetchSeasonStats = async (season) => {
 
       {/* Контент вкладки */}
       {activeTab === "biography" ? (
-        <div style={{ marginTop: "20px", padding: "10px", backgroundColor: "white", borderRadius: "8px" }}>
-          <strong>Биография команды:</strong>
-          <p>{biography}</p>
+        <div style={{ marginTop: "0px", padding: "10px", backgroundColor: "white", borderRadius: "8px" }}>
+          <strong style={{ fontSize: 13}}>Биография команды:</strong>
+          <p style={{ fontSize: 11, marginTop: "10px"}}>{biography}</p>
         </div>
       ) : (
-        <div style={{ marginTop: "20px" }}>
+        <div style={{}}>
           <select
             value={selectedSeason}
             onChange={(e) => setSelectedSeason(e.target.value)}
@@ -388,10 +312,10 @@ const fetchSeasonStats = async (season) => {
               width: "100%",
               padding: "10px",
               borderRadius: "8px",
-              border: `2px solid ${teamColor}`,
-              backgroundColor: "#f0f0f0",
+              border: `2px solid #1D1D1F`,
+              backgroundColor: "#1D1D1F",
               fontSize: "14px",
-              color: "black",
+              color: "white",
               cursor: "pointer",
               marginTop: "10px",
             }}
@@ -406,31 +330,31 @@ const fetchSeasonStats = async (season) => {
           {/* Статистика для выбранного сезона */}
           <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: "12px", marginTop: "20px" }}>
             <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                 {position}
               </span>
               <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОЗИЦИЯ</div>
             </div>
             <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                 {points}
               </span>
               <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
             </div>
             <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                 {seasonStats.wins}
               </span>
               <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
             </div>
             <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                 {seasonStats.podiums}
               </span>
               <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
             </div>
             <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                 {seasonStats.poles}
               </span>
               <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>

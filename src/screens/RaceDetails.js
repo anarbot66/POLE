@@ -102,7 +102,7 @@ const RaceDetails = ({ }) => {
     <div className="race-details" style={{
       width: "calc(100% - 20px)",
         margin: "10px 10px 100px", padding: "10px",
-      display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#F9F9F9", marginBottom: "100px"
+      display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#1D1D1F", marginBottom: "100px"
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <button
@@ -110,8 +110,8 @@ const RaceDetails = ({ }) => {
         style={{
           left: "25px",
           bottom: "120px",
-          backgroundColor: "white",
-          color: "black",
+          backgroundColor: "#1D1D1F",
+          color: "white",
           border: "none",
           padding: "5px 10px",
           borderRadius: "10px",
@@ -138,11 +138,11 @@ const RaceDetails = ({ }) => {
             <div style={{
               display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
             }}>
-              <div style={{ color: "black", fontSize: "13px" }}>
+              <div style={{ color: "white", fontSize: "13px" }}>
                 {translatedRaceName}
               </div>
               <div style={{
-                color: "#B9B9B9", fontSize: "10px"
+                color: "lightgray", fontSize: "10px"
               }}>
                 {race.Circuit.circuitName}
               </div>
@@ -161,14 +161,14 @@ const RaceDetails = ({ }) => {
 
       
 
-      <h3>Расписание уик-энда</h3>
+      <h3 style={{color: "white"}}>Расписание уик-энда</h3>
       {sessions.map((session, index) => (
         <div key={index} style={{
-          background: "white", padding: "15px", borderRadius: "10px",
+          background: "#212124", padding: "15px", borderRadius: "10px",
           display: "flex", justifyContent: "space-between", alignItems: "center"
         }}>
-          <span style={{fontSize: "12px"}}>{sessionTypeTranslations[session.type] || session.type}</span>
-          <span style={{ color: "gray",fontSize: "12px" }}>{convertToMoscowTime(session.date, session.time)}</span>
+          <span style={{fontSize: "12px", color: "white"}}>{sessionTypeTranslations[session.type] || session.type}</span>
+          <span style={{ color: "lightgray",fontSize: "12px" }}>{convertToMoscowTime(session.date, session.time)}</span>
         </div>
       ))}
     </div>

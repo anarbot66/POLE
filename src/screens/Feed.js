@@ -108,7 +108,8 @@ const Feed = ({ userName }) => {
       paddingTop: "10px",
       display: "flex",
       flexDirection: "column",
-      gap: "15px"
+      gap: "15px",
+      background: "#1D1D1F"
     }}>
       <div style={{
         width: "calc(100% - 20px)",
@@ -118,13 +119,13 @@ const Feed = ({ userName }) => {
         flexDirection: "column"
       }}>
         {/* Заголовки */}
-        <h2 style={{ fontSize: "16px", fontWeight: "bold", color: "black", textAlign: "left"}}>
+        <h2 style={{ fontSize: "16px", fontWeight: "300", color: "white", textAlign: "left"}}>
           Привет, {userName}!
         </h2>
-        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
+        <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px"}}>
           {`Сегодня: ${formattedDate}`}
         </h3>
-        <h4 style={{ fontSize: "14px", color: "gray" }}>
+        <h4 style={{ fontSize: "14px", color: "lightgray" }}>
           Грядущие события:
         </h4>
       </div>
@@ -141,7 +142,7 @@ const Feed = ({ userName }) => {
                onClick={() => handleRaceSelect(event.race)} // При клике переходим к деталям гонки
                style={{
                   width: "100%",
-                  background: "white",
+                  background: "#212124",
                   borderRadius: "20px",
                   display: "flex",
                   alignItems: "center",
@@ -157,7 +158,7 @@ const Feed = ({ userName }) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              background: "white"
+              background: "#212124"
             }}>
               <img 
                 src={`https://flagcdn.com/w80/${countryCode}.png`} 
@@ -168,7 +169,7 @@ const Feed = ({ userName }) => {
 
             {/* Название сессии и название гонки */}
             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-              <div style={{ fontSize: "12px", fontWeight: "600", color: "black" }}>
+              <div style={{ fontSize: "12px", fontWeight: "300", color: "white" }}>
                 {sessionName}
               </div>
               <div style={{ fontSize: "12px", color: "#999" }}>
@@ -178,7 +179,7 @@ const Feed = ({ userName }) => {
 
             {/* Время сессии */}
             <div style={{ textAlign: "right", minWidth: "100px" }}>
-              <span style={{ fontSize: "12px", color: "#555", fontWeight: "500" }}>
+              <span style={{ fontSize: "12px", color: "white", fontWeight: "light" }}>
                 {formattedTime}
               </span>
             </div>

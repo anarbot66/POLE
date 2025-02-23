@@ -24,7 +24,7 @@ const PilotsList = () => {
   const teamColors = {
     "McLaren": "#F48021",
     "Ferrari": "#FF0000",
-    "Red Bull": "#001690",
+    "Red Bull": "#2546FF",
     "Mercedes": "#00A19C",
     "Aston Martin": "#00594F",
     "Alpine F1 Team": "#0078C1",
@@ -141,8 +141,8 @@ const PilotsList = () => {
       paddingTop: "10px", 
       display: "flex", 
       flexDirection: "column", 
-      gap: "15px", 
-      backgroundColor: "#F9F9F9"
+      gap: "15px",
+      background: "#1D1D1F"
     }}>
       <div style={{
         width: "calc(100% - 20px)", 
@@ -151,13 +151,13 @@ const PilotsList = () => {
         display: "flex", 
         flexDirection: "column"
       }}>
-        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left" }}>
+        <h2 style={{ fontSize: "18px", fontWeight: "300", color: "white", textAlign: "left" }}>
           Таблица пилотов
         </h2>
-        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px" }}>
+        <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px" }}>
           {`Сегодня: ${getFormattedDate()}`}
         </h3>
-        <h4 style={{ fontSize: "12px", color: "gray" }}>
+        <h4 style={{ fontSize: "12px", color: "lightgray" }}>
           Кликни по пилоту чтобы узнать подробнее
         </h4>
       </div>
@@ -174,7 +174,7 @@ const PilotsList = () => {
             onClick={() => handlePilotSelect(pilot)}
             style={{
               width: "100%",
-              background: "white",
+              background: "#212124",
               borderRadius: "20px",
               display: "flex",
               justifyContent: "space-between",
@@ -187,7 +187,7 @@ const PilotsList = () => {
             <div style={{
               width: "65px", height: "65px", borderRadius: "20px",
               display: "flex", justifyContent: "center", alignItems: "center",
-              background: "white"
+              background: "#212124"
             }}>
               <div style={{
                 color: teamColor,
@@ -200,7 +200,7 @@ const PilotsList = () => {
               display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ color: "black", fontSize: "12px" }}>
+                <div style={{ color: "white", fontSize: "12px", fontWeight: "300" }}>
                   {translatedName}
                 </div>
                 <img src={`https://flagcdn.com/w40/${countryCode}.png`} alt={nationality}
@@ -208,17 +208,18 @@ const PilotsList = () => {
               </div>
               <div style={{
                 color: teamColor,
-                fontSize: "12px"
+                fontSize: "12px",
+                fontWeight: "300"
               }}>
                 {pilot.Constructors[0].name}
               </div>
             </div>
             <div style={{ textAlign: "center", minWidth: "60px" }}>
-              <span style={{ color: "black", fontSize: "16px" }}>
+              <span style={{ color: "white", fontSize: "16px" }}>
                 {pilot.points}
               </span>
               <br />
-              <span style={{ color: "black", fontSize: "10px" }}>
+              <span style={{ color: "white", fontSize: "10px" }}>
                 PTS
               </span>
             </div>

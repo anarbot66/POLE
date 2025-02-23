@@ -230,7 +230,7 @@ const PilotDetails = () => {
   const teamColors = {
     "McLaren": "#F48021",
     "Ferrari": "#FF0000",
-    "Red Bull": "#001690",
+    "Red Bull": "#2546FF",
     "Mercedes": "#00A19C",
     "Aston Martin": "#00594F",
     "Alpine F1 Team": "#0078C1",
@@ -250,7 +250,7 @@ const PilotDetails = () => {
         width: "calc(100% - 20px)",
         margin: "10px 10px 100px",
         padding: "15px",
-        background: "white",
+        background: "#212124",
         height: "100%",
         marginBottom: "100px",
         overflowY: "auto",
@@ -266,8 +266,8 @@ const PilotDetails = () => {
         <button
           onClick={goBack}
           style={{
-            backgroundColor: "white",
-            color: "black",
+            backgroundColor: "#212124",
+            color: "white",
             border: "none",
             padding: "5px 10px",
             borderRadius: "10px",
@@ -280,14 +280,14 @@ const PilotDetails = () => {
         {/* Заголовок с информацией о пилоте и команде */}
         <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "400" }}>
+            <div style={{ color: "White", fontSize: "16px", fontFamily: "Inter", fontWeight: "300" }}>
               {pilotFirstName}
             </div>
-            <div style={{ color: "#B9B9B9", fontSize: "16px", fontFamily: "Inter", fontWeight: "400" }}>
+            <div style={{ color: "lightgray", fontSize: "16px", fontFamily: "Inter", fontWeight: "300" }}>
               {pilotLastNameDisplay}
             </div>
           </div>
-          <div style={{ color: teamColor, fontSize: "12px", fontFamily: "Inter", fontWeight: "600" }}>
+          <div style={{ color: teamColor, fontSize: "12px", fontFamily: "Inter", fontWeight: "200" }}>
             {pilot.Constructors[0].name}
           </div>
         </div>
@@ -299,37 +299,37 @@ const PilotDetails = () => {
       {/* Статистика пилота */}
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: "12px", width: "100%" }}>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {pilot.position}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОЗИЦИЯ</div>
         </div>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {pilot.points}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
         </div>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {currentSeasonStats.wins || 0}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
         </div>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {currentSeasonStats.podiums || 0}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
         </div>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {currentSeasonStats.poles || 0}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>
         </div>
         <div style={{ width: "65px", textAlign: "center" }}>
-          <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+          <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
             {currentSeasonStats.dnf || 0}
           </span>
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>DNF</div>
@@ -349,8 +349,8 @@ const PilotDetails = () => {
             padding: "10px",
             width: "100%",
             margin: "5px",
-            backgroundColor: activeTab === "biography" ? teamColor : "#f0f0f0",
-            color: activeTab === "biography" ? "white" : "black",
+            backgroundColor: activeTab === "biography" ? "#0077FF" : "#1D1D1F",
+            color: activeTab === "biography" ? "white" : "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
@@ -364,8 +364,8 @@ const PilotDetails = () => {
             padding: "10px",
             width: "100%",
             margin: "5px",
-            backgroundColor: activeTab === "seasons" ? teamColor : "#f0f0f0",
-            color: activeTab === "seasons" ? "white" : "black",
+            backgroundColor: activeTab === "seasons" ? "#0077FF" : "#1D1D1F",
+            color: activeTab === "seasons" ? "white" : "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
@@ -378,15 +378,16 @@ const PilotDetails = () => {
       {/* Контент вкладки */}
       <div style={{
         width: "100%",
-        backgroundColor: "white",
+        backgroundColor: "#212124",
         borderRadius: "8px",
         fontSize: "14px",
-        color: "black",
+        color: "white",
         fontFamily: "Arial, sans-serif",
+        fontWeight: "300"
       }}>
         {activeTab === "biography" ? (
           <>
-            <strong>Биография:</strong>
+            <strong style={{fontSize: "16px"}}>Биография:</strong>
             <p>{biography}</p>
           </>
         ) : (
@@ -399,10 +400,10 @@ const PilotDetails = () => {
                   width: "100%",
                   padding: "10px",
                   borderRadius: "8px",
-                  border: `2px solid ${teamColor}`,
-                  backgroundColor: "#f0f0f0",
+                  border: `2px solid #1D1D1F`,
+                  backgroundColor: "#1D1D1F",
                   fontSize: "14px",
-                  color: "black",
+                  color: "white",
                   cursor: "pointer",
                   marginTop: "10px",
                 }}
@@ -416,37 +417,37 @@ const PilotDetails = () => {
             </div>
             <div style={{ display: "flex", flexDirection: "row", marginTop: "10px", justifyContent: "space-between", alignItems: "center", gap: "12px", width: "100%" }}>
               <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                   {selectedYear === "2024" ? currentSeasonStats.position || " " : selectedSeasonStats.position || " "}
                 </span>
                 <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОЗИЦИЯ</div>
               </div>
               <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                   {selectedYear === "2024" ? currentSeasonStats.points || " " : selectedSeasonStats.points || " "}
                 </span>
                 <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
               </div>
               <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                   {selectedSeasonStats.wins}
                 </span>
                 <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
               </div>
               <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                   {selectedSeasonStats.podiums || 0}
                 </span>
                 <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
               </div>
               <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                   {selectedSeasonStats.poles || 0}
                 </span>
                 <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>
               </div>
               <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "black", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
                   {selectedSeasonStats.dnf || 0}
                 </span>
                 <div style={{ color: "#B9B9B9", fontSize: "10px" }}>DNF</div>

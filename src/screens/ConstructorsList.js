@@ -129,7 +129,7 @@ const ConstructorsList = ({ onConstructorSelect }) => {
       flexDirection: "column",
       justifyContent: "flex-start",
       gap: "15px",
-      backgroundColor: "#F9F9F9"
+      backgroundColor: "#1D1D1F"
     }}>
       <div style={{
           width: "calc(100% - 20px)",
@@ -139,13 +139,13 @@ const ConstructorsList = ({ onConstructorSelect }) => {
           flexDirection: "column"
         }}>
         {/* Заголовки */}
-        <h2 style={{ fontSize: "18px", fontWeight: "bold", color: "black", textAlign: "left"}}>
+        <h2 style={{ fontSize: "18px", fontWeight: "light", color: "white", textAlign: "left"}}>
         {'Таблица конструкторов'}
         </h2>
-        <h3 style={{ fontSize: "14px", color: "black", textAlign: "left", marginBottom: "10px"}}>
+        <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px"}}>
         {`Сегодня: ${formattedDate}`}
         </h3>
-        <h4 style={{ fontSize: "12px", color: "gray" }}>
+        <h4 style={{ fontSize: "12px", color: "lightgray" }}>
           Кликни по конструктору чтобы узнать подробнее
         </h4>
       </div>
@@ -167,7 +167,7 @@ const ConstructorsList = ({ onConstructorSelect }) => {
           <div key={index} onClick={() => onConstructorSelect(constructor)}>
             <div style={{
               width: "100%",
-              background: "white",
+              background: "#212124",
               borderRadius: "20px",
               display: "flex",
               justifyContent: "space-between",
@@ -179,7 +179,7 @@ const ConstructorsList = ({ onConstructorSelect }) => {
               <div style={{
                 width: "65px", height: "65px", borderRadius: "20px",
                 display: "flex", justifyContent: "center", alignItems: "center",
-                background: "white"
+                background: "#212124"
               }}>
                 <div style={{
                   color: teamColor,
@@ -193,7 +193,7 @@ const ConstructorsList = ({ onConstructorSelect }) => {
                 display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ color: "black", fontSize: "14px" }}>
+                  <div style={{ color: "White", fontSize: "14px" }}>
                     {constructor.Constructor.name}
                   </div>
                 </div>
@@ -206,11 +206,11 @@ const ConstructorsList = ({ onConstructorSelect }) => {
               </div>
 
               <div style={{ textAlign: "center", minWidth: "60px" }}>
-                <span style={{ color: "black", fontSize: "16px" }}>
+                <span style={{ color: "white", fontSize: "16px" }}>
                   {constructor.points}
                 </span>
                 <br />
-                <span style={{ color: "black", fontSize: "10px" }}>
+                <span style={{ color: "white", fontSize: "10px" }}>
                   PTS
                 </span>
               </div>

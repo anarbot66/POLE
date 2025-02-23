@@ -8,7 +8,7 @@ import ConstructorDetails from "./screens/ConstructorDetails";
 import RacesList from "./screens/RacesList";
 import RaceDetails from "./screens/RaceDetails";
 import BottomNavigation from "./components/BottomNavigation";
-import logo from "./screens/images/logo.png";
+import logo from "./screens/images/logo-250.png";
 import Feed from "./screens/Feed";
 import PilotDetails from "./screens/PilotDetails";
 import LegendDetails from "./screens/LegendDetails";
@@ -170,13 +170,14 @@ function App() {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#F9F9F9",
+        background: "#1D1D1F",
       }}
     >
       {loading && (
-        <div className={`loading-screen ${fadeOut ? "fade-out" : ""}`}>
-          <img src={logo} alt="Логотип" className="logo" />
-          <ProgressBar progress={progress} />
+        <div className={`loading-screen ${fadeOut ? "fade-out" : "fade-in"}`}>
+          <img style={{
+        height: "50px",
+      }} src={logo} alt="Логотип" className="logo" />
         </div>
       )}
 

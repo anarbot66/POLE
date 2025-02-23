@@ -47,7 +47,7 @@ const BottomNavigation = ({ setActivePage }) => {
     transform: "translateX(-50%)",
     width: "100%",
     height: 80,
-    background: "transparent", // Фон прозрачный для контейнера
+    background: "#1D1D1F", // Фон прозрачный для контейнера
     borderRadius: 30,
     display: "flex",
     justifyContent: "center",
@@ -55,7 +55,6 @@ const BottomNavigation = ({ setActivePage }) => {
     gap: 10,
     zIndex: 1000,
     boxShadow: "none", // Убираем тень
-    backgroundImage: "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 100%)", // Градиент от прозрачного белого к белому с прозрачностью
   }}
 >
 
@@ -73,8 +72,8 @@ const BottomNavigation = ({ setActivePage }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            background: activeIndex === button.id ? "black" : "transparent",
-            border: activeIndex === button.id ? "none" : "1px solid #D8D8D8",
+            background: activeIndex === button.id ? "#0077FF" : "#212124",
+            border: activeIndex === button.id ? "none" : "none",
             cursor: "pointer",
             transition: "background 0.3s ease, border 0.3s ease, transform 0.2s ease",
           }}

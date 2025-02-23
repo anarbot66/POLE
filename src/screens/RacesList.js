@@ -139,7 +139,7 @@ const RacesList = () => {
         flexDirection: "column",
         justifyContent: "flex-start",
         gap: "15px",
-        backgroundColor: "#F9F9F9"
+        backgroundColor: "#1D1D1F"
       }}
     >
       <div
@@ -168,14 +168,14 @@ const RacesList = () => {
                 width: "100%",
                 height: "100%",
                 padding: 20,
-                background: "white",
+                background: "#212124",
                 borderRadius: 30,
                 display: "flex",
                 flexDirection: "column",
                 gap: 10
               }}
             >
-              <div style={{ color: "#8C8C8C", fontSize: 13 }}>Следующее гран-при:</div>
+              <div style={{ color: "lightgray", fontSize: 13 }}>Следующее гран-при:</div>
               {/* Флаг и название гонки в одной строке */}
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <div
@@ -186,7 +186,7 @@ const RacesList = () => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    background: "white"
+                    background: "#1D1D1F"
                   }}
                 >
                   <img
@@ -205,24 +205,24 @@ const RacesList = () => {
                     }}
                   />
                 </div>
-                <span style={{ color: "black", fontSize: 20 }}>
+                <span style={{ color: "white", fontSize: 20  }}>
                   {raceNameTranslations[nextRace.raceName] || nextRace.raceName}
                 </span>
               </div>
               <div>
-                <span style={{ color: "#5F5F5F", fontSize: 16 }}>
+                <span style={{ color: "lightgray", fontSize: 16 }}>
                   {nextRace.Circuit.circuitName}
                 </span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                <div style={{ fontSize: 14 }}>Начало через:</div>
-                <div style={{ fontSize: 28 }}>{daysUntilNextRace} дней</div>
+                <div style={{ fontSize: 14, color: "white" }}>Начало через:</div>
+                <div style={{ fontSize: 28, color: "white" }}>{daysUntilNextRace} дней</div>
               </div>
               <div
                 style={{
                   width: 121,
                   height: 80,
-                  background: "black",
+                  background: "#0077FF",
                   borderRadius: 10,
                   display: "flex",
                   justifyContent: "center",
@@ -254,7 +254,7 @@ const RacesList = () => {
               width: "calc(100% - 20px)",
               margin: "0px 10px",
               display: "flex",
-              background: "white",
+              background: "#212124",
               borderRadius: "20px",
               justifyContent: "space-between",
               alignItems: "center",
@@ -272,7 +272,7 @@ const RacesList = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                background: "white"
+                background: "#212124"
               }}
             >
               <img
@@ -301,14 +301,14 @@ const RacesList = () => {
                 flex: 1
               }}
             >
-              <div style={{ color: "black", fontSize: "13px" }}>{translatedRaceName}</div>
+              <div style={{ color: "white", fontSize: "13px" }}>{translatedRaceName}</div>
               <div style={{ color: "#B9B9B9", fontSize: "10px" }}>
                 {race.Circuit.circuitName}
               </div>
             </div>
             {/* Даты уик-энда */}
             <div style={{ textAlign: "center", minWidth: "80px" }}>
-              <span style={{ color: "black", fontSize: "12px" }}>{weekendDate}</span>
+              <span style={{ color: "white", fontSize: "12px" }}>{weekendDate}</span>
             </div>
           </div>
         );
