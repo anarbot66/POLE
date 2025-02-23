@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import RaceDetails from "./RaceDetails"; // Импортируем компонент деталей гонки
+import RaceDetails from "./RaceDetails";
 import { useLocation, useNavigate } from "react-router-dom";
 
-// Сопоставление стран с кодами флагов
 const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
   "China": "cn", "USA": "us", "United States": "us", "Miami": "us",

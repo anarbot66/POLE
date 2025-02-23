@@ -161,7 +161,7 @@ const Feed = ({ userName }) => {
               background: "#212124"
             }}>
               <img 
-                src={`https://flagcdn.com/w80/${countryCode}.png`} 
+                src={`https://flagcdn.com/w320/${countryCode}.png`} 
                 alt={countryName}
                 style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }} 
               />

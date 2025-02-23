@@ -6,7 +6,7 @@ const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
   "China": "cn", "USA": "us", "United States": "us", "Miami": "us",
   "Italy": "it", "Monaco": "mc", "Canada": "ca", "Spain": "es",
-  "Austria": "at", "Great Britain": "gb", "United Kingdom": "gb", "UK": "uk",
+  "Austria": "at", "Great Britain": "gb", "United Kingdom": "gb", "UK": "gb",
   "Hungary": "hu", "Belgium": "be", "Netherlands": "nl", "Singapore": "sg",
   "Mexico": "mx", "Brazil": "br", "Las Vegas": "us", "UAE": "ae",
   "Qatar": "qa", "Azerbaijan": "az"
