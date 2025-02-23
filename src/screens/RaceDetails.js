@@ -91,7 +91,7 @@ const RaceDetails = () => {
   }, [race]);
 
   if (!race || loading) {
-    return <div style={{ padding: "20px", textAlign: "center", color: "white" }}>Загрузка...</div>;
+    return <div style={{ padding: "20px", textAlign: "center", color: "white" }}> </div>;
   }
 
   const countryCode = countryToFlag[race.Circuit.Location.country] || "un";

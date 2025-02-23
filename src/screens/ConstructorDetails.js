@@ -299,9 +299,9 @@ const fetchSeasonStats = async (season) => {
 
       {/* Контент вкладки */}
       {activeTab === "biography" ? (
-        <div style={{ marginTop: "0px", padding: "10px", backgroundColor: "white", borderRadius: "8px" }}>
-          <strong style={{ fontSize: 13}}>Биография команды:</strong>
-          <p style={{ fontSize: 11, marginTop: "10px"}}>{biography}</p>
+        <div style={{ marginTop: "0px", padding: "10px", backgroundColor: "#1D1D1F", borderRadius: "8px" }}>
+          <strong style={{ fontSize: 13, color: "white"}}>Биография команды:</strong>
+          <p style={{ fontSize: 11, marginTop: "10px", color: "white"}}>{biography}</p>
         </div>
       ) : (
         <div style={{}}>
