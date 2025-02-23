@@ -48,8 +48,8 @@ const formatRaceWeekend = (firstPracticeDate, raceDate) => {
     "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"
   ];
   const startDate = new Date(firstPracticeDate);
-  const endDate = new Date(raceDate);
-  return `${startDate.getDate()} ${months[endDate.getMonth()]}`;
+  // Используем месяц из startDate вместо endDate
+  return `${startDate.getDate()} ${months[startDate.getMonth()]}`;
 };
 
 const RacesList = () => {
