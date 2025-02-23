@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-
 const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
   "China": "cn", "USA": "us", "United States": "us", "Miami": "us",
@@ -22,34 +21,32 @@ const sessionTypeTranslations = {
   "Race": "Гонка"
 };
 
-// Перевод названий гонок
 const raceNameTranslations = {
-    "Bahrain Grand Prix": "Бахрейн",
-    "Saudi Arabian Grand Prix": "Саудовская Аравия",
-    "Australian Grand Prix": "Австралия",
-    "Japanese Grand Prix": "Япония",
-    "Chinese Grand Prix": "Китай",
-    "Miami Grand Prix": "Майами",
-    "Emilia Romagna Grand Prix": "Эмилия-Романья",
-    "Monaco Grand Prix": "Монако",
-    "Canadian Grand Prix": "Канада",
-    "Spanish Grand Prix": "Испания",
-    "Austrian Grand Prix": "Австрия",
-    "British Grand Prix": "Великобритания",
-    "Hungarian Grand Prix": "Венгрия",
-    "Belgian Grand Prix": "Бельгия",
-    "Dutch Grand Prix": "Нидерланды",
-    "Italian Grand Prix": "Италия",
-    "Azerbaijan Grand Prix": "Азербайджан",
-    "Singapore Grand Prix": "Сингапур",
-    "United States Grand Prix": "США",
-    "Mexico City Grand Prix": "Мексика",
-    "São Paulo Grand Prix": "Бразилия",
-    "Las Vegas Grand Prix": "Лас-Вегас",
-    "Qatar Grand Prix": "Катар",
-    "Abu Dhabi Grand Prix": "Абу-Даби"
-  };
-  
+  "Bahrain Grand Prix": "Бахрейн",
+  "Saudi Arabian Grand Prix": "Саудовская Аравия",
+  "Australian Grand Prix": "Австралия",
+  "Japanese Grand Prix": "Япония",
+  "Chinese Grand Prix": "Китай",
+  "Miami Grand Prix": "Майами",
+  "Emilia Romagna Grand Prix": "Эмилия-Романья",
+  "Monaco Grand Prix": "Монако",
+  "Canadian Grand Prix": "Канада",
+  "Spanish Grand Prix": "Испания",
+  "Austrian Grand Prix": "Австрия",
+  "British Grand Prix": "Великобритания",
+  "Hungarian Grand Prix": "Венгрия",
+  "Belgian Grand Prix": "Бельгия",
+  "Dutch Grand Prix": "Нидерланды",
+  "Italian Grand Prix": "Италия",
+  "Azerbaijan Grand Prix": "Азербайджан",
+  "Singapore Grand Prix": "Сингапур",
+  "United States Grand Prix": "США",
+  "Mexico City Grand Prix": "Мексика",
+  "São Paulo Grand Prix": "Бразилия",
+  "Las Vegas Grand Prix": "Лас-Вегас",
+  "Qatar Grand Prix": "Катар",
+  "Abu Dhabi Grand Prix": "Абу-Даби"
+};
 
 const convertToMoscowTime = (utcDate, utcTime) => {
   if (!utcDate || !utcTime) return "—";
@@ -60,30 +57,42 @@ const convertToMoscowTime = (utcDate, utcTime) => {
   });
 };
 
-
-const RaceDetails = ({ }) => {
+const RaceDetails = () => {
   const [imageSrc, setImageSrc] = useState(null);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const race = location.state?.race;
 
   useEffect(() => {
     const loadImage = async () => {
-      const circuitName = race.Circuit.Location.locality; // Преобразуем в правильный формат
+      if (!race) return;
 
+      const circuitName = race.Circuit.Location.locality;
       try {
-        // Динамический импорт изображения
         const image = await import(`./images/circuits/${circuitName}.png`);
-        setImageSrc(image.default); // Для динамического импорта используем .default
+        const img = new Image();
+        img.src = image.default;
+        img.onload = () => {
+          setImageSrc(image.default);
+          setLoading(false); // Снимаем загрузку только после загрузки изображения
+        };
+        img.onerror = () => {
+          console.error("Ошибка загрузки изображения");
+          setLoading(false); // Снимаем загрузку даже если изображение не найдено
+        };
       } catch (error) {
         console.error("Ошибка загрузки изображения", error);
-        setImageSrc(null); // В случае ошибки изображения не будет
+        setLoading(false);
       }
     };
 
     loadImage();
   }, [race]);
-  if (!race) return <div style={{ padding: "20px", textAlign: "center" }}>Загрузка...</div>;
+
+  if (!race || loading) {
+    return <div style={{ padding: "20px", textAlign: "center", color: "white" }}>Загрузка...</div>;
+  }
 
   const countryCode = countryToFlag[race.Circuit.Location.country] || "un";
   const sessions = [
@@ -96,70 +105,43 @@ const RaceDetails = ({ }) => {
   ].filter(session => session.date);
   const translatedRaceName = raceNameTranslations[race.raceName] || race.raceName;
 
-
   return (
-    
     <div className="race-details" style={{
-      width: "calc(100% - 20px)",
-        margin: "10px 10px 100px", padding: "10px",
-      display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#1D1D1F", marginBottom: "100px"
+      width: "calc(100% - 20px)", margin: "10px", padding: "10px",
+      display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#1D1D1F"
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          left: "25px",
-          bottom: "120px",
-          backgroundColor: "#1D1D1F",
-          color: "white",
-          border: "none",
-          padding: "5px 10px",
-          borderRadius: "10px",
-          cursor: "pointer",
-          zIndex: "1000",
-        }}
-      >
-        ✕
-      </button>
-      <img 
-                src={`https://flagcdn.com/w80/${countryCode}.png`} 
-                alt={race.Circuit.Location.country}
-                style={{ 
-                    width: "30px", 
-                    height: "30px", 
-                    borderRadius: "50%", 
-                    objectFit: "cover",
-                    objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(race.Circuit.Location.country) 
-                    ? "20% center"  // Смещение для выбранных стран
-                    : "center"  // Для всех остальных
-                }} 
-                />
-
-            <div style={{
-              display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
-            }}>
-              <div style={{ color: "white", fontSize: "13px" }}>
-                {translatedRaceName}
-              </div>
-              <div style={{
-                color: "lightgray", fontSize: "10px"
-              }}>
-                {race.Circuit.circuitName}
-              </div>
-            </div>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            backgroundColor: "#1D1D1F", color: "white", border: "none",
+            padding: "5px 10px", borderRadius: "10px", cursor: "pointer"
+          }}
+        >
+          ✕
+        </button>
+        <img 
+          src={`https://flagcdn.com/w80/${countryCode}.png`} 
+          alt={race.Circuit.Location.country}
+          style={{ 
+            width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover",
+            objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(race.Circuit.Location.country) 
+            ? "20% center" : "center"
+          }} 
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
+          <div style={{ color: "white", fontSize: "13px" }}>{translatedRaceName}</div>
+          <div style={{ color: "lightgray", fontSize: "10px" }}>{race.Circuit.circuitName}</div>
+        </div>
       </div>
 
-      {/* Добавляем изображение трассы */}
       <div style={{ marginBottom: "20px", textAlign: "center" }}>
         <img
-        
           src={imageSrc}
-          alt={`Изображения для ${race.Circuit.Location.locality}, не найдено, следите за обновлениями`}
+          alt=""
           style={{ width: "100%", maxHeight: "100px", objectFit: "contain" }}
         />
       </div>
-
-      
 
       <h3 style={{color: "white"}}>Расписание уик-энда</h3>
       {sessions.map((session, index) => (
@@ -168,7 +150,7 @@ const RaceDetails = ({ }) => {
           display: "flex", justifyContent: "space-between", alignItems: "center"
         }}>
           <span style={{fontSize: "12px", color: "white"}}>{sessionTypeTranslations[session.type] || session.type}</span>
-          <span style={{ color: "lightgray",fontSize: "12px" }}>{convertToMoscowTime(session.date, session.time)}</span>
+          <span style={{ color: "lightgray", fontSize: "12px" }}>{convertToMoscowTime(session.date, session.time)}</span>
         </div>
       ))}
     </div>
