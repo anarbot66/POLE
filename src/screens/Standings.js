@@ -11,8 +11,8 @@ const Standings = ({ onConstructorSelect }) => {
   };
 
   return (
-    <div style={{ width: "calc(100% - 20px)", 
-    margin: "0 auto", 
+    <div style={{ width: "100%",
+    margin: "0px",
     marginBottom: "100px",  height: '100%', background: '#1D1D1F' }}>
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '10px' }}>
         <div
