@@ -78,7 +78,7 @@ const Auth = ({ user }) => {
       style={{
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'white',
+        backgroundColor: '#1D1D1F',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -91,7 +91,7 @@ const Auth = ({ user }) => {
           justifyContent: 'center',
           alignItems: 'center',
           height: '100%',
-          backgroundColor: 'white'
+          backgroundColor: '#1D1D1F'
         }}
       >
         <div
@@ -103,7 +103,7 @@ const Auth = ({ user }) => {
             alignItems: 'center',
             gap: 25,
             display: 'inline-flex',
-            backgroundColor: 'white',
+            backgroundColor: '#212124',
             padding: 20,
             borderRadius: 10,
           }}
@@ -117,7 +117,7 @@ const Auth = ({ user }) => {
             style={{
               alignSelf: 'stretch',
               textAlign: 'center',
-              color: 'black',
+              color: 'white',
               fontSize: 13,
               fontWeight: '500',
               wordWrap: 'break-word'
@@ -168,7 +168,7 @@ const Auth = ({ user }) => {
                   alignItems: 'center',
                   width: 164,
                   height: 8,
-                  color: 'black',
+                  color: 'white',
                   fontSize: 10,
                   fontWeight: '500',
                   wordWrap: 'break-word'
@@ -195,7 +195,7 @@ const Auth = ({ user }) => {
             style={{
               alignSelf: 'stretch',
               height: 100,
-              background: isChecked ? 'black' : 'grey',
+              background: isChecked ? '#0077FF' : 'grey',
               borderRadius: 10,
               justifyContent: 'center',
               alignItems: 'center',
