@@ -4,6 +4,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore'; // Им�
 
 const Profile = ({ user }) => {
   const [profileData, setProfileData] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -16,11 +17,28 @@ const Profile = ({ user }) => {
             setProfileData(doc.data());
           });
         }
+        setLoading(false);
       }
     };
 
     fetchProfileData();
   }, [user]);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: '#1D1D1F',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+      </div>
+    );
+  }
 
   return (
     <div
@@ -64,19 +82,7 @@ const Profile = ({ user }) => {
             textAlign: 'center'
           }}
         >
-          {profileData.username || 'Username'}
-        </div>
-        <div
-          style={{
-            color: 'white',
-            fontSize: 15,
-            fontFamily: 'Inter',
-            fontWeight: '500',
-            wordWrap: 'break-word',
-            textAlign: 'center'
-          }}
-        >
-          {profileData.firstName + profileData.lastName || 'Not found'}
+          {profileData.firstName + ' ' + profileData.lastName || 'Not found'}
         </div>
       </div>
     </div>
