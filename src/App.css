@@ -116,6 +116,7 @@ body {
 }
 
 .page-exit-done {
+  position: absolute;
   display: none;
 }
 

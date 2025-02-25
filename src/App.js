@@ -2,8 +2,7 @@ import "./App.css";
 import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import PilotsList from "./screens/PilotsList";
-import ConstructorsList from "./screens/ConstructorsList";
+import Standings from "./screens/Standings";
 import ConstructorDetails from "./screens/ConstructorDetails";
 import RacesList from "./screens/RacesList";
 import RaceDetails from "./screens/RaceDetails";
@@ -13,6 +12,7 @@ import Feed from "./screens/Feed";
 import PilotDetails from "./screens/PilotDetails";
 import LegendDetails from "./screens/LegendDetails";
 import Auth from "./screens/Auth";
+import Profile from "./screens/Profile";
 import { db } from "./firebase"; // Импорт Firestore
 import { collection, query, where, getDocs } from "firebase/firestore"; // Методы Firestore
 import ProgressBar from "./components/ProgressBar"; // Компонент прогресс-бара
@@ -48,6 +48,7 @@ function App() {
           first_name: userData.first_name || "",
           last_name: userData.last_name || "",
           id: userData.id,
+          photo_url: userData.photo_url || '',
         });
       } else {
         setUser({
@@ -123,11 +124,11 @@ function App() {
     if (page === 0) {
       navigate(isAuthenticated ? "/feed" : "/");
     } else if (page === 1) {
-      navigate("/pilots");
+      navigate("/standings");
     } else if (page === 2) {
-      navigate("/constructors");
-    } else if (page === 3) {
       navigate("/races");
+    } else if (page === 3) {
+      navigate("/profile");
     }
   };
 
@@ -152,15 +153,15 @@ function App() {
 
   const handleBackToConstructors = () => {
     setSelectedConstructor(null);
-    navigate("/constructors");
+    navigate("/standings");
   };
 
   const handleBackToPilots = () => {
-    navigate("/pilots");
+    navigate("/standings");
   };
 
   if (!dbCheckCompleted) {
-    return <div> </div>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -175,9 +176,7 @@ function App() {
     >
       {loading && (
         <div className={`loading-screen ${fadeOut ? "fade-out" : "fade-in"}`}>
-          <img style={{
-        height: "50px",
-      }} src={logo} alt="Логотип" className="logo" />
+          <img style={{ height: "50px" }} src={logo} alt="Логотип" className="logo" />
         </div>
       )}
 
@@ -190,12 +189,8 @@ function App() {
                   <Routes location={location}>
                     <Route path="/" element={<Auth user={user} />} />
                     <Route path="/feed" element={<Feed userName={user?.name} />} />
-                    <Route path="/pilots" element={<PilotsList />} />
+                    <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} />} />
                     <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
-                    <Route
-                      path="/constructors"
-                      element={<ConstructorsList onConstructorSelect={handleSelectConstructor} />}
-                    />
                     <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
                     <Route
                       path="/constructor-details"
@@ -203,6 +198,7 @@ function App() {
                     />
                     <Route path="/races/:raceId" element={<RaceDetails />} />
                     <Route path="/legend-details/:lastName" element={<LegendDetails />} />
+                    <Route path="/profile" element={<Profile user={user} />} />
                   </Routes>
                 </div>
               </CSSTransition>

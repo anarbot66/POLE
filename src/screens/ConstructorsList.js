@@ -138,10 +138,6 @@ const ConstructorsList = ({ onConstructorSelect }) => {
           display: "flex",
           flexDirection: "column"
         }}>
-        {/* Заголовки */}
-        <h2 style={{ fontSize: "18px", fontWeight: "light", color: "white", textAlign: "left"}}>
-        {'Таблица конструкторов'}
-        </h2>
         <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px"}}>
         {`Сегодня: ${formattedDate}`}
         </h3>

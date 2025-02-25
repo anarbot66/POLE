@@ -27,19 +27,19 @@ const Profile = ({ user }) => {
       style={{
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'white',
+        backgroundColor: '#1D1D1F',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        paddingTop: '20px'
+        paddingTop: '10px'
       }}
     >
       <div
         style={{
           width: 340,
-          height: 200,
+          height: 170,
           padding: 20,
-          background: 'white',
+          background: '#212124',
           borderRadius: 15,
           flexDirection: 'column',
           justifyContent: 'flex-start',
@@ -50,13 +50,13 @@ const Profile = ({ user }) => {
         }}
       >
         <img
-          src={profileData.photoUrl || 'https://placehold.co/58x58'}
-          alt="User"
+          src={profileData.photoUrl}
+          alt="Not Found"
           style={{ width: 58, height: 58, background: '#D9D9D9', borderRadius: 5 }}
         />
         <div
           style={{
-            color: 'black',
+            color: 'white',
             fontSize: 15,
             fontFamily: 'Inter',
             fontWeight: '500',
@@ -68,7 +68,7 @@ const Profile = ({ user }) => {
         </div>
         <div
           style={{
-            color: 'black',
+            color: 'white',
             fontSize: 15,
             fontFamily: 'Inter',
             fontWeight: '500',
@@ -76,19 +76,7 @@ const Profile = ({ user }) => {
             textAlign: 'center'
           }}
         >
-          {profileData.firstName || 'Not found'}
-        </div>
-        <div
-          style={{
-            color: 'black',
-            fontSize: 15,
-            fontFamily: 'Inter',
-            fontWeight: '500',
-            wordWrap: 'break-word',
-            textAlign: 'center'
-          }}
-        >
-          {profileData.lastName || 'Not found'}
+          {profileData.firstName + profileData.lastName || 'Not found'}
         </div>
       </div>
     </div>

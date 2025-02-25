@@ -151,9 +151,6 @@ const PilotsList = () => {
         display: "flex", 
         flexDirection: "column"
       }}>
-        <h2 style={{ fontSize: "18px", fontWeight: "300", color: "white", textAlign: "left" }}>
-          Таблица пилотов
-        </h2>
         <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px" }}>
           {`Сегодня: ${getFormattedDate()}`}
         </h3>

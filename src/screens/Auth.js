@@ -15,15 +15,31 @@ const Auth = ({ user }) => {
     setIsChecked(!isChecked);
   };
 
+  const uploadToImgBB = async (imageUrl) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", imageUrl);
+      formData.append("key", "YOUR_IMGBB_API_KEY"); // Вставь API-ключ от ImgBB
+
+      const response = await fetch("https://api.imgbb.com/1/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      return data.data.url; // Ссылка на загруженное фото
+    } catch (error) {
+      console.error("Ошибка загрузки фото:", error);
+      return imageUrl; // Если не удалось загрузить, оставляем Telegram-аватар
+    }
+  };
+
   const handleContinue = async () => {
     if (isChecked) {
       try {
         // Аутентификация пользователя
         const userCredential = await signInAnonymously(auth);
         const firebaseUser = userCredential.user;
-
-        // Проверка данных пользователя перед сохранением
-        console.log("User data before saving:", user);
 
         // Сохраняем данные пользователя в Firestore
         if (user && user.name) {
@@ -34,17 +50,17 @@ const Auth = ({ user }) => {
           const querySnapshot = await getDocs(q);
 
           if (querySnapshot.empty) {
+            const photoUrl = await uploadToImgBB(user.photo_url || '');
+
             await setDoc(doc(db, "users", firebaseUser.uid), {
               username: user.name,
               firstName: user.first_name || '',
               lastName: user.last_name || '',
-              photoUrl: user.photo_url || '',
+              photoUrl: photoUrl,
               uid: firebaseUser.uid
             });
-            console.log("Пользователь сохранен в Firestore");
-            console.log(`Данные сохранены для пользователя с именем: ${user.name}`);
           } else {
-            console.log("Пользователь уже существует в Firestore");
+            console.log("Пользователь уже существует");
           }
         }
         navigate("/feed");
