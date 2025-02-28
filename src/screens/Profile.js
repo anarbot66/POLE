@@ -18,42 +18,43 @@ const Profile = ({ currentUser }) => {
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [subLoading, setSubLoading] = useState(false);
-  const [favoritePilot, setFavoritePilot] = useState(null); // Состояние для любимого пилота
+  const [favoritePilot, setFavoritePilot] = useState(null);
 
-  // Загрузка данных о пользователе
+  // Проверяем, если uid совпадает с currentUser.uid, используем текущего пользователя
   useEffect(() => {
-    const fetchProfileData = async () => {
-      if (location.state && location.state.profileUser) {
-        setProfileUser(location.state.profileUser);
-        setLoading(false);
-      } else if (uid) {
-        try {
-          const q = query(collection(db, "users"), where("uid", "==", uid));
-          const snapshot = await getDocs(q);
-          if (!snapshot.empty) {
-            setProfileUser(snapshot.docs[0].data());
-          }
-        } catch (error) {
-          console.error("Ошибка загрузки данных профиля:", error);
-        } finally {
-          setLoading(false);
+    if (currentUser && uid === currentUser.uid) {
+      setProfileUser(currentUser);
+      setLoading(false);
+    } else {
+      fetchProfileData();
+    }
+  }, [currentUser, uid]);
+
+  const fetchProfileData = async () => {
+    if (location.state && location.state.profileUser) {
+      setProfileUser(location.state.profileUser);
+      setLoading(false);
+    } else if (uid) {
+      try {
+        const q = query(collection(db, "users"), where("uid", "==", uid));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          setProfileUser(snapshot.docs[0].data());
         }
-      } else {
+      } catch (error) {
+        console.error("Ошибка загрузки данных профиля:", error);
+      } finally {
         setLoading(false);
       }
-    };
-
-    fetchProfileData();
-  }, [location, uid]);
+    } else {
+      setLoading(false);
+    }
+  };
 
   // Проверка подписки
   useEffect(() => {
     const checkFollowStatus = async () => {
-      if (
-        currentUser &&
-        profileUser &&
-        currentUser.uid !== profileUser.uid
-      ) {
+      if (currentUser && profileUser && currentUser.uid !== profileUser.uid) {
         try {
           const followQuery = query(
             collection(db, "follows"),
@@ -67,7 +68,6 @@ const Profile = ({ currentUser }) => {
         }
       }
     };
-
     checkFollowStatus();
   }, [currentUser, profileUser]);
 
@@ -76,11 +76,7 @@ const Profile = ({ currentUser }) => {
     if (!currentUser || !profileUser) return;
     setSubLoading(true);
     try {
-      const followDocRef = doc(
-        db,
-        "follows",
-        `${currentUser.uid}_${profileUser.uid}`
-      );
+      const followDocRef = doc(db, "follows", `${currentUser.uid}_${profileUser.uid}`);
       await setDoc(followDocRef, {
         followerId: currentUser.uid,
         followingId: profileUser.uid,
@@ -98,11 +94,7 @@ const Profile = ({ currentUser }) => {
     if (!currentUser || !profileUser) return;
     setSubLoading(true);
     try {
-      const followDocRef = doc(
-        db,
-        "follows",
-        `${currentUser.uid}_${profileUser.uid}`
-      );
+      const followDocRef = doc(db, "follows", `${currentUser.uid}_${profileUser.uid}`);
       await deleteDoc(followDocRef);
       setIsFollowing(false);
     } catch (error) {
@@ -113,47 +105,35 @@ const Profile = ({ currentUser }) => {
 
   // Загрузка любимого пилота
   useEffect(() => {
-    const fetchFavoritePilot = () => {
+    const fetchFavoritePilot = async () => {
       const storedPilotId = localStorage.getItem("favoritePilot");
       if (storedPilotId) {
-        fetch(`https://ergast.com/api/f1/current/driverStandings.json`)
-          .then((res) => res.json())
-          .then((data) => {
-            const standings =
-              data.MRData.StandingsTable.StandingsLists[0]?.DriverStandings || [];
-            const pilotData = standings.find(
-              (pilot) => pilot.Driver.driverId === storedPilotId
-            );
-            if (pilotData) {
-              setFavoritePilot({
-                givenName: pilotData.Driver.givenName,
-                familyName: pilotData.Driver.familyName,
-                team: pilotData.Constructors[0].name,
-                position: pilotData.position,
-                points: pilotData.points,
-                wins: pilotData.wins,
-              });
-            }
-          });
+        try {
+          const response = await fetch("https://ergast.com/api/f1/current/driverStandings.json");
+          const data = await response.json();
+          const standings = data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings || [];
+          const pilotData = standings.find(pilot => pilot.Driver.driverId === storedPilotId);
+          if (pilotData) {
+            setFavoritePilot({
+              givenName: pilotData.Driver.givenName,
+              familyName: pilotData.Driver.familyName,
+              team: pilotData.Constructors[0].name,
+              position: pilotData.position,
+              points: pilotData.points,
+              wins: pilotData.wins,
+            });
+          }
+        } catch (error) {
+          console.error("Ошибка загрузки любимого пилота:", error);
+        }
       }
     };
-
     fetchFavoritePilot();
   }, []);
 
   if (loading) {
     return (
-      <div
-        style={{
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "#1D1D1F",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
-        }}
-      >
+      <div style={{ width: "100vw", height: "100vh", backgroundColor: "#1D1D1F", display: "flex", justifyContent: "center", alignItems: "center", color: "white" }}>
         Загрузка...
       </div>
     );
@@ -161,73 +141,23 @@ const Profile = ({ currentUser }) => {
 
   if (!profileUser) {
     return (
-      <div
-        style={{
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "#1D1D1F",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
-        }}
-      >
+      <div style={{ width: "100vw", height: "100vh", backgroundColor: "#1D1D1F", display: "flex", justifyContent: "center", alignItems: "center", color: "white" }}>
         Пользователь не найден.
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        minHeight: "100vh",
-        backgroundColor: "#1D1D1F",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        paddingTop: "20px",
-        color: "white",
-      }}
-    >
-      <div
-        style={{
-          width: 340,
-          padding: 20,
-          background: "#212124",
-          borderRadius: 15,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 12,
-          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-        }}
-      >
-        <img
-          src={profileUser.photoUrl}
-          alt="Аватар"
-          style={{
-            width: 80,
-            height: 80,
-            background: "#D9D9D9",
-            borderRadius: "50%",
-          }}
-        />
+    <div style={{ width: "100vw", minHeight: "100vh", backgroundColor: "#1D1D1F", display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "20px", color: "white" }}>
+      <div style={{ width: 340, padding: 20, background: "#212124", borderRadius: 15, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, boxShadow: "0 4px 8px rgba(0,0,0,0.1)" }}>
+        <img src={profileUser.photoUrl} alt="Аватар" style={{ width: 80, height: 80, background: "#D9D9D9", borderRadius: "50%" }} />
         <div style={{ fontSize: 18, fontWeight: "500", textAlign: "center" }}>
           {profileUser.firstName} {profileUser.lastName}
         </div>
+        
         {/* Карточка любимого пилота */}
         {favoritePilot && (
-          <div
-            style={{
-              background: "#212124",
-              padding: "15px",
-              borderRadius: "10px",
-              width: "100%",
-              textAlign: "center",
-              marginTop: "15px",
-            }}
-          >
+          <div style={{ background: "#212124", padding: "15px", borderRadius: "10px", width: "100%", textAlign: "center", marginTop: "15px" }}>
             <h3>{favoritePilot.givenName} {favoritePilot.familyName}</h3>
             <p>Команда: {favoritePilot.team}</p>
             <p>Позиция: {favoritePilot.position}</p>
@@ -235,25 +165,11 @@ const Profile = ({ currentUser }) => {
             <p>Победы: {favoritePilot.wins}</p>
           </div>
         )}
+
         {/* Подписка/Отписка */}
         {currentUser && currentUser.uid !== profileUser.uid && (
-          <button
-            onClick={isFollowing ? handleUnfollow : handleFollow}
-            disabled={subLoading}
-            style={{
-              padding: "10px 20px",
-              borderRadius: "10px",
-              border: "none",
-              background: isFollowing ? "#888" : "#0077FF",
-              color: "white",
-              cursor: "pointer",
-            }}
-          >
-            {subLoading
-              ? "Обработка..."
-              : isFollowing
-              ? "Отписаться"
-              : "Подписаться"}
+          <button onClick={isFollowing ? handleUnfollow : handleFollow} disabled={subLoading} style={{ padding: "10px 20px", borderRadius: "10px", border: "none", background: isFollowing ? "#888" : "#0077FF", color: "white", cursor: "pointer" }}>
+            {subLoading ? "Обработка..." : isFollowing ? "Отписаться" : "Подписаться"}
           </button>
         )}
       </div>

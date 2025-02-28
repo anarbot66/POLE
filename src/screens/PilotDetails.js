@@ -402,6 +402,29 @@ const PilotDetails = ({ currentUser }) => {
           <div style={{ color: "#B9B9B9", fontSize: "10px" }}>DNF</div>
         </div>
       </div>
+      {/* Новая кнопка "Любимый пилот" */}
+      {currentUser && (
+        <button
+          onClick={isFavorite ? handleUnfavorite : handleFavorite}
+          disabled={favLoading}
+          style={{
+            marginTop: "20px",
+            padding: "10px 20px",
+            borderRadius: "10px",
+            border: "none",
+            background: isFavorite ? "#888" : "#FF4500",
+            color: "white",
+            cursor: "pointer",
+            background: teamColor
+          }}
+        >
+          {favLoading
+            ? "Обработка..."
+            : isFavorite
+            ? "Удалить из любимых"
+            : "Любимый пилот"}
+        </button>
+      )}
 
       {/* Вкладки для переключения */}
       <div style={{
@@ -524,29 +547,7 @@ const PilotDetails = ({ currentUser }) => {
         )}
       </div>
 
-      {/* Новая кнопка "Любимый пилот" */}
-      {currentUser && (
-        <button
-          onClick={isFavorite ? handleUnfavorite : handleFavorite}
-          disabled={favLoading}
-          style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            borderRadius: "10px",
-            border: "none",
-            background: isFavorite ? "#888" : "#FF4500",
-            color: "white",
-            cursor: "pointer",
-            background: "black"
-          }}
-        >
-          {favLoading
-            ? "Обработка..."
-            : isFavorite
-            ? "Удалить из любимых"
-            : "Любимый пилот"}
-        </button>
-      )}
+      
     </div>
   );
 };

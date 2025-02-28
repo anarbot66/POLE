@@ -227,7 +227,7 @@ function App() {
                     <Route path="/" element={<Auth user={user} />} />
                     <Route path="/feed" element={<Feed userName={user?.name} />} />
                     <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} />} />
-                    <Route path="/pilot-details/:lastName" element={<PilotDetails />} />
+                    <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
                     <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
                     <Route
                       path="/constructor-details"
