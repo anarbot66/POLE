@@ -9,18 +9,27 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 const Profile = ({ currentUser }) => {
   const location = useLocation();
-  const { uid } = useParams();
+  const navigate = useNavigate();
+  let { uid } = useParams(); // uid из URL
   const [profileUser, setProfileUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [subLoading, setSubLoading] = useState(false);
   const [favoritePilot, setFavoritePilot] = useState(null);
 
-  // Проверяем, если uid совпадает с currentUser.uid, используем текущего пользователя
+  // Если uid отсутствует (заход через нижнюю навигацию), подставляем currentUser.uid
+  useEffect(() => {
+    if (!uid && currentUser) {
+      uid = currentUser.uid; 
+      navigate(`/profile/${currentUser.uid}`, { replace: true });
+    }
+  }, [uid, currentUser, navigate]);
+
+  // Загружаем данные пользователя
   useEffect(() => {
     if (currentUser && uid === currentUser.uid) {
       setProfileUser(currentUser);
@@ -154,7 +163,7 @@ const Profile = ({ currentUser }) => {
         <div style={{ fontSize: 18, fontWeight: "500", textAlign: "center" }}>
           {profileUser.firstName} {profileUser.lastName}
         </div>
-        
+
         {/* Карточка любимого пилота */}
         {favoritePilot && (
           <div style={{ background: "#212124", padding: "15px", borderRadius: "10px", width: "100%", textAlign: "center", marginTop: "15px" }}>
