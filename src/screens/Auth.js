@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from "./images/logo-250.png";
-import { db } from '../firebase'; // Импортируем Firestore
-import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore'; // Импортируем необходимые методы Firestore
-import { getAuth, signInAnonymously } from 'firebase/auth'; // Импортируем Firebase Auth
+import { db } from '../firebase'; // Импорт Firestore
+import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 
 const Auth = ({ user }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -17,9 +18,13 @@ const Auth = ({ user }) => {
 
   const uploadToImgBB = async (imageUrl) => {
     try {
+      // Если imageUrl пустой, можно вернуть пустую строку или задать дефолтное изображение
+      if (!imageUrl) {
+        return "";
+      }
       const formData = new FormData();
       formData.append("image", imageUrl);
-      formData.append("key", "YOUR_IMGBB_API_KEY"); // Вставь API-ключ от ImgBB
+      formData.append("key", "YOUR_IMGBB_API_KEY"); // Вставьте ваш API-ключ от ImgBB
 
       const response = await fetch("https://api.imgbb.com/1/upload", {
         method: "POST",
@@ -27,21 +32,21 @@ const Auth = ({ user }) => {
       });
 
       const data = await response.json();
-      return data.data.url; // Ссылка на загруженное фото
+      return data.data.url; // Возвращаем ссылку на загруженное фото
     } catch (error) {
       console.error("Ошибка загрузки фото:", error);
-      return imageUrl; // Если не удалось загрузить, оставляем Telegram-аватар
+      return imageUrl; // При ошибке возвращаем оригинальное значение
     }
   };
 
   const handleContinue = async () => {
     if (isChecked) {
+      setIsLoading(true); // Делаем кнопку неактивной
       try {
-        // Аутентификация пользователя
+        // Аутентификация пользователя через Firebase Auth
         const userCredential = await signInAnonymously(auth);
         const firebaseUser = userCredential.user;
 
-        // Сохраняем данные пользователя в Firestore
         if (user && user.name) {
           console.log("Начинаем проверку и сохранение данных в Firestore");
 
@@ -50,8 +55,8 @@ const Auth = ({ user }) => {
           const querySnapshot = await getDocs(q);
 
           if (querySnapshot.empty) {
+            // Загружаем фото пользователя (если оно есть)
             const photoUrl = await uploadToImgBB(user.photo_url || '');
-
             await setDoc(doc(db, "users", firebaseUser.uid), {
               username: user.name,
               firstName: user.first_name || '',
@@ -67,6 +72,8 @@ const Auth = ({ user }) => {
       } catch (error) {
         console.error("Ошибка аутентификации или сохранения пользователя в Firestore: ", error);
         setErrorMessage(`Ошибка: ${error.message}`);
+      } finally {
+        setIsLoading(false); // Возвращаем активное состояние кнопки
       }
     } else {
       console.log("Checkbox не отмечен, данные не сохраняются.");
@@ -111,7 +118,7 @@ const Auth = ({ user }) => {
           <img
             style={{ alignSelf: 'fill', height: "120px" }}
             src={logo}
-            alt="Placeholder"
+            alt="Logo"
           />
           <div
             style={{
@@ -195,15 +202,15 @@ const Auth = ({ user }) => {
             style={{
               alignSelf: 'stretch',
               height: 100,
-              background: isChecked ? '#0077FF' : 'grey',
+              background: isChecked && !isLoading ? '#0077FF' : 'grey',
               borderRadius: 10,
               justifyContent: 'center',
               alignItems: 'center',
               gap: 10,
               display: 'inline-flex',
-              cursor: isChecked ? 'pointer' : 'not-allowed'
+              cursor: isChecked && !isLoading ? 'pointer' : 'not-allowed'
             }}
-            onClick={handleContinue}
+            onClick={!isLoading ? handleContinue : null}
           >
             <div
               style={{
@@ -214,7 +221,7 @@ const Auth = ({ user }) => {
                 wordWrap: 'break-word'
               }}
             >
-              Продолжить
+              {isLoading ? "Загрузка..." : "Продолжить"}
             </div>
           </div>
         </div>

@@ -13,9 +13,10 @@ import PilotDetails from "./screens/PilotDetails";
 import LegendDetails from "./screens/LegendDetails";
 import Auth from "./screens/Auth";
 import Profile from "./screens/Profile";
-import { db } from "./firebase"; // Импорт Firestore
-import { collection, query, where, getDocs } from "firebase/firestore"; // Методы Firestore
-import ProgressBar from "./components/ProgressBar"; // Компонент прогресс-бара
+import UserSearch from "./screens/UserSearch"; // Компонент поиска пользователей
+import { db } from "./firebase";
+import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
+import ProgressBar from "./components/ProgressBar";
 
 function App() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ function App() {
   const [dbCheckCompleted, setDbCheckCompleted] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Получаем данные пользователя из Telegram
+  // Получаем данные пользователя из Telegram или задаем тестовые данные
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.expand();
@@ -45,28 +46,67 @@ function App() {
           : `${userData.first_name}${userData.last_name ? " " + userData.last_name : ""}`;
         setUser({
           name: name,
-          first_name: userData.first_name || "",
-          last_name: userData.last_name || "",
-          id: userData.id,
-          photo_url: userData.photo_url || '',
+          firstName: userData.first_name || "",
+          lastName: userData.last_name || "",
+          uid: userData.id, // Используем userData.id как uid
+          photoUrl: userData.photo_url || "",
         });
       } else {
         setUser({
           name: "Гость",
-          id: null,
+          uid: null,
+          photoUrl: ""
         });
       }
     } else {
       setUser({
         name: "TestUser",
-        id: null,
+        uid: "test_uid",
+        photoUrl: ""
       });
     }
   }, []);
 
+  // Если у пользователя нет photoUrl, выполняем загрузку (например, дефолтного изображения)
+  useEffect(() => {
+    const uploadUserPhoto = async () => {
+      if (user && !user.photoUrl) {
+        try {
+          const defaultImage = "DEFAULT_IMAGE_BASE64_OR_URL";
+          const formData = new FormData();
+          formData.append("image", defaultImage);
+          formData.append("key", "YOUR_IMGBB_API_KEY");
+          const response = await fetch("https://api.imgbb.com/1/upload", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await response.json();
+          const newPhotoUrl = data.data.url;
+          // Обновляем Firestore, если пользователь уже существует
+          const q = query(collection(db, "users"), where("username", "==", user.name));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const userDoc = querySnapshot.docs[0];
+            await setDoc(userDoc.ref, { photoUrl: newPhotoUrl }, { merge: true });
+          }
+          // Обновляем локальное состояние пользователя
+          setUser((prevUser) => ({
+            ...prevUser,
+            photoUrl: newPhotoUrl,
+          }));
+        } catch (error) {
+          console.error("Ошибка загрузки фото:", error);
+        }
+      }
+    };
+    if (user) {
+      uploadUserPhoto();
+    }
+  }, [user]);
+
   // Проверка наличия пользователя в базе данных (асинхронно)
   useEffect(() => {
-    if (!user) return; // Не выполняем, пока нет данных пользователя
+    if (!user) return;
     const checkUserInDB = async () => {
       const q = query(collection(db, "users"), where("username", "==", user.name));
       const querySnapshot = await getDocs(q);
@@ -83,32 +123,28 @@ function App() {
           navigate("/");
         }
       }
-      // Как только поиск завершился, помечаем, что БД проверена
       setDbCheckCompleted(true);
     };
     checkUserInDB();
   }, [user, navigate, initialLoad]);
 
-  // Обновление progress bar во время загрузки (параллельно с запросом к БД)
+  // Обновление progress bar во время загрузки
   useEffect(() => {
     if (loading) {
       const interval = setInterval(() => {
-        // Увеличиваем progress до 90%, оставляя место для завершающего этапа
         setProgress((prev) => (prev < 90 ? prev + 2 : prev));
       }, 100);
       return () => clearInterval(interval);
     }
   }, [loading]);
 
-  // Как только поиск в БД завершен, завершаем progress bar и запускаем fade-out
+  // Завершаем progress bar и запускаем анимацию скрытия загрузочного экрана
   useEffect(() => {
     if (dbCheckCompleted) {
-      // Устанавливаем progress в 100% после небольшой задержки
       setTimeout(() => {
         setContentLoaded(true);
         setProgress(100);
       }, 300);
-      // Запускаем анимацию скрытия экрана загрузки
       setTimeout(() => {
         setFadeOut(true);
         setTimeout(() => setLoading(false), 600);
@@ -128,7 +164,8 @@ function App() {
     } else if (page === 2) {
       navigate("/races");
     } else if (page === 3) {
-      navigate("/profile");
+      // Переход к профилю текущего пользователя
+      navigate(`/profile/${user.uid}`);
     }
   };
 
@@ -198,7 +235,9 @@ function App() {
                     />
                     <Route path="/races/:raceId" element={<RaceDetails />} />
                     <Route path="/legend-details/:lastName" element={<LegendDetails />} />
-                    <Route path="/profile" element={<Profile user={user} />} />
+                    {/* Маршрут профиля с параметром uid */}
+                    <Route path="/profile/:uid" element={<Profile currentUser={user} />} />
+                    <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
                   </Routes>
                 </div>
               </CSSTransition>

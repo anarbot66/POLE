@@ -1,6 +1,16 @@
-// PilotDetails.js
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { db } from "../firebase";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  getDoc,
+  deleteDoc,
+  doc
+} from "firebase/firestore";
 import biographies from "./json/bio"; // данные о биографиях
 import seasonsData from "./json/seasons"; // данные о сезонах
 
@@ -59,8 +69,8 @@ const lastNameTranslations = {
   "Doohan": "Дуэн",
 };
 
-const PilotDetails = () => {
-  const { lastName } = useParams(); // получаем фамилию из URL
+const PilotDetails = ({ currentUser }) => {
+  const { lastName } = useParams();
   const navigate = useNavigate();
   const [pilot, setPilot] = useState(null);
   const [biography, setBiography] = useState("");
@@ -72,13 +82,23 @@ const PilotDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Состояния для избранного пилота
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
+
   const normalizeName = (name) => {
     if (name === "Magnussen") return "kevin_magnussen";
     if (name === "Verstappen") return "max_verstappen";
     return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   };
 
-  // Загружаем общую информацию о пилоте
+  const saveFavoritePilot = () => {
+    if (pilot) {
+      localStorage.setItem("favoritePilot", pilot.driverId);
+    }
+  };
+
+  // Загружаем данные о пилоте
   useEffect(() => {
     const fetchPilotInfo = async () => {
       try {
@@ -117,7 +137,7 @@ const PilotDetails = () => {
         fetchPilotResults(lastNameNormalized, pilotSeasons[0], false);
         fetchPilotStandings(lastNameNormalized, pilotSeasons[0]);
       }
-      // Загружаем текущий сезон (2024)
+      // Загружаем данные для текущего сезона (2024)
       fetchPilotResults(lastNameNormalized, "2024", true);
       fetchPilotStandings(lastNameNormalized, "2024");
     }
@@ -222,7 +242,54 @@ const PilotDetails = () => {
     navigate(-1);
   };
 
-  // Если еще не загрузились данные о пилоте, ничего не рендерим
+  // Проверка статуса "Любимого пилота"
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (!currentUser || !pilot) return;
+      try {
+        const favDocRef = doc(db, "favorites", `${currentUser.uid}_${pilot.Driver.driverId}`);
+        const favDoc = await getDoc(favDocRef);
+        setIsFavorite(favDoc.exists());
+      } catch (error) {
+        console.error("Ошибка проверки избранного:", error);
+      }
+    };
+    checkFavoriteStatus();
+  }, [currentUser, pilot]);
+
+  // Функция для добавления пилота в избранное
+  const handleFavorite = async () => {
+    if (!currentUser || !pilot) return;
+    setFavLoading(true);
+    try {
+      const favDocRef = doc(db, "favorites", `${currentUser.uid}_${pilot.Driver.driverId}`);
+      await setDoc(favDocRef, {
+        userId: currentUser.uid,
+        pilotId: pilot.Driver.driverId,
+        pilotData: pilot,
+        createdAt: new Date(),
+      });
+      setIsFavorite(true);
+    } catch (error) {
+      console.error("Ошибка при добавлении в избранное:", error);
+    }
+    setFavLoading(false);
+  };
+
+  // Функция для удаления пилота из избранного
+  const handleUnfavorite = async () => {
+    if (!currentUser || !pilot) return;
+    setFavLoading(true);
+    try {
+      const favDocRef = doc(db, "favorites", `${currentUser.uid}_${pilot.Driver.driverId}`);
+      await deleteDoc(favDocRef);
+      setIsFavorite(false);
+    } catch (error) {
+      console.error("Ошибка при удалении из избранного:", error);
+    }
+    setFavLoading(false);
+  };
+
   if (loading || !pilot) return <div></div>;
   if (error) return <div>{error}</div>;
 
@@ -350,7 +417,7 @@ const PilotDetails = () => {
             width: "100%",
             margin: "5px",
             backgroundColor: activeTab === "biography" ? "#0077FF" : "#1D1D1F",
-            color: activeTab === "biography" ? "white" : "white",
+            color: "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
@@ -365,7 +432,7 @@ const PilotDetails = () => {
             width: "100%",
             margin: "5px",
             backgroundColor: activeTab === "seasons" ? "#0077FF" : "#1D1D1F",
-            color: activeTab === "seasons" ? "white" : "white",
+            color: "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
@@ -456,6 +523,30 @@ const PilotDetails = () => {
           </>
         )}
       </div>
+
+      {/* Новая кнопка "Любимый пилот" */}
+      {currentUser && (
+        <button
+          onClick={isFavorite ? handleUnfavorite : handleFavorite}
+          disabled={favLoading}
+          style={{
+            marginTop: "20px",
+            padding: "10px 20px",
+            borderRadius: "10px",
+            border: "none",
+            background: isFavorite ? "#888" : "#FF4500",
+            color: "white",
+            cursor: "pointer",
+            background: "black"
+          }}
+        >
+          {favLoading
+            ? "Обработка..."
+            : isFavorite
+            ? "Удалить из любимых"
+            : "Любимый пилот"}
+        </button>
+      )}
     </div>
   );
 };
