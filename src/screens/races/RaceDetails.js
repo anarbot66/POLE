@@ -70,7 +70,7 @@ const RaceDetails = () => {
 
       const circuitName = race.Circuit.Location.locality;
       try {
-        const image = await import(`./images/circuits/${circuitName}.png`);
+        const image = await import(`../recources/images/circuits/${circuitName}.png`);
         const img = new Image();
         img.src = image.default;
         img.onload = () => {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import PilotsList from './PilotsList';
-import ConstructorsList from './ConstructorsList';
+import PilotsList from '../pilots/PilotsList';
+import ConstructorsList from '../constructor/ConstructorsList';
 
 const Standings = ({ onConstructorSelect }) => {
   const [activeTab, setActiveTab] = useState('pilots');

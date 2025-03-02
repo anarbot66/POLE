@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase"; // убедитесь, что путь корректный
+import { db } from "../../firebase"; // убедитесь, что путь корректный
 import { collection, query, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
@@ -7,6 +7,10 @@ const UserSearch = ({ currentUser }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState([]);
   const navigate = useNavigate();
+
+  const goBack = () => {
+    navigate(-1);
+  };
 
   // Debounce для уменьшения количества запросов
   useEffect(() => {
@@ -42,7 +46,7 @@ const UserSearch = ({ currentUser }) => {
         });
       }
       // Исключаем самого себя из результатов
-      // filteredUsers = filteredUsers.filter(user => user.uid !== currentUser.uid);
+      filteredUsers = filteredUsers.filter(user => user.uid !== currentUser.uid);
       setResults(filteredUsers);
     } catch (error) {
       console.error("Ошибка при поиске пользователей:", error);
@@ -51,30 +55,44 @@ const UserSearch = ({ currentUser }) => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <input
-        type="text"
-        placeholder="Найти друзей..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{
-          background: "#212124",
-          position: "fixed",
-          width: "calc(100% - 40px)",
-          padding: "15px",
-          fontSize: "16px",
-          borderRadius: "4px",
-          color: "white",
-          border: "none"
-        }}
-      />
+      <div style={{ width: "100%", position: "fixed", display: "flex" }}>
+        <button
+          onClick={goBack}
+          style={{
+            backgroundColor: "#212124",
+            color: "white",
+            border: "none",
+            padding: "15px 20px",
+            borderRadius: "10px",
+            cursor: "pointer",
+            zIndex: "1000",
+          }}
+        >
+          ✕
+        </button>
+        <input
+          type="text"
+          placeholder="Найти друзей..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            marginLeft: "10px",
+            background: "#212124",
+            width: "calc(100% - 100px)",
+            padding: "15px",
+            fontSize: "16px",
+            borderRadius: "10px",
+            color: "white",
+            border: "none"
+          }}
+        />
+      </div>
       <div style={{ marginTop: "60px" }}>
         {results.length > 0 ? (
           results.map((user, index) => (
             <div
               key={index}
-              onClick={() =>
-                navigate(`/profile/${user.uid}`, { state: { profileUser: user } })
-              }
+              onClick={() => navigate(`/userprofile/${user.uid}`, { state: { currentUserUid: currentUser.uid } })}  // Навигация к профилю пользователя
               style={{
                 padding: "10px",
                 display: "flex",

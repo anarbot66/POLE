@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import seasonsData from "./json/seasons"; // Загружаем данные о сезонах конструктора
+import seasonsData from "../recources/json/seasons"; // Загружаем данные о сезонах конструктора
 
 // Словарь для преобразования имен конструкторов в API-формат
 const constructorApiNames = {

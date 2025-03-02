@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import {
   collection,
   query,
@@ -11,8 +11,8 @@ import {
   deleteDoc,
   doc
 } from "firebase/firestore";
-import biographies from "./json/bio"; // данные о биографиях
-import seasonsData from "./json/seasons"; // данные о сезонах
+import biographies from "../recources/json/bio"; // данные о биографиях
+import seasonsData from "../recources/json/seasons"; // данные о сезонах
 
 // Словари для перевода имен на русский
 const firstNameTranslations = {
@@ -258,37 +258,51 @@ const PilotDetails = ({ currentUser }) => {
   }, [currentUser, pilot]);
 
   // Функция для добавления пилота в избранное
-  const handleFavorite = async () => {
-    if (!currentUser || !pilot) return;
-    setFavLoading(true);
-    try {
-      const favDocRef = doc(db, "favorites", `${currentUser.uid}_${pilot.Driver.driverId}`);
-      await setDoc(favDocRef, {
-        userId: currentUser.uid,
-        pilotId: pilot.Driver.driverId,
-        pilotData: pilot,
-        createdAt: new Date(),
-      });
-      setIsFavorite(true);
-    } catch (error) {
-      console.error("Ошибка при добавлении в избранное:", error);
+  // Функция для добавления пилота в избранное
+const handleFavorite = async () => {
+  if (!currentUser || !pilot) return;
+  
+  // Проверка, есть ли уже любимый пилот
+  try {
+    const userFavoritesRef = collection(db, "favorites");
+    const q = query(userFavoritesRef, where("userId", "==", currentUser.uid));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      // Если уже есть любимый пилот
+      setFavLoading(false);
+      alert("Вы уже выбрали любимого пилота!");
+      return;
     }
-    setFavLoading(false);
-  };
+    
+    setFavLoading(true);
+    const favDocRef = doc(db, "favorites", `${currentUser.uid}_${pilot.Driver.driverId}`);
+    await setDoc(favDocRef, {
+      userId: currentUser.uid,
+      pilotId: pilot.Driver.driverId,
+      pilotData: pilot,
+      createdAt: new Date(),
+    });
+    setIsFavorite(true);
+  } catch (error) {
+    console.error("Ошибка при добавлении в избранное:", error);
+  }
+  setFavLoading(false);
+};
 
-  // Функция для удаления пилота из избранного
-  const handleUnfavorite = async () => {
-    if (!currentUser || !pilot) return;
-    setFavLoading(true);
-    try {
-      const favDocRef = doc(db, "favorites", `${currentUser.uid}_${pilot.Driver.driverId}`);
-      await deleteDoc(favDocRef);
-      setIsFavorite(false);
-    } catch (error) {
-      console.error("Ошибка при удалении из избранного:", error);
-    }
-    setFavLoading(false);
-  };
+// Функция для удаления пилота из избранного
+const handleUnfavorite = async () => {
+  if (!currentUser || !pilot) return;
+  setFavLoading(true);
+  try {
+    const favDocRef = doc(db, "favorites", `${currentUser.uid}_${pilot.Driver.driverId}`);
+    await deleteDoc(favDocRef);
+    setIsFavorite(false);
+  } catch (error) {
+    console.error("Ошибка при удалении из избранного:", error);
+  }
+  setFavLoading(false);
+};
+
 
   if (loading || !pilot) return <div></div>;
   if (error) return <div>{error}</div>;

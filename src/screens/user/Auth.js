@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from "./images/logo-250.png";
-import { db } from '../firebase'; // Импорт Firestore
+import logo from "../recources/images/logo-250.png";
+import { db } from '../../firebase'; // Импорт Firestore
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { getAuth, signInAnonymously } from 'firebase/auth';
 

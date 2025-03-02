@@ -2,21 +2,21 @@ import "./App.css";
 import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import Standings from "./screens/Standings";
-import ConstructorDetails from "./screens/ConstructorDetails";
-import RacesList from "./screens/RacesList";
-import RaceDetails from "./screens/RaceDetails";
-import BottomNavigation from "./components/BottomNavigation";
-import logo from "./screens/images/logo-250.png";
-import Feed from "./screens/Feed";
-import PilotDetails from "./screens/PilotDetails";
-import LegendDetails from "./screens/LegendDetails";
-import Auth from "./screens/Auth";
-import Profile from "./screens/Profile";
-import UserSearch from "./screens/UserSearch"; // Компонент поиска пользователей
+import Standings from "./screens/standings/Standings";
+import ConstructorDetails from "./screens/constructor/ConstructorDetails";
+import RacesList from "./screens/races/RacesList";
+import RaceDetails from "./screens/races/RaceDetails";
+import BottomNavigation from "./screens/components/BottomNavigation";
+import logo from "./screens/recources/images/logo-250.png";
+import Feed from "./screens/user/Feed";
+import PilotDetails from "./screens/pilots/PilotDetails";
+import Auth from "./screens/user/Auth";
+import Profile from "./screens/user/Profile";
+import UserProfile from "./screens/user/UserProfile";
+import FollowersList from "./screens/user/FollowersList";
+import UserSearch from "./screens/user/UserSearch"; // Компонент поиска пользователей
 import { db } from "./firebase";
 import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
-import ProgressBar from "./components/ProgressBar";
 
 function App() {
   const navigate = useNavigate();
@@ -48,13 +48,13 @@ function App() {
           name: name,
           firstName: userData.first_name || "",
           lastName: userData.last_name || "",
-          uid: userData.id, // Используем userData.id как uid
+          uid: userData.id,
           photoUrl: userData.photo_url || "",
         });
       } else {
         setUser({
           name: "Гость",
-          uid: null,
+          uid: "1",
           photoUrl: ""
         });
       }
@@ -234,10 +234,11 @@ function App() {
                       element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
                     />
                     <Route path="/races/:raceId" element={<RaceDetails />} />
-                    <Route path="/legend-details/:lastName" element={<LegendDetails />} />
                     {/* Маршрут профиля с параметром uid */}
                     <Route path="/profile/:uid" element={<Profile currentUser={user} />} />
+                    <Route path="/userprofile/:uid" element={<UserProfile />} />
                     <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
+                    <Route path="/userprofile/:uid/followers" element={<FollowersList />} />
                   </Routes>
                 </div>
               </CSSTransition>
