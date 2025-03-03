@@ -205,7 +205,7 @@ const Profile = ({ currentUser }) => {
   }
 
   if (error) {
-    return <div style={{ color: "red" }}>{error}</div>;
+    return <div style={{ color: "red" }}>{uid}</div>;
   }
 
   if (!profileUser) {
