@@ -54,7 +54,7 @@ function App() {
       } else {
         setUser({
           name: "Гость",
-          uid: "0332wM50AuRmEPhZudSTXSLR1xO2",
+          uid: "mWnaHKPqEENmhDiWO4tnqwpIw4r1",
           photoUrl: ""
         });
       }

@@ -94,6 +94,7 @@ const Profile = ({ currentUser }) => {
     const loadData = async () => {
       if (uid) {
         try {
+          console.log("Fetching data for UID:", uid);
           if (currentUser && uid === currentUser.uid) {
             setProfileUser(currentUser);
             await loadFavorites(currentUser.uid);
@@ -103,6 +104,7 @@ const Profile = ({ currentUser }) => {
           await fetchFollowersCount(uid); // Fetch followers count
         } catch (err) {
           setError("Ошибка загрузки данных");
+          console.error("Error loading data:", err);
         } finally {
           setLoading(false);
         }
@@ -122,6 +124,7 @@ const Profile = ({ currentUser }) => {
         setProfileUser(userData);
       } else {
         console.log("Пользователь не найден");
+        setError("Пользователь не найден");
       }
       await loadFavorites(uid);
     } catch (err) {
@@ -208,7 +211,7 @@ const Profile = ({ currentUser }) => {
   if (!profileUser) {
     return (
       <div style={{ width: "100vw", height: "100vh", backgroundColor: "#1D1D1F", display: "flex", justifyContent: "center", alignItems: "center", color: "white" }}>
-        Пользователь не найден.
+        {uid}
       </div>
     );
   }
