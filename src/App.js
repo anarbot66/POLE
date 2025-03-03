@@ -48,7 +48,7 @@ function App() {
           name: name,
           firstName: userData.first_name || "",
           lastName: userData.last_name || "",
-          uid: user.uid,
+          uid: userData.uid,
           photoUrl: userData.photo_url || "",
         });
       } else {
