@@ -54,7 +54,7 @@ function App() {
       } else {
         setUser({
           name: "Гость",
-          uid: "1",
+          uid: "0332wM50AuRmEPhZudSTXSLR1xO2",
           photoUrl: ""
         });
       }
@@ -225,7 +225,7 @@ function App() {
                 <div key={location.pathname}>
                   <Routes location={location}>
                     <Route path="/" element={<Auth user={user} />} />
-                    <Route path="/feed" element={<Feed userName={user?.name} />} />
+                    <Route path="/feed" element={<Feed uid={user.uid} />} />
                     <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} />} />
                     <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
                     <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />

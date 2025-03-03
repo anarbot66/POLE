@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Импортируем navigate
+import { db } from "../../firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
@@ -36,26 +38,37 @@ const convertToMoscowTime = (utcDate, utcTime) => {
   });
 };
 
-const getFormattedDate = () => {
-  const now = new Date();
-  const day = now.getDate();
-  const monthNames = [
-    "января", "февраля", "марта", "апреля", "мая", "июня", 
-    "июля", "августа", "сентября", "октября", "ноября", "декабря"
-  ];
-  const month = monthNames[now.getMonth()];
-  const year = now.getFullYear();
-  
-  return `${day} ${month} ${year}`;
-};
-
-const Feed = ({ userName }) => {
+const Feed = ({ uid }) => {
   const [events, setEvents] = useState([]);
+  const [followers, setFollowers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("events"); // Состояние для активной вкладки
+  const [userName, setUserName] = useState(""); // Состояние для имени пользователя
+  const navigate = useNavigate();
+
+  console.log("UID", uid);
+
+  // Функция для перехода на страницу с деталями гонки
+  const handleRaceSelect = (race) => {
+    navigate(`/races/${race.round}`, { state: { race } });
+  };
+
+  const getFormattedDate = () => {
+    const now = new Date();
+    const day = now.getDate();
+    const monthNames = [
+      "января", "февраля", "марта", "апреля", "мая", "июня", 
+      "июля", "августа", "сентября", "октября", "ноября", "декабря"
+    ];
+    const month = monthNames[now.getMonth()];
+    const year = now.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
+
   const formattedDate = getFormattedDate();
 
-  const navigate = useNavigate(); // Хук для навигации
-
+  // Загрузка данных о событиях
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -71,7 +84,7 @@ const Feed = ({ userName }) => {
           { type: "ThirdPractice", date: race.ThirdPractice?.date, time: race.ThirdPractice?.time, race },
           { type: "Qualifying", date: race.Qualifying?.date, time: race.Qualifying?.time, race },
           { type: "Race", date: race.date, time: race.time, race }
-        ]).filter(event => event.date); // Убираем пустые события
+        ]).filter(event => event.date);
 
         const now = new Date();
         const upcomingEvents = allEvents
@@ -90,18 +103,53 @@ const Feed = ({ userName }) => {
     fetchEvents();
   }, []);
 
-  if (error) return <div>Ошибка: {error}</div>;
-  if (!events.length) return <div> </div>;
+  // Загрузка данных о подписчиках
+  useEffect(() => {
+    const fetchFollowing = async () => {
+      setLoading(true);
+      try {
+        // Ищем всех пользователей, на которых подписан текущий пользователь
+        const followsQuery = query(
+          collection(db, "follows"),
+          where("followerId", "==", uid)  // Изменили на followerId
+        );
+        const snapshot = await getDocs(followsQuery);
+        
+        // Для каждого пользователя, на которого подписан текущий, получаем данные
+        const followingData = await Promise.all(
+          snapshot.docs.map(async (doc) => {
+            const followingId = doc.data().followingId;  // Это ID пользователя, на которого подписан текущий
+            const userQuery = query(collection(db, "users"), where("uid", "==", followingId));
+            const userSnapshot = await getDocs(userQuery);
+            return userSnapshot.docs[0].data();
+          })
+        );
+        setFollowers(followingData);  // Теперь это будут те, на кого подписан пользователь
+      } catch (err) {
+        console.error("Ошибка при загрузке подписок:", err);
+        setError("Ошибка при загрузке подписок");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Функция для перехода на страницу с деталями гонки
-  const handleRaceSelect = (race) => {
-    navigate(`/races/${race.round}`, { state: { race } });
+    fetchFollowing(); // вызываем функцию загрузки
+
+}, [uid]);  // Массив зависимостей, чтобы перезагружать при изменении uid
+
+
+  // Обработка смены вкладки
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
   };
 
-  // Функция для перехода на страницу поиска пользователей
-  const handleFindFriends = () => {
-    navigate("/usersearch");
-  };
+  if (loading) {
+    return (
+      <div style={{ width: "100vw", height: "100vh", backgroundColor: "#1D1D1F", display: "flex", justifyContent: "center", alignItems: "center", color: "white" }}>
+        Загрузка...
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -116,56 +164,46 @@ const Feed = ({ userName }) => {
       gap: "15px",
       background: "#1D1D1F"
     }}>
-      <div style={{
-        width: "calc(100% - 20px)",
-        margin: "0 auto",
-        paddingTop: "10px",
-        display: "flex",
-        flexDirection: "column"
-      }}>
-        {/* Заголовки */}
-        <h2 style={{ fontSize: "16px", fontWeight: "300", color: "white", textAlign: "left"}}>
-          Привет, {userName}!
-        </h2>
-        <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px"}}>
-          {`Сегодня: ${formattedDate}`}
-        </h3>
-        <h4 style={{ fontSize: "14px", color: "lightgray" }}>
-          Грядущие события:
-        </h4>
+      {/* Заголовки */}
+      <h2 style={{ fontSize: "16px", fontWeight: "300", color: "white", textAlign: "left" }}>
+        Привет, {userName}!
+      </h2>
+      <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px" }}>
+        {`Сегодня: ${formattedDate}`}
+      </h3>
 
-          {/* Кнопка "Найдите друзей" */}
-        <div style={{
-          display: "flex",
-          justifyContent: "left",
-          marginTop: "20px"
-        }}>
-          <button 
-            onClick={handleFindFriends}
-            style={{
-              padding: "10px 20px",
-              borderRadius: "10px",
-              background: "#212124",
-              border: "none",
-              color: "white",
-              fontSize: "14px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px"
-            }}
-          >
-            Найдите друзей
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12.5 16C14.433 16 16 14.433 16 12.5C16 10.567 14.433 9 12.5 9C10.567 9 9 10.567 9 12.5C9 14.433 10.567 16 12.5 16ZM13 11V12H14C14.2761 12 14.5 12.2239 14.5 12.5C14.5 12.7761 14.2761 13 14 13H13V14C13 14.2761 12.7761 14.5 12.5 14.5C12.2239 14.5 12 14.2761 12 14V13H11C10.7239 13 10.5 12.7761 10.5 12.5C10.5 12.2239 10.7239 12 11 12H12V11C12 10.7239 12.2239 10.5 12.5 10.5C12.7761 10.5 13 10.7239 13 11Z" fill="white"/>
-            <path d="M11 5C11 6.65685 9.65685 8 8 8C6.34315 8 5 6.65685 5 5C5 3.34315 6.34315 2 8 2C9.65685 2 11 3.34315 11 5Z" fill="white"/>
-            <path d="M2 13C2 14 3 14 3 14H8.25606C8.09023 13.5308 8 13.026 8 12.5C8 11.1463 8.5977 9.93228 9.54358 9.10733C9.07708 9.03817 8.56399 9 8 9C3 9 2 12 2 13Z" fill="white"/>
-            </svg>
-          </button>
-        </div>
+      {/* Переключатель вкладок */}
+      <div style={{ display: "flex", gap: "20px" }}>
+        <button
+          onClick={() => handleTabChange("events")}
+          style={{
+            padding: "10px 20px",
+            borderRadius: "10px",
+            background: activeTab === "events" ? "#212124" : "#333",
+            border: "none",
+            color: "white",
+            cursor: "pointer"
+          }}
+        >
+          События
+        </button>
+        <button
+          onClick={() => handleTabChange("followers")}
+          style={{
+            padding: "10px 20px",
+            borderRadius: "10px",
+            background: activeTab === "followers" ? "#212124" : "#333",
+            border: "none",
+            color: "white",
+            cursor: "pointer"
+          }}
+        >
+          Друзья
+        </button>
       </div>
 
-      {events.map((event, index) => {
+      {/* Содержимое вкладки */}
+      {activeTab === "events" && events.map((event, index) => {
         let countryName = event.race.Circuit.Location.country;
         if (countryName === "Great Britain") countryName = "United Kingdom";
         const countryCode = countryToFlag[countryName] || "un"; // "un" для неизвестных стран
@@ -173,19 +211,18 @@ const Feed = ({ userName }) => {
         const formattedTime = convertToMoscowTime(event.date, event.time);
 
         return (
-          <div key={index} 
-               onClick={() => handleRaceSelect(event.race)} // При клике переходим к деталям гонки
-               style={{
-                  width: "100%",
-                  background: "#212124",
-                  borderRadius: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  padding: "10px",
-                  cursor: "pointer"
-               }}>
-            {/* Флаг страны */}
+          <div key={index}
+            onClick={() => handleRaceSelect(event.race)}
+            style={{
+              width: "100%",
+              background: "#212124",
+              borderRadius: "20px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "10px",
+              cursor: "pointer"
+            }}>
             <div style={{
               width: "55px",
               height: "55px",
@@ -195,14 +232,8 @@ const Feed = ({ userName }) => {
               alignItems: "center",
               background: "#212124"
             }}>
-              <img 
-                src={`https://flagcdn.com/w320/${countryCode}.png`} 
-                alt={countryName}
-                style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }} 
-              />
+              <img src={`https://flagcdn.com/w320/${countryCode}.png`} alt={countryName} style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }} />
             </div>
-
-            {/* Название сессии и название гонки */}
             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
               <div style={{ fontSize: "12px", fontWeight: "300", color: "white" }}>
                 {sessionName}
@@ -211,8 +242,6 @@ const Feed = ({ userName }) => {
                 {event.race.raceName}
               </div>
             </div>
-
-            {/* Время сессии */}
             <div style={{ textAlign: "right", minWidth: "100px" }}>
               <span style={{ fontSize: "12px", color: "white", fontWeight: "light" }}>
                 {formattedTime}
@@ -222,7 +251,30 @@ const Feed = ({ userName }) => {
         );
       })}
 
-      
+      {/* Содержимое вкладки для подписчиков */}
+      {activeTab === "followers" && (
+        <div style={{ }}>
+          {followers.length > 0 ? (
+            followers.map((user, index) => (
+              <div key={index} style={{ padding: "10px", display: "flex", alignItems: "center", gap: "10px", borderBottom: "1px solid #444", cursor: "pointer" }}>
+                <div style={{ width: "50px", height: "50px", borderRadius: "50%", background: "#212124", display: "flex", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+                  <img src={user.photoUrl} alt={`${user.firstName} ${user.lastName}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span style={{ color: "white", fontSize: "14px" }}>
+                    {user.firstName} {user.lastName}
+                  </span>
+                  <span style={{ color: "#0077FF", fontSize: "12px" }}>
+                    {user.username ? "@" + user.username : ""}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div style={{ color: "white", fontSize: "14px" }}>У вас нет подписчиков</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

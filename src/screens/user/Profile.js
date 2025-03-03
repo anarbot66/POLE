@@ -236,7 +236,7 @@ const Profile = ({ currentUser }) => {
         </div>
       </div>
 
-      <h3 style={{ marginTop: "20px", marginBottom: "20px", width: "calc(100% - 40px)"}}>Любимый пилот</h3>
+      <h3 style={{ marginTop: "20px", marginBottom: "20px", width: "calc(100% - 40px)"}}>Любимый пилот: </h3>
       {favoritePilot ? (
         <div
           onClick={() => handlePilotSelect(favoritePilot)}
