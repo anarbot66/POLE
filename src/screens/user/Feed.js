@@ -38,16 +38,15 @@ const convertToMoscowTime = (utcDate, utcTime) => {
   });
 };
 
-const Feed = ({ uid }) => {
+const Feed = ({ currentUser }) => {
   const [events, setEvents] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("events"); // Состояние для активной вкладки
-  const [userName, setUserName] = useState(""); // Состояние для имени пользователя
   const navigate = useNavigate();
 
-  console.log("UID", uid);
+  console.log(currentUser);
 
   // Функция для перехода на страницу с деталями гонки
   const handleRaceSelect = (race) => {
@@ -103,28 +102,35 @@ const Feed = ({ uid }) => {
     fetchEvents();
   }, []);
 
-  // Загрузка данных о подписчиках
+  // Загрузка данных о подписчиках через username
   useEffect(() => {
     const fetchFollowing = async () => {
       setLoading(true);
       try {
-        // Ищем всех пользователей, на которых подписан текущий пользователь
-        const followsQuery = query(
-          collection(db, "follows"),
-          where("followerId", "==", uid)  // Изменили на followerId
-        );
-        const snapshot = await getDocs(followsQuery);
+        // Ищем пользователя по username
+        const userQuery = query(collection(db, "users"), where("username", "==", currentUser.username));
+        const userSnapshot = await getDocs(userQuery);
         
-        // Для каждого пользователя, на которого подписан текущий, получаем данные
-        const followingData = await Promise.all(
-          snapshot.docs.map(async (doc) => {
-            const followingId = doc.data().followingId;  // Это ID пользователя, на которого подписан текущий
-            const userQuery = query(collection(db, "users"), where("uid", "==", followingId));
-            const userSnapshot = await getDocs(userQuery);
-            return userSnapshot.docs[0].data();
-          })
-        );
-        setFollowers(followingData);  // Теперь это будут те, на кого подписан пользователь
+        if (!userSnapshot.empty) {
+          const userId = userSnapshot.docs[0].id;
+
+          // Ищем всех пользователей, на которых подписан текущий
+          const followsQuery = query(
+            collection(db, "follows"),
+            where("followerId", "==", userId)
+          );
+          const snapshot = await getDocs(followsQuery);
+          
+          const followingData = await Promise.all(
+            snapshot.docs.map(async (doc) => {
+              const followingId = doc.data().followingId; // Это ID пользователя, на которого подписан текущий
+              const userQuery = query(collection(db, "users"), where("uid", "==", followingId));
+              const userSnapshot = await getDocs(userQuery);
+              return userSnapshot.docs[0].data();
+            })
+          );
+          setFollowers(followingData);
+        }
       } catch (err) {
         console.error("Ошибка при загрузке подписок:", err);
         setError("Ошибка при загрузке подписок");
@@ -133,10 +139,8 @@ const Feed = ({ uid }) => {
       }
     };
 
-    fetchFollowing(); // вызываем функцию загрузки
-
-}, [uid]);  // Массив зависимостей, чтобы перезагружать при изменении uid
-
+    fetchFollowing();
+  }, [currentUser]);  // Используем currentUser в качестве зависимости для обновления данных
 
   // Обработка смены вкладки
   const handleTabChange = (tab) => {
@@ -164,9 +168,8 @@ const Feed = ({ uid }) => {
       gap: "15px",
       background: "#1D1D1F"
     }}>
-      {/* Заголовки */}
       <h2 style={{ fontSize: "16px", fontWeight: "300", color: "white", textAlign: "left" }}>
-        Привет, {userName}!
+        Привет, {currentUser.name}!
       </h2>
       <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px" }}>
         {`Сегодня: ${formattedDate}`}

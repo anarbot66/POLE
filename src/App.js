@@ -218,7 +218,7 @@ function App() {
                 <div key={location.pathname}>
                   <Routes location={location}>
                     <Route path="/" element={<Auth user={user} />} />
-                    <Route path="/feed" element={<Feed uid={user.uid} />} />
+                    <Route path="/feed" element={<Feed currentUser={user} />} />
                     <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} />} />
                     <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
                     <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
@@ -227,7 +227,7 @@ function App() {
                       element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
                     />
                     <Route path="/races/:raceId" element={<RaceDetails />} />
-                    <Route path="/profile/:uid" element={<Profile user={user} />} />
+                    <Route path="/profile" element={<Profile currentUser={user} />} />
                     <Route path="/userprofile/:uid" element={<UserProfile />} />
                     <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
                     <Route path="/userprofile/:uid/followers" element={<FollowersList />} />
