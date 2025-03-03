@@ -48,7 +48,7 @@ function App() {
           name: name,
           firstName: userData.first_name || "",
           lastName: userData.last_name || "",
-          uid: user.uid,
+          uid: userData.uid,
           photoUrl: userData.photo_url || "",
         });
       } else {
@@ -227,8 +227,7 @@ function App() {
                       element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
                     />
                     <Route path="/races/:raceId" element={<RaceDetails />} />
-                    {/* Маршрут профиля с параметром uid */}
-                    <Route path="/profile/:uid" element={<Profile currentUser={user} />} />
+                    <Route path="/profile/:uid" element={<Profile user={user} />} />
                     <Route path="/userprofile/:uid" element={<UserProfile />} />
                     <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
                     <Route path="/userprofile/:uid/followers" element={<FollowersList />} />
