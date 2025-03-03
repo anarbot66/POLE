@@ -48,20 +48,20 @@ function App() {
           name: name,
           firstName: userData.first_name || "",
           lastName: userData.last_name || "",
-          uid: userData.id,
+          uid: user.uid,
           photoUrl: userData.photo_url || "",
         });
       } else {
         setUser({
           name: "Гость",
-          uid: "mWnaHKPqEENmhDiWO4tnqwpIw4r1",
+          uid: "",
           photoUrl: ""
         });
       }
     } else {
       setUser({
         name: "TestUser",
-        uid: "test_uid",
+        uid: "",
         photoUrl: ""
       });
     }
@@ -75,7 +75,7 @@ function App() {
           const defaultImage = "DEFAULT_IMAGE_BASE64_OR_URL";
           const formData = new FormData();
           formData.append("image", defaultImage);
-          formData.append("key", "YOUR_IMGBB_API_KEY");
+          formData.append("key", "2efcc5045381407287404d66cbe72876");
           const response = await fetch("https://api.imgbb.com/1/upload", {
             method: "POST",
             body: formData,
@@ -183,19 +183,12 @@ function App() {
     navigate("/race-details");
   };
 
-  const handleBackToRaces = () => {
-    setSelectedRace(null);
-    navigate("/races");
-  };
 
   const handleBackToConstructors = () => {
     setSelectedConstructor(null);
     navigate("/standings");
   };
 
-  const handleBackToPilots = () => {
-    navigate("/standings");
-  };
 
   if (!dbCheckCompleted) {
     return <div> </div>;

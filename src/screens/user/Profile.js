@@ -68,7 +68,6 @@ const nationalityToFlag = {
   "South African": "za",
 };
 
-// Функция для нормализации фамилии, аналогичная PilotsList
 const normalizeName = (name) => {
   if (name === "Magnussen") {
     return "kevin_magnussen";
@@ -81,40 +80,38 @@ const normalizeName = (name) => {
     .toLowerCase();
 };
 
-const Profile = ({ currentUser }) => {
-  const { uid } = useParams(); // Получаем uid из URL
+const Profile = () => {
+  // Используем переименование, чтобы явно обозначить, что это uid из URL
+  const { uid: profileUid } = useParams();
   const navigate = useNavigate();
   const [profileUser, setProfileUser] = useState(null);
   const [favoritePilot, setFavoritePilot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [followersCount, setFollowersCount] = useState(0); // New state for followers count
+  const [followersCount, setFollowersCount] = useState(0);
 
   useEffect(() => {
     const loadData = async () => {
-      if (uid) {
-        try {
-          console.log("Fetching data for UID:", uid);
-          if (currentUser && uid === currentUser.uid) {
-            setProfileUser(currentUser);
-            await loadFavorites(currentUser.uid);
-          } else {
-            await fetchUserAndFavorites(uid);
-          }
-          await fetchFollowersCount(uid); // Fetch followers count
-        } catch (err) {
-          setError("Ошибка загрузки данных");
-          console.error("Error loading data:", err);
-        } finally {
-          setLoading(false);
-        }
+      console.log("Получаем profileUid из useParams:", profileUid);
+      if (!profileUid) return;
+
+      try {
+        console.log("Fetching data for profileUid:", profileUid);
+        await fetchUserAndFavorites(profileUid);
+        await fetchFollowersCount(profileUid);
+      } catch (err) {
+        setError("Ошибка загрузки данных");
+        console.error("Error loading data:", err);
+      } finally {
+        setLoading(false);
       }
     };
-    loadData();
-  }, [currentUser, uid]);
 
-  // Загружает пользователя из Firestore и затем его избранного пилота
+    loadData();
+  }, [profileUid]);
+
   const fetchUserAndFavorites = async (uid) => {
+    console.log("Выполняем fetchUserAndFavorites для UID:", uid);
     try {
       const userQuery = query(collection(db, "users"), where("uid", "==", uid));
       const userSnapshot = await getDocs(userQuery);
@@ -133,13 +130,12 @@ const Profile = ({ currentUser }) => {
     }
   };
 
-  // Загружает избранное (любимого пилота) из Firestore и получает данные пилота по API
   const loadFavorites = async (uid) => {
+    console.log("Загружаем избранное для UID:", uid);
     try {
       const favQuery = query(collection(db, "favorites"), where("userId", "==", uid));
       const favSnapshot = await getDocs(favQuery);
       if (!favSnapshot.empty) {
-        // Если выбран только один любимый пилот:
         const favData = favSnapshot.docs[0].data();
         const favoritePilotId = favData.pilotId;
         console.log("Favorite pilotId из Firestore:", favoritePilotId);
@@ -153,8 +149,8 @@ const Profile = ({ currentUser }) => {
     }
   };
 
-  // Запрашивает данные о пилотах и ищет любимого по его driverId
   const fetchPilotData = async (favoritePilotId) => {
+    console.log("Запрашиваем данные о пилоте с ID:", favoritePilotId);
     try {
       const response = await fetch("https://api.jolpi.ca/ergast/f1/2024/driverStandings.json");
       if (!response.ok) throw new Error("Ошибка получения данных пилотов");
@@ -171,8 +167,8 @@ const Profile = ({ currentUser }) => {
     }
   };
 
-  // Fetch followers count
   const fetchFollowersCount = async (uid) => {
+    console.log("Запрашиваем количество подписчиков для UID:", uid);
     try {
       const followsQuery = query(
         collection(db, "follows"),
@@ -185,15 +181,13 @@ const Profile = ({ currentUser }) => {
     }
   };
 
-  // Обработчик клика по карточке пилота, переход на страницу pilotdetails
   const handlePilotSelect = (pilot) => {
     const pilotLastName = normalizeName(pilot.Driver.familyName);
     navigate(`/pilot-details/${pilotLastName}`);
   };
 
-  // Обработчик клика по количеству подписчиков, переход на страницу списка подписчиков
   const handleFollowersClick = () => {
-    navigate(`/userprofile/${uid}/followers`);
+    navigate(`/userprofile/${profileUid}/followers`);
   };
 
   if (loading) {
@@ -211,12 +205,11 @@ const Profile = ({ currentUser }) => {
   if (!profileUser) {
     return (
       <div style={{ width: "100vw", height: "100vh", backgroundColor: "#1D1D1F", display: "flex", justifyContent: "center", alignItems: "center", color: "white" }}>
-        {uid}
+        {profileUid}
       </div>
     );
   }
 
-  // Если любимый пилот найден, получаем его полное имя и перевод
   let pilotFullName = "";
   let translatedName = "";
   if (favoritePilot) {
@@ -239,7 +232,7 @@ const Profile = ({ currentUser }) => {
         </div>
       </div>
 
-      <h3 style={{ marginTop: "20px", marginBottom: "20px", width: "calc(100% - 40px)"}}>Любимый пилот: </h3>
+      <h3 style={{ marginTop: "20px", marginBottom: "20px", width: "calc(100% - 40px)" }}>Любимый пилот: </h3>
       {favoritePilot ? (
         <div
           onClick={() => handlePilotSelect(favoritePilot)}
