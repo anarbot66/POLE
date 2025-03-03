@@ -80,9 +80,8 @@ const normalizeName = (name) => {
     .toLowerCase();
 };
 
-const Profile = () => {
-  // Используем переименование, чтобы явно обозначить, что это uid из URL
-  const { uid: profileUid } = useParams();
+const Profile = ({ currentUser }) => {
+  const { uid } = useParams(); // Получаем uid из URL
   const navigate = useNavigate();
   const [profileUser, setProfileUser] = useState(null);
   const [favoritePilot, setFavoritePilot] = useState(null);
@@ -92,13 +91,30 @@ const Profile = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      console.log("Получаем profileUid из useParams:", profileUid);
-      if (!profileUid) return;
-
+      console.log("Получаем UID из useParams:", uid);
+  
+      if (!uid) return;
+  
+      // Проверяем, был ли загружен currentUser
+      if (!currentUser) {
+        console.log("Текущий пользователь ещё не загружен.");
+        return; // Ранний выход, если текущий пользователь ещё не инициализирован
+      }
+  
       try {
-        console.log("Fetching data for profileUid:", profileUid);
-        await fetchUserAndFavorites(profileUid);
-        await fetchFollowersCount(profileUid);
+        console.log("Fetching data for UID:", uid);
+        console.log("Текущий пользователь (currentUser):", currentUser);
+  
+        if (currentUser && uid === currentUser.uid) {
+          console.log("UID совпадает с currentUser.uid");
+          setProfileUser(currentUser);
+          await loadFavorites(currentUser.uid);
+        } else {
+          console.log("UID не совпадает с currentUser.uid, загружаем данные по UID:", uid);
+          await fetchUserAndFavorites(uid);
+        }
+  
+        await fetchFollowersCount(uid);
       } catch (err) {
         setError("Ошибка загрузки данных");
         console.error("Error loading data:", err);
@@ -106,9 +122,10 @@ const Profile = () => {
         setLoading(false);
       }
     };
-
+  
     loadData();
-  }, [profileUid]);
+  }, [currentUser, uid]); // Следим за изменениями currentUser и uid
+  
 
   const fetchUserAndFavorites = async (uid) => {
     console.log("Выполняем fetchUserAndFavorites для UID:", uid);
@@ -187,7 +204,7 @@ const Profile = () => {
   };
 
   const handleFollowersClick = () => {
-    navigate(`/userprofile/${profileUid}/followers`);
+    navigate(`/userprofile/${uid}/followers`);
   };
 
   if (loading) {
@@ -205,7 +222,7 @@ const Profile = () => {
   if (!profileUser) {
     return (
       <div style={{ width: "100vw", height: "100vh", backgroundColor: "#1D1D1F", display: "flex", justifyContent: "center", alignItems: "center", color: "white" }}>
-        {profileUid}
+        {uid}
       </div>
     );
   }
@@ -232,7 +249,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <h3 style={{ marginTop: "20px", marginBottom: "20px", width: "calc(100% - 40px)" }}>Любимый пилот: </h3>
+      <h3 style={{ marginTop: "20px", marginBottom: "20px", width: "calc(100% - 40px)"}}>Любимый пилот: </h3>
       {favoritePilot ? (
         <div
           onClick={() => handlePilotSelect(favoritePilot)}
