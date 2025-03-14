@@ -7,7 +7,7 @@ const getFormattedDate = () => {
     "января", "февраля", "марта", "апреля", "мая", "июня", 
     "июля", "августа", "сентября", "октября", "ноября", "декабря"
   ];
-  const month = monthNames[now.getMonth()]; // Используем правильный месяц
+  const month = monthNames[now.getMonth()];
   const year = now.getFullYear();
   
   return `${day} ${month} ${year}`;
@@ -18,7 +18,6 @@ const ConstructorsList = ({ onConstructorSelect }) => {
   const [drivers, setDrivers] = useState([]);
   const [error, setError] = useState(null);
   const formattedDate = getFormattedDate();
-  
 
   // Цвета команд
   const teamColors = {
@@ -138,9 +137,6 @@ const ConstructorsList = ({ onConstructorSelect }) => {
           display: "flex",
           flexDirection: "column"
         }}>
-        <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px"}}>
-        {`Сегодня: ${formattedDate}`}
-        </h3>
         <h4 style={{ fontSize: "12px", color: "lightgray" }}>
           Кликни по конструктору чтобы узнать подробнее
         </h4>

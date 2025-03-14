@@ -51,7 +51,7 @@ const formatRaceWeekend = (firstPracticeDate, raceDate) => {
   return `${startDate.getDate()} ${months[startDate.getMonth()]}`;
 };
 
-const RacesList = () => {
+const RacesList = ({ currentUser }) => {
   const [races, setRaces] = useState([]);
   const [selectedRace, setSelectedRace] = useState(null);
   const [error, setError] = useState(null);
@@ -88,7 +88,7 @@ const RacesList = () => {
           textAlign: "center"
         }}
       >
-        Загрузка...
+        
       </div>
     );
 
@@ -150,6 +150,26 @@ const RacesList = () => {
           flexDirection: "column"
         }}
       >
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "10px",
+          backgroundColor: "#212124",
+          borderRadius: 15,
+          width: "100%"
+        }}
+      >
+        <img
+          src={currentUser.photoUrl || "https://placehold.co/80x80"}
+          alt="Avatar"
+          style={{ width: "30px", height: "30px", borderRadius: "50%" }}
+        />
+
+        <span style={{color: "white", padding: "10px"}}>Расписание</span>
+      </div>
         {/* Блок с информацией о следующей гонке */}
         {nextRace && (
           <div
@@ -159,7 +179,8 @@ const RacesList = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
-              gap: 10
+              gap: 10,
+              marginTop: "15px"
             }}
           >
             <div
@@ -168,7 +189,7 @@ const RacesList = () => {
                 height: "100%",
                 padding: 20,
                 background: "#212124",
-                borderRadius: 30,
+                borderRadius: 15,
                 display: "flex",
                 flexDirection: "column",
                 gap: 10

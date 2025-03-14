@@ -1,0 +1,203 @@
+{
+    "max_verstappen": {
+      "personalChampionships": 4,
+      "constructorsChampionships": 2,
+      "races": 209,
+      "podiums": 112,
+      "poles": 40,
+      "wins": 60,
+      "points": 3023.5,
+      "grandSlams": 5
+    },
+    "norris": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 1,
+      "races": 128,
+      "podiums": 26,
+      "poles": 9,
+      "wins": 4,
+      "points": 1007,
+      "grandSlams": 0
+    },
+    "leclerc": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 147,
+      "podiums": 43,
+      "poles": 26,
+      "wins": 8,
+      "points": 1430,
+      "grandSlams": 1
+    },
+    "piastri": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 1,
+      "races": 46,
+      "podiums": 10,
+      "poles": 0,
+      "wins": 2,
+      "points": 389,
+      "grandSlams": 0
+    },
+    "russell": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 128,
+      "podiums": 15,
+      "poles": 5,
+      "wins": 3,
+      "points": 714,
+      "grandSlams": 0
+    },
+    "hamilton": {
+      "personalChampionships": 7,
+      "constructorsChampionships": 8,
+      "races": 356,
+      "podiums": 202,
+      "poles": 104,
+      "wins": 105,
+      "points": 4862.5,
+      "grandSlams": 6
+    },
+    "lawson": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 11,
+      "podiums": 0,
+      "poles": 0,
+      "wins": 0,
+      "points": 6,
+      "grandSlams": 0
+    },
+    "alonso": {
+      "personalChampionships": 2,
+      "constructorsChampionships": 2,
+      "races": 401,
+      "podiums": 106,
+      "poles": 22,
+      "wins": 32,
+      "points": 2337,
+      "grandSlams": 1
+    },
+    "gasly": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 153,
+      "podiums": 5,
+      "poles": 0,
+      "wins": 1,
+      "points": 436,
+      "grandSlams": 0
+    },
+    "hulkenberg": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 227,
+      "podiums": 0,
+      "poles": 0,
+      "wins": 0,
+      "points": 571,
+      "grandSlams": 0
+    },
+    "tsunoda": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 87,
+      "podiums": 0,
+      "poles": 0,
+      "wins": 0,
+      "points": 91,
+      "grandSlams": 0
+    },
+    "stroll": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 166,
+      "podiums": 3,
+      "poles": 0,
+      "wins": 0,
+      "points": 292,
+      "grandSlams": 0
+    },
+    "ocon": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 156,
+      "podiums": 4,
+      "poles": 0,
+      "wins": 1,
+      "points": 445,
+      "grandSlams": 0
+    },
+    "bearman": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 3,
+      "podiums": 0,
+      "poles": 0,
+      "wins": 0,
+      "points": 7,
+      "grandSlams": 0
+    },
+    "albon": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 104,
+      "podiums": 2,
+      "poles": 0,
+      "wins": 0,
+      "points": 240,
+      "grandSlams": 0
+    },
+    "sainz": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 206,
+      "podiums": 27,
+      "poles": 6,
+      "wins": 4,
+      "points": 1272.5,
+      "grandSlams": 0
+    },
+    "hadjar": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 0,
+      "podiums": 0,
+      "poles": 0,
+      "wins": 0,
+      "points": 0,
+      "grandSlams": 0
+    },
+    "bortoleto": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 0,
+      "podiums": 0,
+      "poles": 0,
+      "wins": 0,
+      "points": 0,
+      "grandSlams": 0
+    },
+    "antonelli": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 0,
+      "podiums": 0,
+      "poles": 0,
+      "wins": 0,
+      "points": 0,
+      "grandSlams": 0
+    },
+    "doohan": {
+      "personalChampionships": 0,
+      "constructorsChampionships": 0,
+      "races": 1,
+      "podiums": 0,
+      "poles": 0,
+      "wins": 0,
+      "points": 0,
+      "grandSlams": 0
+    }
+  }
+  

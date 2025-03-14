@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../firebase";
 import {
   collection,
   query,
   where,
+  orderBy,
   getDocs,
   addDoc,
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
 
+// Цвета команд и другие данные
 const teamColors = {
   "McLaren": "#F48021",
   "Ferrari": "#FF0000",
@@ -76,19 +78,25 @@ const nationalityToFlag = {
   "South African": "za",
 };
 
-// Функция для нормализации фамилии
 const normalizeName = (name) => {
   if (name === "Magnussen") return "kevin_magnussen";
   if (name === "Verstappen") return "max_verstappen";
   return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 };
 
+const formatDate = (dateInput) => {
+    const date = typeof dateInput === "object" ? dateInput : new Date(dateInput);
+    const dayMonth = date.toLocaleString("ru-RU", { day: "numeric", month: "long" });
+    const time = date.toLocaleString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+    return `${dayMonth} в ${time}`;
+  };
+
 const UserProfile = ({ currentUser }) => {
   const navigate = useNavigate();
-  const { uid } = useParams(); // Получаем uid из URL
+  const { uid } = useParams(); // uid профиля, который отображается
   const location = useLocation();
-  // Берем из state, если передано, иначе используем currentUser.uid
-  const currentUserUid = location.state?.currentUserUid || currentUser.uid;
+  // Если в state передали currentUserUid, используем его, иначе currentUser.uid
+  const currentUserUid = location.state?.currentUserUid || currentUser?.uid;
 
   const goBack = () => {
     navigate(-1);
@@ -97,11 +105,14 @@ const UserProfile = ({ currentUser }) => {
   const [profileUser, setProfileUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [favoritePilot, setFavoritePilot] = useState(null);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [followersCount, setFollowersCount] = useState(0); // New state for followers count
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followsYou, setFollowsYou] = useState(false);
 
-  // Загружаем данные профиля и избранного пилота
+
+  // Загружаем данные профиля, избранного пилота, подписчиков и посты
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -114,7 +125,8 @@ const UserProfile = ({ currentUser }) => {
           console.log("Пользователь не найден.");
         }
         await loadFavorites(uid);
-        await fetchFollowersCount(uid); // Fetch followers count
+        await fetchFollowersCount(uid);
+        await fetchPosts(uid);
       } catch (err) {
         console.error("Ошибка при загрузке данных профиля:", err);
         setError("Ошибка загрузки данных профиля");
@@ -125,9 +137,11 @@ const UserProfile = ({ currentUser }) => {
     fetchProfileData();
   }, [uid]);
 
-  // Проверяем, подписан ли текущий пользователь на этого пользователя
+  
+
+  // Проверяем, подписан ли текущий пользователь на данного пользователя
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && currentUserUid) {
       const checkIfFollowing = async () => {
         try {
           const followsQuery = query(
@@ -145,7 +159,27 @@ const UserProfile = ({ currentUser }) => {
     }
   }, [currentUser, uid, currentUserUid]);
 
-  // Fetch followers count
+  useEffect(() => {
+    if (currentUser && currentUserUid) {
+      const checkIfTheyFollowYou = async () => {
+        try {
+          const followsYouQuery = query(
+            collection(db, "follows"),
+            where("followerId", "==", uid),              // uid пользователя, чей профиль вы смотрите
+            where("followingId", "==", currentUserUid)     // текущий пользователь
+          );
+          const snapshot = await getDocs(followsYouQuery);
+          setFollowsYou(!snapshot.empty);
+        } catch (err) {
+          console.error("Ошибка при проверке обратной подписки:", err);
+        }
+      };
+      checkIfTheyFollowYou();
+    }
+  }, [currentUser, uid, currentUserUid]);
+  
+
+  // Получаем количество подписчиков
   const fetchFollowersCount = async (uid) => {
     try {
       const followsQuery = query(
@@ -159,6 +193,26 @@ const UserProfile = ({ currentUser }) => {
     }
   };
 
+  // Загружаем посты пользователя (сортировка: новые сверху)
+  const fetchPosts = async (uid) => {
+    try {
+      const postsQuery = query(
+        collection(db, "posts"),
+        where("uid", "==", uid),
+        orderBy("createdAt", "desc")
+      );
+      const snapshot = await getDocs(postsQuery);
+      const userPosts = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setPosts(userPosts);
+    } catch (err) {
+      console.error("Ошибка при загрузке постов:", err);
+      setError("Ошибка при загрузке постов");
+    }
+  };
+
   // Функции подписки/отписки
   const handleFollow = async () => {
     try {
@@ -167,9 +221,10 @@ const UserProfile = ({ currentUser }) => {
         followingId: uid,
       });
       setIsFollowing(true);
-      setFollowersCount((prevCount) => prevCount + 1); // Increment followers count
+      setFollowersCount((prev) => prev + 1);
     } catch (err) {
       console.error("Ошибка при подписке:", err);
+      setError("Ошибка при подписке: " + err.message);
     }
   };
 
@@ -185,13 +240,14 @@ const UserProfile = ({ currentUser }) => {
         await deleteDoc(doc(db, "follows", docSnapshot.id));
       });
       setIsFollowing(false);
-      setFollowersCount((prevCount) => prevCount - 1); // Decrement followers count
+      setFollowersCount((prev) => prev - 1);
     } catch (err) {
       console.error("Ошибка при отписке:", err);
+      setError("Ошибка при отписке: " + err.message);
     }
   };
 
-  // Загружаем избранного пилота из Firestore и получаем данные через API
+  // Загружаем избранного пилота
   const loadFavorites = async (uid) => {
     try {
       const favQuery = query(
@@ -200,7 +256,6 @@ const UserProfile = ({ currentUser }) => {
       );
       const favSnapshot = await getDocs(favQuery);
       if (!favSnapshot.empty) {
-        // Если выбран только один любимый пилот:
         const favData = favSnapshot.docs[0].data();
         const favoritePilotId = favData.pilotId;
         console.log("Favorite pilotId из Firestore:", favoritePilotId);
@@ -219,7 +274,8 @@ const UserProfile = ({ currentUser }) => {
       const response = await fetch(
         "https://api.jolpi.ca/ergast/f1/2024/driverStandings.json"
       );
-      if (!response.ok) throw new Error("Ошибка получения данных пилотов");
+      if (!response.ok)
+        throw new Error("Ошибка получения данных пилотов");
       const data = await response.json();
       const drivers =
         data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings;
@@ -237,16 +293,19 @@ const UserProfile = ({ currentUser }) => {
     }
   };
 
-  // Обработчик клика по карточке пилота – переходим на страницу деталей
   const handlePilotSelect = (pilot) => {
     const pilotLastName = normalizeName(pilot.Driver.familyName);
     navigate(`/pilot-details/${pilotLastName}`);
   };
 
-  // Обработчик клика по количеству подписчиков, переход на страницу списка подписчиков
   const handleFollowersClick = () => {
-    navigate(`/userprofile/${uid}/followers`);
+    if (profileUser && profileUser.username) {
+      navigate(`/userprofile/${profileUser.username}/followers`, {
+        state: { currentUserUid },
+      });
+    }
   };
+  
 
   if (loading) {
     return (
@@ -293,31 +352,32 @@ const UserProfile = ({ currentUser }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        paddingTop: "20px",
+        padding: "20px",
         color: "white",
+        marginBottom: "100px"
       }}
     >
-
-        <button
-          onClick={goBack}
-          style={{
-            position: "absolute",
-            backgroundColor: "#1D1D1F",
-            color: "white",
-            border: "none",
-            padding: "5px 10px",
-            borderRadius: "10px",
-            cursor: "pointer",
-            zIndex: "1000",
-            left: "30px",
-            top: "30px"
-          }}
-        >
-          ✕
-        </button>
+      <button
+        onClick={goBack}
+        style={{
+          position: "absolute",
+          backgroundColor: "#1D1D1F",
+          color: "white",
+          border: "none",
+          padding: "5px 10px",
+          borderRadius: "10px",
+          cursor: "pointer",
+          zIndex: "1000",
+          left: "30px",
+          top: "30px",
+        }}
+      >
+        ✕
+      </button>
+      {/* Информация о пользователе */}
       <div
         style={{
-          width: "calc(100% - 40px)",
+          width: "100%",
           padding: 20,
           background: "#212124",
           borderRadius: 15,
@@ -325,13 +385,12 @@ const UserProfile = ({ currentUser }) => {
           flexDirection: "column",
           alignItems: "center",
           gap: 12,
-          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
         }}
       >
         <img
           src={profileUser.photoUrl}
           alt="Аватар"
-          style={{ width: 80, height: 80, background: "#D9D9D9", borderRadius: "50%" }}
+          style={{ width: 80, height: 80, borderRadius: "50%" }}
         />
         <div style={{ fontSize: 18, fontWeight: "500", textAlign: "center" }}>
           {profileUser.firstName} {profileUser.lastName}
@@ -339,38 +398,47 @@ const UserProfile = ({ currentUser }) => {
         <div style={{ fontSize: 14, color: "#7E7E7E", textAlign: "center" }}>
           @{profileUser.username}
         </div>
-        <div style={{ fontSize: 14, color: "#7E7E7E", textAlign: "center" }}>
-          Подписчики:{" "}
-          <span
-            style={{ color: "#0077FF", cursor: "pointer" }}
-            onClick={handleFollowersClick}
-          >
-            {followersCount}
-          </span>
+        <div
+          style={{ fontSize: 14, color: "#7E7E7E", textAlign: "center", cursor: "pointer" }}
+          onClick={handleFollowersClick}
+        >
+          Подписчики: {followersCount}
         </div>
         <button
-          onClick={isFollowing ? handleUnfollow : handleFollow}
-          style={{
-            marginTop: "20px",
-            backgroundColor: isFollowing ? "#1D1D1F" : "#0077FF",
-            color: "white",
-            border: "none",
-            padding: "10px 20px",
-            borderRadius: "10px",
-            cursor: "pointer",
-          }}
-        >
-          {isFollowing ? "Вы подписаны" : "Подписаться"}
-        </button>
+        onClick={isFollowing ? handleUnfollow : handleFollow}
+        style={{
+          marginTop: "20px",
+          backgroundColor: isFollowing ? "#1D1D1F" : "#0077FF",
+          color: "white",
+          border: "none",
+          padding: "10px 20px",
+          borderRadius: "10px",
+          cursor: "pointer",
+        }}
+      >
+        {isFollowing
+          ? "Вы подписаны"
+          : (followsYou ? "Подписаться в ответ" : "Подписаться")}
+      </button>
+
       </div>
 
-      {/* Блок с карточкой любимого пилота */}
-      <h3 style={{ marginTop: "20px", marginBottom: "20px", width: "calc(100% - 40px)"}}>Любимый пилот</h3>
+      {/* Блок с любимым пилотом */}
+      <h3
+        style={{
+          marginTop: "20px",
+          marginBottom: "20px",
+          width: "100%",
+          textAlign: "center",
+        }}
+      >
+        Любимый пилот
+      </h3>
       {favoritePilot ? (
         <div
           onClick={() => handlePilotSelect(favoritePilot)}
           style={{
-            width: "calc(100% - 40px)",
+            width: "100%",
             background: "#212124",
             borderRadius: "20px",
             display: "flex",
@@ -394,7 +462,8 @@ const UserProfile = ({ currentUser }) => {
           >
             <div
               style={{
-                color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
+                color:
+                  teamColors[favoritePilot.Constructors[0].name] || "#000000",
                 fontSize: "24px",
                 fontWeight: "600",
               }}
@@ -417,7 +486,9 @@ const UserProfile = ({ currentUser }) => {
                   `${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`}
               </div>
               <img
-                src={`https://flagcdn.com/w40/${nationalityToFlag[favoritePilot.Driver.nationality] || "un"}.png`}
+                src={`https://flagcdn.com/w40/${
+                  nationalityToFlag[favoritePilot.Driver.nationality] || "un"
+                }.png`}
                 alt={favoritePilot.Driver.nationality}
                 style={{ width: "15px", height: "15px", borderRadius: "50%", objectFit: "cover" }}
               />
@@ -443,6 +514,78 @@ const UserProfile = ({ currentUser }) => {
       ) : (
         <div style={{ textAlign: "center" }}>Нет избранного пилота</div>
       )}
+
+      {/* Отображение постов пользователя */}
+      <div style={{ width: "100%", marginTop: "20px" }}>
+        {posts.length > 0 ? (
+          posts.map((post) => (
+            <div
+              key={post.id}
+              style={{
+                width: "100%",
+                alignItems: "flex-start",
+                gap: "20px",
+                marginBottom: "20px",
+              }}
+            >
+              <div
+              style={{
+                display: "flex", alignItems: "center", gap: "15px"
+              }}>
+                {/* Аватарка пользователя */}
+              <img
+                src={profileUser.photoUrl || "https://placehold.co/50x50"}
+                alt="avatar"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
+                  <div>
+                    <strong style={{ fontSize: "14px", color: "#ddd" }}>
+                    {profileUser.firstName} {profileUser.lastName}
+                    </strong>
+                    <span
+                      style={{
+                        fontSize: "16px",
+                        color: "white",
+                        marginLeft: "10px",
+                      }}
+                    >
+                    </span>
+                  </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: "5px",
+                  }}
+                >
+                  <small style={{ color: "#888" }}>
+                  {formatDate(post.createdAt?.toDate ? post.createdAt.toDate() : post.createdAt)}
+                  </small>
+                </div>
+                <div
+                  style={{
+                    borderRadius: "12px",
+                    marginTop: "5px",
+                    color: "white",
+                  }}
+                >
+                  {post.text}
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>Постов пока нет.</p>
+        )}
+      </div>
     </div>
   );
 };

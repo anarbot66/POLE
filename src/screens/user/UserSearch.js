@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../../firebase"; // убедитесь, что путь корректный
+import { db } from "../../firebase";
 import { collection, query, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 const UserSearch = ({ currentUser }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("@"); // Устанавливаем начальное значение как "@"
   const [results, setResults] = useState([]);
   const navigate = useNavigate();
 
@@ -12,22 +12,49 @@ const UserSearch = ({ currentUser }) => {
     navigate(-1);
   };
 
-  // Debounce для уменьшения количества запросов
+  // Загружаем всех пользователей при первой загрузке
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const q = query(collection(db, "users"));
+        const snapshot = await getDocs(q);
+        const users = snapshot.docs.map(doc => doc.data());
+
+        // Исключаем текущего пользователя из списка
+        const filteredUsers = users.filter(user => user.uid !== currentUser.uid);
+        setResults(filteredUsers);
+      } catch (error) {
+        console.error("Ошибка при загрузке пользователей:", error);
+      }
+    };
+    loadUsers();
+  }, [currentUser.uid]);
+
+  // Debounce для уменьшения количества запросов при вводе
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      if (searchTerm.trim() !== "") {
+      if (searchTerm.trim() !== "@" && searchTerm.trim() !== "") {
         performSearch();
+      } else if (searchTerm.trim() === "@") {
+        // Если в строке только "@", показываем всех пользователей
+        const loadUsers = async () => {
+          const q = query(collection(db, "users"));
+          const snapshot = await getDocs(q);
+          const users = snapshot.docs.map(doc => doc.data());
+          const filteredUsers = users.filter(user => user.uid !== currentUser.uid);
+          setResults(filteredUsers);
+        };
+        loadUsers();
       } else {
         setResults([]);
       }
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  }, [searchTerm, currentUser.uid]);
 
   const performSearch = async () => {
     try {
-      // Загружаем всех пользователей
       const q = query(collection(db, "users"));
       const snapshot = await getDocs(q);
       const users = snapshot.docs.map(doc => doc.data());
@@ -45,7 +72,7 @@ const UserSearch = ({ currentUser }) => {
           return fullName.includes(term);
         });
       }
-      // Исключаем самого себя из результатов
+
       filteredUsers = filteredUsers.filter(user => user.uid !== currentUser.uid);
       setResults(filteredUsers);
     } catch (error) {
@@ -54,8 +81,10 @@ const UserSearch = ({ currentUser }) => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <div style={{ width: "100%", position: "fixed", display: "flex" }}>
+    <div style={{ padding: "10px" }}>
+      
+      <div style={{ width: "100%", position: "fixed", display: "flex"}}>
+        
         <button
           onClick={goBack}
           style={{
@@ -78,12 +107,12 @@ const UserSearch = ({ currentUser }) => {
           style={{
             marginLeft: "10px",
             background: "#212124",
-            width: "calc(100% - 100px)",
+            width: "calc(100% - 85px)",
             padding: "15px",
             fontSize: "16px",
             borderRadius: "10px",
             color: "white",
-            border: "none"
+            border: "none",
           }}
         />
       </div>
@@ -92,17 +121,15 @@ const UserSearch = ({ currentUser }) => {
           results.map((user, index) => (
             <div
               key={index}
-              onClick={() => navigate(`/userprofile/${user.uid}`, { state: { currentUserUid: currentUser.uid } })}  // Навигация к профилю пользователя
+              onClick={() => navigate(`/userprofile/${user.uid}`, { state: { currentUserUid: currentUser.uid } })}
               style={{
                 padding: "10px",
                 display: "flex",
                 alignItems: "center",
                 gap: "10px",
-                borderBottom: "1px solid #444",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
             >
-              {/* Аватарка пользователя */}
               <div
                 style={{
                   width: "50px",
@@ -112,7 +139,7 @@ const UserSearch = ({ currentUser }) => {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  overflow: "hidden"
+                  overflow: "hidden",
                 }}
               >
                 <img
@@ -121,7 +148,6 @@ const UserSearch = ({ currentUser }) => {
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
               </div>
-              {/* Информация о пользователе */}
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <span style={{ color: "white", fontSize: "14px" }}>
                   {user.firstName} {user.lastName}

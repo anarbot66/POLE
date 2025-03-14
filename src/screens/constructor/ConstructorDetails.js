@@ -1,8 +1,62 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import seasonsData from "../recources/json/seasons"; // Загружаем данные о сезонах конструктора
+import SocialIcons from "../../screens/recources/SocialIcons";
+import CustomSelect from "../user/components/CustomSelect"; // Обновите путь в зависимости от структуры проекта
 
-// Словарь для преобразования имен конструкторов в API-формат
+const teamSocial = {
+  "McLaren": {
+    twitter: "https://twitter.com/McLarenF1",
+    instagram: "https://www.instagram.com/mclaren",
+    tiktok: "https://www.tiktok.com/@mclaren"
+  },
+  "Ferrari": {
+    twitter: "https://twitter.com/ScuderiaFerrari",
+    instagram: "https://www.instagram.com/scuderiaferrari/",
+    tiktok: "https://www.tiktok.com/@scuderiaferrari"
+  },
+  "Red Bull": {
+    twitter: "https://twitter.com/redbullracing",
+    instagram: "https://www.instagram.com/redbullracing/",
+    tiktok: "https://www.tiktok.com/@redbullracing"
+  },
+  "Mercedes": {
+    twitter: "https://twitter.com/MercedesAMGF1",
+    instagram: "https://www.instagram.com/mercedesamgf1/",
+    tiktok: "https://www.tiktok.com/@mercedesamgf1"
+  },
+  "Aston Martin": {
+    twitter: "https://twitter.com/AstonMartinF1",
+    instagram: "https://www.instagram.com/astonmartinf1/",
+    tiktok: "https://www.tiktok.com/@astonmartinf1"
+  },
+  "Alpine F1 Team": {
+    twitter: "https://twitter.com/AlpineF1Team",
+    instagram: "https://www.instagram.com/alpinef1team/",
+    tiktok: "https://www.tiktok.com/@alpinef1team"
+  },
+  "Haas F1 Team": {
+    twitter: "https://twitter.com/HaasF1Team",
+    instagram: "https://www.instagram.com/haasf1team/",
+    tiktok: "https://www.tiktok.com/@haasf1official"
+  },
+  "RB F1 Team": {
+    twitter: "https://twitter.com/visacashapprb",
+    instagram: "https://www.instagram.com/visacashapprb/",
+    tiktok: "https://www.tiktok.com/@visacashapprb"
+  },
+  "Williams": {
+    twitter: "https://twitter.com/WilliamsRacing",
+    instagram: "https://www.instagram.com/williamsracing/",
+    tiktok: "https://www.tiktok.com/@williamsracing"
+  },
+  "Sauber": {
+    twitter: "https://twitter.com/stakef1team_ks",
+    instagram: "https://www.instagram.com/stakef1team/",
+    tiktok: "https://www.tiktok.com/@stakef1team_ks"
+  }
+};
+
 const constructorApiNames = {
   "Red Bull": "red_bull",
   "McLaren": "mclaren",
@@ -16,7 +70,6 @@ const constructorApiNames = {
   "Mercedes": "mercedes"
 };
 
-// Цвета команд
 const teamColors = {
   "Red Bull": "#001690",
   "McLaren": "#F48021",
@@ -30,7 +83,6 @@ const teamColors = {
   "Mercedes": "#00A19C"
 };
 
-// Биографии команд
 const teamBiographies = {
   "Red Bull": "Red Bull Racing – австрийская команда Формулы-1, участник чемпионата мира с 2005 года. Известна своими инновациями и отличными результатами в гонках.",
   "McLaren": "McLaren – британская команда Формулы-1, одна из самых успешных в истории спорта. Основана в 1963 году и выиграла множество чемпионатов.",
@@ -52,22 +104,24 @@ const ConstructorDetails = ({ constructor, goBack }) => {
   const [points, setPoints] = useState(""); // Очки конструктора
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [biography, setBiography] = useState(""); // Стейт для биографии команды
+  const [biography, setBiography] = useState(""); // Биография команды
   const [activeTab, setActiveTab] = useState("biography"); // Стейт для активной вкладки
   const [seasons, setSeasons] = useState([]);
   const [selectedSeason, setSelectedSeason] = useState("2023");
   const [seasonStats, setSeasonStats] = useState({ wins: 0, podiums: 0, poles: 0 });
   const navigate = useNavigate();
 
-  // Загружаем данные о сезонах конструктора из JSON
+  // Загружаем данные о сезонах конструктора из JSON и устанавливаем биографию
   useEffect(() => {
     if (!constructor) return;
-
-    const formattedConstructorName = constructorApiNames[constructor.Constructor.name] || constructor.Constructor.name.toLowerCase().replace(/\s+/g, "");
+    
+    const formattedConstructorName = constructorApiNames[constructor.Constructor.name] || 
+      constructor.Constructor.name.toLowerCase().replace(/\s+/g, "");
+      
     setSeasons(seasonsData[formattedConstructorName] || []);
     setBiography(teamBiographies[constructor.Constructor.name] || "Биография команды не найдена.");
 
-    // Загружаем статистику за текущий сезон (2024)
+    // Загружаем статистику за текущий сезон (например, 2024)
     fetchCurrentSeasonStats();
   }, [constructor]);
 
@@ -77,7 +131,7 @@ const ConstructorDetails = ({ constructor, goBack }) => {
       const formattedConstructorName =
         constructorApiNames[constructor.Constructor.name] ||
         constructor.Constructor.name.toLowerCase().replace(/\s+/g, "");
-
+        
       const response = await fetch(`https://api.jolpi.ca/ergast/f1/2024/constructors/${formattedConstructorName}/results.json?limit=100`);
       const data = await response.json();
       const racesData = data.MRData?.RaceTable?.Races || [];
@@ -105,80 +159,71 @@ const ConstructorDetails = ({ constructor, goBack }) => {
     }
   };
 
-// Функция для загрузки статистики по выбранному сезону
-// Функция для загрузки статистики по выбранному сезону
-const fetchSeasonStats = async (season) => {
-  try {
-    const formattedConstructorName =
-      constructorApiNames[constructor.Constructor.name] ||
-      constructor.Constructor.name.toLowerCase().replace(/\s+/g, "");
+  // Функция для загрузки статистики по выбранному сезону
+  const fetchSeasonStats = async (season) => {
+    try {
+      const formattedConstructorName =
+        constructorApiNames[constructor.Constructor.name] ||
+        constructor.Constructor.name.toLowerCase().replace(/\s+/g, "");
+        
+      // Запрос результатов гонок
+      const responseResults = await fetch(`https://api.jolpi.ca/ergast/f1/${season}/constructors/${formattedConstructorName}/results.json?limit=100`);
+      const dataResults = await responseResults.json();
+      const racesData = dataResults.MRData?.RaceTable?.Races || [];
 
-    // 1. Запрос для получения результатов гонок
-    const responseResults = await fetch(`https://api.jolpi.ca/ergast/f1/${season}/constructors/${formattedConstructorName}/results.json?limit=100`);
-    const dataResults = await responseResults.json();
-    const racesData = dataResults.MRData?.RaceTable?.Races || [];
+      let winCount = 0;
+      let podiumCount = 0;
+      let poleCount = 0;
 
-    let winCount = 0;
-    let podiumCount = 0;
-    let poleCount = 0;
+      racesData.forEach((race) => {
+        const top3Finishers = race.Results?.filter((driver) => parseInt(driver.position) <= 3) || [];
+        const poleFinishers = race.Results?.filter((driver) => driver.grid === "1") || [];
 
-    // Обрабатываем данные по гонкам
-    racesData.forEach((race) => {
-      const top3Finishers = race.Results?.filter((driver) => parseInt(driver.position) <= 3) || [];
-      const poleFinishers = race.Results?.filter((driver) => driver.grid === "1") || [];
+        if (top3Finishers.some((driver) => parseInt(driver.position) === 1)) winCount++;
+        if (top3Finishers.length > 0) podiumCount++;
+        if (poleFinishers.length > 0) poleCount++;
+      });
 
-      if (top3Finishers.some((driver) => parseInt(driver.position) === 1)) winCount++;
-      if (top3Finishers.length > 0) podiumCount++;
-      if (poleFinishers.length > 0) poleCount++;
-    });
+      // Запрос для получения данных о позиции и очках конструктора
+      const responseStandings = await fetch(`https://api.jolpi.ca/ergast/f1/${season}/constructorstandings.json`);
+      const dataStandings = await responseStandings.json();
+      const constructorData = dataStandings?.MRData?.StandingsTable?.StandingsLists[0]?.ConstructorStandings || [];
+      
+      const constructorInfo = constructorData.find(item => item.Constructor?.name === constructor.Constructor.name);
+      let constructorPosition = "-";
+      let constructorPoints = "-";
 
-    // 2. Запрос для получения текущих данных о позиции и очках конструктора
-    const responseStandings = await fetch(`https://api.jolpi.ca/ergast/f1/${season}/constructorstandings.json`);
-    const dataStandings = await responseStandings.json();
-    const constructorData = dataStandings?.MRData?.StandingsTable?.StandingsLists[0]?.ConstructorStandings || [];
-    
-    // Найдем данные о нужном конструкторе
-    const constructorInfo = constructorData.find(item => item.Constructor?.name === constructor.Constructor.name);
-    let constructorPosition = "-"; // Изначально пустая позиция
-    let constructorPoints = "-";  // Изначально пустые очки
+      if (constructorInfo) {
+        constructorPosition = constructorInfo.position || "-";
+        constructorPoints = constructorInfo.points || "-";
+      }
 
-    if (constructorInfo) {
-      constructorPosition = constructorInfo.position || "-";  // Позиция конструктора
-      constructorPoints = constructorInfo.points || "-";     // Очки конструктора
+      setSeasonStats({ wins: winCount, podiums: podiumCount, poles: poleCount });
+      setPosition(constructorPosition);
+      setPoints(constructorPoints);
+    } catch (error) {
+      console.error("Ошибка загрузки статистики сезона:", error);
+      setSeasonStats({ wins: 0, podiums: 0, poles: 0 });
+      setPosition("-");
+      setPoints("-");
     }
-
-    // Обновляем стейты
-    setSeasonStats({ wins: winCount, podiums: podiumCount, poles: poleCount });
-    setPosition(constructorPosition);
-    setPoints(constructorPoints);  // Обновляем очки конструктора
-  } catch (error) {
-    console.error("Ошибка загрузки статистики сезона:", error);
-    setSeasonStats({ wins: 0, podiums: 0, poles: 0 });
-    setPosition("-");
-    setPoints("-");  // Если произошла ошибка, ставим дефолтные значения
-  }
-};
-
-
-
-
-
-
-
-
-  
-
-  useEffect(() => {
-    fetchSeasonStats(selectedSeason);
-  }, [selectedSeason]);
-
-  // Обработка переключения вкладок
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
   };
 
-  if (!constructor) return <div> </div>;
+  // При изменении выбранного сезона загружаем статистику
+  useEffect(() => {
+    if (selectedSeason) {
+      fetchSeasonStats(selectedSeason);
+    }
+  }, [selectedSeason]);
 
+  // Обработка переключения вкладок с помощью CustomSelect
+  const tabOptions = [
+    { value: "biography", label: "Биография" },
+    { value: "seasons", label: "Сезоны" },
+  ];
+
+  if (!constructor) return <div> </div>;
+  const socialLinks = teamSocial[constructor.Constructor.name];
   const teamColor = teamColors[constructor.Constructor.name] || "#000000";
 
   return (
@@ -197,9 +242,8 @@ const fetchSeasonStats = async (season) => {
         marginTop: "10px",
       }}
     >
-      {/* Родительский контейнер с display: flex */}
+      {/* Верхняя строка: кнопка назад, название команды и соцсети */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        {/* Кнопка назад */}
         <button
           onClick={goBack}
           style={{
@@ -214,20 +258,18 @@ const fetchSeasonStats = async (season) => {
         >
           ✕
         </button>
-
-        {/* Заголовок с информацией о конструкторе */}
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start" }}>
+        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
           <div style={{ color: teamColor, fontSize: "16px", fontFamily: "Inter", fontWeight: "400" }}>
             {constructor.Constructor.name}
           </div>
         </div>
+        {socialLinks && <SocialIcons social={socialLinks} />}
       </div>
-
 
       {/* Полоска в цвет команды */}
       <div style={{ width: "100%", height: "5px", background: teamColor }} />
 
-      {/* Статистика конструктора (для текущего сезона) */}
+      {/* Статистика конструктора за текущий сезон */}
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: "12px", width: "100%" }}>
         <div style={{ width: "65px", textAlign: "center" }}>
           <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
@@ -261,50 +303,24 @@ const fetchSeasonStats = async (season) => {
         </div>
       </div>
 
-      {/* Переключение вкладок */}
-      <div style={{ width: "100%", display: "flex", justifyContent: "space-around", marginTop: "20px" }}>
-        <button
-          onClick={() => handleTabChange("biography")}
-          style={{
-            padding: "10px",
-            width: "100%",
-            margin: "5px",
-            backgroundColor: activeTab === "biography" ? teamColor : "#1D1D1F",
-            color: activeTab === "biography" ? "white" : "white",
-            border: "none",
-            borderRadius: "10px",
-            cursor: "pointer",
-            fontSize: 12
-          }}
-        >
-          Биография
-        </button>
-        <button
-          onClick={() => handleTabChange("seasons")}
-          style={{
-            padding: "10px",
-            width: "100%",
-            margin: "5px",
-            backgroundColor: activeTab === "seasons" ? teamColor : "#1D1D1F",
-            color: activeTab === "seasons" ? "white" : "white",
-            border: "none",
-            borderRadius: "10px",
-            cursor: "pointer",
-            fontSize: 12
-          }}
-        >
-          Сезоны
-        </button>
+      <div>
+        {/* Переключение вкладок через CustomSelect */}
+      <div style={{ width: "100%", marginTop: "20px" }}>
+        <CustomSelect
+          options={tabOptions}
+          value={activeTab}
+          onChange={(val) => setActiveTab(val)}
+          style={{ width: "100%" }}
+        />
       </div>
 
-      {/* Контент вкладки */}
+      {/* Контент для выбранной вкладки */}
       {activeTab === "biography" ? (
-        <div style={{ marginTop: "0px", padding: "10px", backgroundColor: "#1D1D1F", borderRadius: "8px" }}>
-          <strong style={{ fontSize: 13, color: "white"}}>Биография команды:</strong>
-          <p style={{ fontSize: 11, marginTop: "10px", color: "white"}}>{biography}</p>
+        <div style={{ borderRadius: "8px", padding: "10px" }}>
+          <p style={{ fontSize: 13, marginTop: "10px", color: "white" }}>{biography}</p>
         </div>
       ) : (
-        <div style={{}}>
+        <div style={{ marginTop: "20px", width: "100%" }}>
           <select
             value={selectedSeason}
             onChange={(e) => setSelectedSeason(e.target.value)}
@@ -317,7 +333,6 @@ const fetchSeasonStats = async (season) => {
               fontSize: "14px",
               color: "white",
               cursor: "pointer",
-              marginTop: "10px",
             }}
           >
             {seasons.map((season) => (
@@ -362,6 +377,7 @@ const fetchSeasonStats = async (season) => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

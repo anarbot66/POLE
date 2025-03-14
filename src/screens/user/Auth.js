@@ -50,12 +50,10 @@ const Auth = ({ user }) => {
         if (user && user.name) {
           console.log("Начинаем проверку и сохранение данных в Firestore");
 
-          // Проверка наличия пользователя в Firestore
           const q = query(collection(db, "users"), where("username", "==", user.name));
           const querySnapshot = await getDocs(q);
 
           if (querySnapshot.empty) {
-            // Загружаем фото пользователя (если оно есть)
             const photoUrl = await uploadToImgBB(user.photo_url || '');
             await setDoc(doc(db, "users", firebaseUser.uid), {
               username: user.name,

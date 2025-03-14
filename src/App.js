@@ -14,15 +14,18 @@ import Auth from "./screens/user/Auth";
 import Profile from "./screens/user/Profile";
 import UserProfile from "./screens/user/UserProfile";
 import FollowersList from "./screens/user/FollowersList";
-import UserSearch from "./screens/user/UserSearch"; // Компонент поиска пользователей
+import UserSearch from "./screens/user/UserSearch";
+import NewsCreator from "./screens/admin/NewsCreator";
+import NewsDetail from "./screens/user/NewsDetail ";
 import { db } from "./firebase";
 import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
+import Services from "./screens/user/Services";
+import InfoPage from "./screens/user/InfoPage";
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Состояния
   const [activePage, setActivePage] = useState(0);
   const [selectedConstructor, setSelectedConstructor] = useState(null);
   const [selectedRace, setSelectedRace] = useState(null);
@@ -35,7 +38,6 @@ function App() {
   const [dbCheckCompleted, setDbCheckCompleted] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Получаем данные пользователя из Telegram или задаем тестовые данные
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.expand();
@@ -53,21 +55,19 @@ function App() {
         });
       } else {
         setUser({
-          name: "Гость",
+          name: "anarbot66",
           uid: "",
           photoUrl: ""
         });
       }
     } else {
       setUser({
-        name: "TestUser",
+        name: "",
         uid: "",
         photoUrl: ""
       });
     }
   }, []);
-
-  // Если у пользователя нет photoUrl, выполняем загрузку (например, дефолтного изображения)
   useEffect(() => {
     const uploadUserPhoto = async () => {
       if (user && !user.photoUrl) {
@@ -82,14 +82,12 @@ function App() {
           });
           const data = await response.json();
           const newPhotoUrl = data.data.url;
-          // Обновляем Firestore, если пользователь уже существует
           const q = query(collection(db, "users"), where("username", "==", user.name));
           const querySnapshot = await getDocs(q);
           if (!querySnapshot.empty) {
             const userDoc = querySnapshot.docs[0];
             await setDoc(userDoc.ref, { photoUrl: newPhotoUrl }, { merge: true });
           }
-          // Обновляем локальное состояние пользователя
           setUser((prevUser) => ({
             ...prevUser,
             photoUrl: newPhotoUrl,
@@ -104,13 +102,21 @@ function App() {
     }
   }, [user]);
 
-  // Проверка наличия пользователя в базе данных (асинхронно)
   useEffect(() => {
     if (!user) return;
     const checkUserInDB = async () => {
       const q = query(collection(db, "users"), where("username", "==", user.name));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0].data();
+        setUser((prevUser) => ({
+          ...prevUser,
+          uid: userDoc.uid,            
+          firstName: userDoc.firstName, 
+          lastName: userDoc.lastName,  
+          photoUrl: userDoc.photoUrl,
+          role: userDoc.role ?? null, // Добавляем поле role, если его нет - ставим null
+        }));
         setIsAuthenticated(true);
         if (initialLoad) {
           setInitialLoad(false);
@@ -127,8 +133,8 @@ function App() {
     };
     checkUserInDB();
   }, [user, navigate, initialLoad]);
-
-  // Обновление progress bar во время загрузки
+  
+  
   useEffect(() => {
     if (loading) {
       const interval = setInterval(() => {
@@ -138,7 +144,6 @@ function App() {
     }
   }, [loading]);
 
-  // Завершаем progress bar и запускаем анимацию скрытия загрузочного экрана
   useEffect(() => {
     if (dbCheckCompleted) {
       setTimeout(() => {
@@ -152,7 +157,6 @@ function App() {
     }
   }, [dbCheckCompleted]);
 
-  // Функция для навигации между страницами
   const handlePageChange = (page) => {
     setSelectedConstructor(null);
     setSelectedRace(null);
@@ -164,8 +168,10 @@ function App() {
     } else if (page === 2) {
       navigate("/races");
     } else if (page === 3) {
-      // Переход к профилю текущего пользователя
-      navigate(`/profile/${user.uid}`);
+      navigate("/services");
+    } else if (page === 4) {
+      navigate("/profile");
+
     }
   };
 
@@ -219,18 +225,23 @@ function App() {
                   <Routes location={location}>
                     <Route path="/" element={<Auth user={user} />} />
                     <Route path="/feed" element={<Feed currentUser={user} />} />
-                    <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} />} />
+                    <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} currentUser={user} />} />
                     <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
-                    <Route path="/races" element={<RacesList onRaceSelect={handleSelectRace} />} />
+                    <Route path="/races" element={<RacesList currentUser={user} />} />
                     <Route
                       path="/constructor-details"
                       element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
                     />
                     <Route path="/races/:raceId" element={<RaceDetails />} />
                     <Route path="/profile" element={<Profile currentUser={user} />} />
-                    <Route path="/userprofile/:uid" element={<UserProfile />} />
+                    <Route path="/userprofile/:uid" element={<UserProfile currentUser={user} />} />
                     <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
-                    <Route path="/userprofile/:uid/followers" element={<FollowersList />} />
+                    <Route path="/userprofile/:username/followers" element={<FollowersList currentUser={user}/>} />
+                    <Route path="/news/new" element={<NewsCreator />} />
+                    <Route path="/news/:id" element={<NewsDetail />} />
+                    <Route path="/services" element={<Services currentUser={user}/>} />
+                    <Route path="/info" element={<InfoPage />} />
+
                   </Routes>
                 </div>
               </CSSTransition>

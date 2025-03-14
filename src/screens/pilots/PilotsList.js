@@ -17,7 +17,6 @@ const getFormattedDate = () => {
 const PilotsList = () => {
   const [pilots, setPilots] = useState([]);
   const [error, setError] = useState(null);
-  const formattedDate = getFormattedDate();
   const navigate = useNavigate();
 
   // Цвета команд
@@ -86,7 +85,6 @@ const PilotsList = () => {
     "South African": "za",
   };
 
-  // Нормализация фамилии
   const normalizeName = (name) => {
     if (name === "Magnussen") {
       return "kevin_magnussen";
@@ -99,7 +97,6 @@ const PilotsList = () => {
       .toLowerCase();
   };
 
-  // Загружаем данные о пилотах
   const fetchPilots = async () => {
     try {
       const response = await fetch('https://api.jolpi.ca/ergast/f1/2024/driverStandings.json');
@@ -151,9 +148,6 @@ const PilotsList = () => {
         display: "flex", 
         flexDirection: "column"
       }}>
-        <h3 style={{ fontSize: "14px", color: "white", textAlign: "left", marginBottom: "10px" }}>
-          {`Сегодня: ${getFormattedDate()}`}
-        </h3>
         <h4 style={{ fontSize: "12px", color: "lightgray" }}>
           Кликни по пилоту чтобы узнать подробнее
         </h4>
