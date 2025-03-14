@@ -16,7 +16,8 @@ import seasonsData from "../recources/json/seasons"; // данные о сезо
 import allTimeStats from "../recources/json/allTimeStats.json"; // статистика за всё время для 2025 года
 import SocialIcons from "../recources/SocialIcons";
 import pilotSocialData from "../recources/json/social.json";
-import CustomSelect from "../user/components/CustomSelect"; // импорт вашего кастомного селекта
+import CustomSelect from "../user/components/CustomSelect"; // импорт кастомного селекта
+import { CSSTransition } from "react-transition-group";
 
 // Словари для перевода имен на русский
 const firstNameTranslations = {
@@ -89,6 +90,8 @@ const PilotDetails = ({ currentUser }) => {
   // Состояния для избранного пилота
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
+  // Состояние для кастомного уведомления
+  const [showFavoriteAlert, setShowFavoriteAlert] = useState(false);
 
   // Функция нормализации имени
   const normalizeName = (name) => {
@@ -229,7 +232,13 @@ const PilotDetails = ({ currentUser }) => {
     }
   };
 
-  // Функция для переключения вкладок
+  // Функция для переключения вкладок (используется CustomSelect)
+  const tabOptions = [
+    { value: "biography", label: "Биография" },
+    { value: "seasons", label: "Сезоны" },
+    { value: "allTime", label: "За всё время" }
+  ];
+
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     if (tab === "seasons") {
@@ -266,7 +275,7 @@ const PilotDetails = ({ currentUser }) => {
     checkFavoriteStatus();
   }, [currentUser, pilot]);
 
-  // Добавление в избранное
+  // Добавление в избранное с кастомным уведомлением
   const handleFavorite = async () => {
     if (!currentUser || !pilot) return;
     try {
@@ -274,8 +283,8 @@ const PilotDetails = ({ currentUser }) => {
       const q = query(userFavoritesRef, where("userId", "==", currentUser.uid));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        setFavLoading(false);
-        alert("Вы уже выбрали любимого пилота!");
+        // Вместо стандартного alert – показываем кастомное уведомление
+        setShowFavoriteAlert(true);
         return;
       }
       setFavLoading(true);
@@ -333,13 +342,6 @@ const PilotDetails = ({ currentUser }) => {
   const normalizedPilotName = normalizeName(pilot.Driver.familyName);
   const allTimeData = allTimeStats[normalizedPilotName];
 
-  // Опции для кастомного селекта
-  const tabOptions = [
-    { value: "biography", label: "Биография" },
-    { value: "seasons", label: "Сезоны" },
-    { value: "allTime", label: "За всё время" }
-  ];
-
   return (
     <div
       style={{
@@ -357,7 +359,7 @@ const PilotDetails = ({ currentUser }) => {
         marginTop: "10px"
       }}
     >
-      {/* Кнопка "Назад" */}
+      {/* Кнопка "Назад" и заголовок */}
       <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
         <button
           onClick={goBack}
@@ -389,7 +391,7 @@ const PilotDetails = ({ currentUser }) => {
       {/* Полоска в цвет команды */}
       <div style={{ width: "100%", height: "5px", background: teamColor }} />
 
-      {/* Статистика пилота (сезонные данные) */}
+      {/* Статистика пилота (текущий сезон) */}
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: "12px", width: "100%" }}>
         <div style={{ width: "65px", textAlign: "center" }}>
           <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
@@ -451,8 +453,7 @@ const PilotDetails = ({ currentUser }) => {
         </button>
       )}
 
-      <div>
-        {/* Используем кастомный селект для выбора вкладок */}
+      {/* Кастомный селект для переключения вкладок */}
       <CustomSelect
         options={tabOptions}
         value={activeTab}
@@ -581,7 +582,76 @@ const PilotDetails = ({ currentUser }) => {
           )}
         </div>
       )}
-      </div>
+
+      {/* Кастомное уведомление при попытке повторного добавления в избранное */}
+      <CSSTransition
+        in={showFavoriteAlert}
+        timeout={300}
+        classNames="fade"
+        unmountOnExit
+      >
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 2000
+          }}
+        >
+          <div
+            style={{
+              background: "#1D1D1F",
+              padding: "20px",
+              borderRadius: "20px",
+              textAlign: "center",
+              color: "white",
+              maxWidth: "300px"
+            }}
+          >
+            <p style={{ marginBottom: "20px" }}>Вы уже выбрали любимого пилота</p>
+            <button
+              onClick={() => setShowFavoriteAlert(false)}
+              style={{
+                background: "#212124",
+                color: "white",
+                border: "none",
+                padding: "10px 20px",
+                borderRadius: "15px",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              Хорошо
+            </button>
+          </div>
+        </div>
+        </CSSTransition>
+
+      {/* Стили для анимации fade */}
+      <style>
+        {`
+          .fade-enter {
+            opacity: 0;
+          }
+          .fade-enter-active {
+            opacity: 1;
+            transition: opacity 300ms;
+          }
+          .fade-exit {
+            opacity: 1;
+          }
+          .fade-exit-active {
+            opacity: 0;
+            transition: opacity 300ms;
+          }
+        `}
+      </style>
     </div>
   );
 };
