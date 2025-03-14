@@ -54,11 +54,11 @@ const Auth = ({ user }) => {
           const querySnapshot = await getDocs(q);
 
           if (querySnapshot.empty) {
-            const photoUrl = await uploadToImgBB(user.photo_url || '');
+            const photoUrl = await uploadToImgBB(user.photoUrl);
             await setDoc(doc(db, "users", firebaseUser.uid), {
               username: user.name,
-              firstName: user.first_name || '',
-              lastName: user.last_name || '',
+              firstName: user.firstName,
+              lastName: user.lastName,
               photoUrl: photoUrl,
               uid: firebaseUser.uid
             });
