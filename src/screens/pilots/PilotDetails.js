@@ -19,6 +19,7 @@ import pilotSocialData from "../recources/json/social.json";
 import CustomSelect from "../user/components/CustomSelect"; // импорт кастомного селекта
 import { CSSTransition } from "react-transition-group";
 
+
 // Словари для перевода имен на русский
 const firstNameTranslations = {
   "Max": "Макс",
@@ -44,7 +45,10 @@ const firstNameTranslations = {
   "Liam": "Лиам",
   "Valtteri": "Валттери",
   "Logan": "Логан",
-  "Jack": "Джек"
+  "Jack": "Джек",
+  "Andrea Kimi" : "Кими",
+  "Gabriel" : "Габриэль",
+  "Isack": "Исак"
 };
 
 const lastNameTranslations = {
@@ -71,7 +75,10 @@ const lastNameTranslations = {
   "Lawson": "Лоусон",
   "Bottas": "Боттас",
   "Sargeant": "Сарджент",
-  "Doohan": "Дуэн"
+  "Doohan": "Дуэн",
+  "Antonelli": "Антонелли",
+  "Bortoleto": "Бортолето",
+  "Hadjar": "Хаджар"
 };
 
 const PilotDetails = ({ currentUser }) => {
