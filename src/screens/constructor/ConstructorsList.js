@@ -59,12 +59,15 @@ const ConstructorsList = ({ onConstructorSelect }) => {
     "Valtteri Bottas": "Валттери Боттас",
     "Logan Sargeant": "Логан Сарджент",
     "Jack Doohan": "Джек Дуэн",
+    "Andrea Kimi Antonelli": "Кими Антонелли",
+    "Gabriel Bortoleto": "Габриэль Бортолето",
+    "Isack Hadjar": "Исак Хаджар"
   };
 
   // Функция для получения данных по конструкторам
   const fetchConstructors = async () => {
     try {
-      const response = await fetch('https://api.jolpi.ca/ergast/f1/2024/constructorstandings.json');
+      const response = await fetch('https://api.jolpi.ca/ergast/f1/2025/constructorstandings.json');
       if (!response.ok) {
         throw new Error("Не удалось получить данные о конструкторах");
       }
@@ -84,7 +87,7 @@ const ConstructorsList = ({ onConstructorSelect }) => {
   // Функция для получения данных о пилотах
   const fetchDrivers = async () => {
     try {
-      const response = await fetch('https://api.jolpi.ca/ergast/f1/2024/driverstandings.json');
+      const response = await fetch('https://api.jolpi.ca/ergast/f1/2025/driverstandings.json');
       if (!response.ok) {
         throw new Error("Не удалось получить данные о пилотах");
       }
