@@ -107,7 +107,7 @@ const ConstructorDetails = ({ constructor, goBack }) => {
   const [biography, setBiography] = useState(""); // Биография команды
   const [activeTab, setActiveTab] = useState("biography"); // Стейт для активной вкладки
   const [seasons, setSeasons] = useState([]);
-  const [selectedSeason, setSelectedSeason] = useState("2023");
+  const [selectedSeason, setSelectedSeason] = useState("2024");
   const [seasonStats, setSeasonStats] = useState({ wins: 0, podiums: 0, poles: 0 });
   const navigate = useNavigate();
 
@@ -132,7 +132,7 @@ const ConstructorDetails = ({ constructor, goBack }) => {
         constructorApiNames[constructor.Constructor.name] ||
         constructor.Constructor.name.toLowerCase().replace(/\s+/g, "");
         
-      const response = await fetch(`https://api.jolpi.ca/ergast/f1/2024/constructors/${formattedConstructorName}/results.json?limit=100`);
+      const response = await fetch(`https://api.jolpi.ca/ergast/f1/2025/constructors/${formattedConstructorName}/results.json?limit=100`);
       const data = await response.json();
       const racesData = data.MRData?.RaceTable?.Races || [];
       let winCount = 0;

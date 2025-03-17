@@ -50,7 +50,7 @@ const BottomNavigation = ({ setActivePage }) => {
         width: "100%",
         height: 80,
         background: "#1D1D1F",
-        borderRadius: 30,
+        borderRadius: 0,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

@@ -111,7 +111,7 @@ const PilotDetails = ({ currentUser }) => {
   useEffect(() => {
     const fetchPilotInfo = async () => {
       try {
-        const response = await fetch(`https://api.jolpi.ca/ergast/f1/2024/drivers/${lastName}/driverStandings.json`);
+        const response = await fetch(`https://api.jolpi.ca/ergast/f1/2025/drivers/${lastName}/driverStandings.json`);
         if (!response.ok) throw new Error("Ошибка загрузки данных о пилоте");
         const data = await response.json();
         const pilotData = data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings[0];
