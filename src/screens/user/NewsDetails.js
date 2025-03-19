@@ -40,16 +40,36 @@ const NewsDetail = () => {
 
   if (loading) {
     return (
-      <div style={{
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "#1D1D1F",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        color: "white"
-      }}>
-        Загрузка...
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "#1D1D1F",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div className="loader"></div>
+        <style>
+          {`
+            .loader {
+              width: 50px;
+              aspect-ratio: 1;
+              --_c: no-repeat radial-gradient(farthest-side, white 92%, transparent);
+              background:
+                var(--_c) top,
+                var(--_c) left,
+                var(--_c) right,
+                var(--_c) bottom;
+              background-size: 12px 12px;
+              animation: l7 1s infinite;
+            }
+            @keyframes l7 {
+              to { transform: rotate(.5turn); }
+            }
+          `}
+        </style>
       </div>
     );
   }
@@ -71,7 +91,9 @@ const NewsDetail = () => {
   }
 
   return (
-    <div style={{
+    <div
+    className="fade-in"
+    style={{
       width: "calc(100% - 40px)",
       maxWidth: "600px",
       margin: "20px auto",

@@ -351,10 +351,11 @@ const PilotDetails = ({ currentUser }) => {
 
   return (
     <div
+    className="fade-in"
       style={{
         width: "calc(100% - 20px)",
         margin: "10px",
-        padding: "15px",
+        padding: "15px",  
         background: "#212124",
         height: "100%",
         marginBottom: "100px",
@@ -640,7 +641,6 @@ const PilotDetails = ({ currentUser }) => {
         </div>
         </CSSTransition>
 
-      {/* Стили для анимации fade */}
       <style>
         {`
           .fade-enter {

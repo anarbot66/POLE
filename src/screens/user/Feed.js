@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 import {
@@ -14,7 +14,7 @@ import {
   getCountFromServer,
 } from "firebase/firestore";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import CustomSelect from "./components/CustomSelect"; // путь обновите в зависимости от структуры проекта
+import CustomSelect from "./components/CustomSelect"; // проверьте путь
 
 const formatDate = (dateInput) => {
   if (!dateInput) return "—";
@@ -24,34 +24,37 @@ const formatDate = (dateInput) => {
   return `${dayMonth} в ${time}`;
 };
 
-const Feed = ({ currentUser }) => {
-  // Посты друзей
+const Feed = ({ currentUser, onFeedLoad }) => {
+  // Состояния для постов друзей
   const [followers, setFollowers] = useState([]);
   const [friendPosts, setFriendPosts] = useState([]);
   const [friendPostsLoading, setFriendPostsLoading] = useState(false);
   const [lastFriendPost, setLastFriendPost] = useState(null);
 
-  // Новости с пагинацией
+  // Состояния для новостей с пагинацией
   const [newsItems, setNewsItems] = useState([]);
   const [newsLoading, setNewsLoading] = useState(false);
   const [lastNewsItem, setLastNewsItem] = useState(null);
   const [totalNewsCount, setTotalNewsCount] = useState(0);
 
+  // Глобальное состояние загрузки (например, для подписок)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Строка поиска для новостей
+  // Состояния для поиска и переключения вкладок
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Активная вкладка: "news" или "followers"
   const [activeTab, setActiveTab] = useState("news");
 
   const navigate = useNavigate();
-
-  // Состояние для выпадающего меню новостей (для удаления)
+  // Состояние для открытия меню новости. Открыто только одно меню одновременно.
   const [openNewsMenuId, setOpenNewsMenuId] = useState(null);
+  // Создаём ref для CSSTransition, чтобы избежать findDOMNode
+  const nodeRef = useRef(null);
 
-  // Функция для получения текущей даты (пример)
+  // Используем ref, чтобы onFeedLoad вызывался только один раз для каждой вкладки
+  const onFeedLoadCalled = useRef(false);
+
+  // Функция для форматирования текущей даты
   const getFormattedDate = () => {
     const now = new Date();
     const day = now.getDate();
@@ -66,7 +69,7 @@ const Feed = ({ currentUser }) => {
 
   const formattedDate = getFormattedDate();
 
-  // Фильтрация новостей по строке поиска (по заголовку и тексту)
+  // Фильтрация новостей по строке поиска
   const filteredNews = newsItems.filter((news) => {
     const lowerQuery = searchQuery.toLowerCase();
     const title = news.title ? news.title.toLowerCase() : "";
@@ -110,7 +113,7 @@ const Feed = ({ currentUser }) => {
     fetchFollowing();
   }, [currentUser?.uid]);
 
-  // Получаем общее количество новостей (для показа кнопки "Загрузить ещё")
+  // Получение общего количества новостей
   useEffect(() => {
     const fetchNewsCount = async () => {
       try {
@@ -160,10 +163,14 @@ const Feed = ({ currentUser }) => {
       setError("Ошибка загрузки постов друзей");
     } finally {
       setFriendPostsLoading(false);
+      if (activeTab === "followers" && !onFeedLoadCalled.current) {
+        onFeedLoadCalled.current = true;
+        onFeedLoad && onFeedLoad();
+      }
     }
   };
 
-  // Загрузка новостей с пагинацией (по 5 штук)
+  // Загрузка новостей с пагинацией
   const fetchNews = useCallback(
     async (loadMore = false) => {
       setNewsLoading(true);
@@ -198,19 +205,23 @@ const Feed = ({ currentUser }) => {
         setError("Ошибка загрузки новостей");
       } finally {
         setNewsLoading(false);
+        if (activeTab === "news" && !onFeedLoadCalled.current) {
+          onFeedLoadCalled.current = true;
+          onFeedLoad && onFeedLoad();
+        }
       }
     },
-    [lastNewsItem]
+    [lastNewsItem, activeTab, onFeedLoad]
   );
 
-  // Загружаем новости при переключении на вкладку "news", если список пустой
+  // При выборе вкладки "news", если список пустой, загружаем новости
   useEffect(() => {
     if (activeTab === "news" && newsItems.length === 0) {
       fetchNews(false);
     }
   }, [activeTab, newsItems.length, fetchNews]);
 
-  // При переключении на вкладку "followers" загружаем посты друзей
+  // При выборе вкладки "followers" загружаем посты друзей
   useEffect(() => {
     if (activeTab === "followers") {
       fetchFriendPosts();
@@ -219,21 +230,28 @@ const Feed = ({ currentUser }) => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    // Сбрасываем флаг, чтобы onFeedLoad можно было вызвать заново для новой вкладки
+    onFeedLoadCalled.current = false;
   };
 
-  // Функция удаления новости (только для admin/owner)
   const handleDeleteNews = async (newsId) => {
     try {
       await deleteDoc(doc(db, "news", newsId));
-      // После удаления обновляем список новостей
       setNewsItems((prevItems) => prevItems.filter((item) => item.id !== newsId));
-      // Обновляем общее количество новостей
       setTotalNewsCount((prev) => prev - 1);
     } catch (err) {
       console.error("Ошибка при удалении новости:", err);
       setError("Ошибка при удалении новости");
     }
   };
+
+  // Если локальная загрузка закончилась, а onFeedLoad ещё не вызван – вызываем его
+  useEffect(() => {
+    if (!loading && !onFeedLoadCalled.current) {
+      onFeedLoadCalled.current = true;
+      onFeedLoad && onFeedLoad();
+    }
+  }, [loading, onFeedLoad]);
 
   if (loading) {
     return (
@@ -245,12 +263,32 @@ const Feed = ({ currentUser }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          color: "white",
         }}
-      ></div>
+      >
+        <div className="loader"></div>
+        <style>
+          {`
+            .loader {
+              width: 50px;
+              aspect-ratio: 1;
+              --_c: no-repeat radial-gradient(farthest-side, white 92%, transparent);
+              background:
+                var(--_c) top,
+                var(--_c) left,
+                var(--_c) right,
+                var(--_c) bottom;
+              background-size: 12px 12px;
+              animation: l7 1s infinite;
+            }
+            @keyframes l7 {
+              to { transform: rotate(.5turn); }
+            }
+          `}
+        </style>
+      </div>
     );
   }
-
+  
   if (error) {
     return (
       <div
@@ -265,7 +303,6 @@ const Feed = ({ currentUser }) => {
     );
   }
 
-  // Опции для кастомного селекта
   const tabOptions = [
     { value: "news", label: "Новости" },
     { value: "followers", label: "Друзья" },
@@ -273,8 +310,9 @@ const Feed = ({ currentUser }) => {
 
   return (
     <div
+      className="fade-in"
       style={{
-        width: "calc(100% - 20px)",
+        width: "100%",
         height: "100%",
         margin: "0 auto",
         marginBottom: "100px",
@@ -285,49 +323,13 @@ const Feed = ({ currentUser }) => {
         background: "#1D1D1F",
       }}
     >
-      {/* Стили для fade-анимации */}
-      <style>
-        {`
-          .fade-enter {
-            opacity: 0;
-          }
-          .fade-enter-active {
-            opacity: 1;
-            transition: opacity 300ms;
-          }
-          .fade-exit {
-            opacity: 1;
-          }
-          .fade-exit-active {
-            opacity: 0;
-            transition: opacity 300ms;
-          }
-          .page-enter {
-            opacity: 0;
-          }
-          .page-enter-active {
-            opacity: 1;
-            transition: opacity 300ms;
-          }
-          .page-exit {
-            opacity: 1;
-          }
-          .page-exit-active {
-            opacity: 0;
-            transition: opacity 300ms;
-          }
-        `}
-      </style>
-
-      {/* Верхний блок: аватарка + кастомный селект */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: "10px",
-          padding: "10px",
-          backgroundColor: "#212124",
           borderRadius: 15,
+          margin: "0px 15px",
         }}
       >
         <img
@@ -343,9 +345,8 @@ const Feed = ({ currentUser }) => {
         />
       </div>
 
-      {/* Если выбрана вкладка "news", показываем строку поиска */}
       {activeTab === "news" && (
-        <div style={{ marginTop: "10px", position: "relative" }}>
+        <div style={{ position: "relative", margin: "10px 15px 0 15px" }}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -376,19 +377,20 @@ const Feed = ({ currentUser }) => {
               width: "100%",
               padding: "20px 20px 20px 50px",
               borderRadius: "12px",
-              backgroundColor: "#212124",
+              backgroundColor: "#1D1D1F",
               color: "white",
+              outline: "none",
+              border: "none",
             }}
           />
         </div>
       )}
 
-      {/* Содержимое вкладок с анимацией */}
       <TransitionGroup>
         <CSSTransition key={activeTab} classNames="page" timeout={300}>
           <div style={{ position: "relative", minHeight: "calc(100% - 70px)" }}>
             {activeTab === "followers" && (
-              <div style={{ width: "100%", marginTop: "20px" }}>
+              <div style={{ margin: "20px 15px 0px 15px" }}>
                 {friendPosts.length > 0 ? (
                   friendPosts.map((post) => {
                     const friend = followers.find((user) => user.uid === post.uid);
@@ -402,25 +404,25 @@ const Feed = ({ currentUser }) => {
                           marginBottom: "20px",
                         }}
                       >
-                        {/* Оборачиваем блок с информацией о друге в кликабельный контейнер */}
                         <div
                           onClick={() =>
-                            navigate(`/userprofile/${friend.uid}`, { state: { currentUserUid: currentUser.uid } })
+                            navigate(`/userprofile/${friend.uid}`, {
+                              state: { currentUserUid: currentUser.uid },
+                            })
                           }
-                          
                           style={{
                             display: "flex",
                             alignItems: "center",
                             gap: "15px",
-                            cursor: "pointer", // Добавляем указатель мыши для индикации кликабельности
+                            cursor: "pointer",
                           }}
                         >
                           <img
                             src={friend?.photoUrl || "https://placehold.co/50x50"}
                             alt="avatar"
                             style={{
-                              width: "50px",
-                              height: "50px",
+                              width: "35px",
+                              height: "35px",
                               borderRadius: "50%",
                               objectFit: "cover",
                             }}
@@ -489,168 +491,170 @@ const Feed = ({ currentUser }) => {
               </div>
             )}
             {activeTab === "news" && (
-              <div style={{ width: "100%", marginTop: "20px" }}>
+              <div style={{ marginTop: "20px" }}>
                 {(currentUser.role === "admin" || currentUser.role === "owner") && (
                   <button
                     onClick={() => navigate("/news/new")}
                     style={{
-                      marginBottom: "20px",
-                      padding: "10px 20px",
+                      margin: "10px",
+                      padding: "10px",
                       borderRadius: "10px",
                       backgroundColor: "#212124",
                       color: "white",
                       border: "none",
                       cursor: "pointer",
                       display: "block",
-                      width: "100%",
+                      width: "calc(100% - 20px)",
                     }}
                   >
                     Новая новость
                   </button>
                 )}
-                {filteredNews.map((news) => (
-                  <div
-                    key={news.id}
-                    style={{
-                      marginBottom: "10px",
-                      position: "relative",
-                      display: "flex",
-                      flexDirection: "column",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    {(currentUser.role === "admin" || currentUser.role === "owner") && (
-                      <div style={{ position: "absolute", top: 0, right: 0 }}>
-                        <button
-                          onClick={() =>
-                            setOpenNewsMenuId((prev) => (prev === news.id ? null : news.id))
-                          }
+                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                  {filteredNews.map((news) => (
+                    <div
+                      key={news.id}
+                      style={{
+                        marginBottom: "10px",
+                        position: "relative",
+                        display: "flex",
+                        flexDirection: "column",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      {news.imageUrl && (
+                        <img
+                          src={news.imageUrl}
+                          alt="news"
                           style={{
-                            background: "transparent",
-                            border: "none",
-                            color: "white",
-                            cursor: "pointer",
-                            fontSize: "18px",
+                            width: "100%",
+                            marginTop: "10px",
                           }}
-                        >
-                          ⋮
-                        </button>
-                        <CSSTransition in={openNewsMenuId === news.id} timeout={300} classNames="fade" unmountOnExit>
-                          <div
-                            style={{
-                              position: "absolute",
-                              top: "24px",
-                              right: "0",
-                              background: "#333",
-                              borderRadius: "12px",
-                              padding: "5px",
-                              zIndex: 10,
-                            }}
-                          >
+                        />
+                      )}
+                      <div style={{ margin: "10px 15px 0px 15px", display: "flex", flexDirection: "column" }}>
+                        {(currentUser.role === "admin" || currentUser.role === "owner") && (
+                          <div style={{ position: "absolute", top: 0, right: 0 }}>
                             <button
-                              onClick={() => {
-                                handleDeleteNews(news.id);
-                                setOpenNewsMenuId(null);
-                              }}
+                              onClick={() =>
+                                setOpenNewsMenuId((prev) => (prev === news.id ? null : news.id))
+                              }
                               style={{
-                                display: "block",
                                 background: "transparent",
                                 border: "none",
                                 color: "white",
                                 cursor: "pointer",
-                                padding: "5px 10px",
-                                textAlign: "left",
-                                width: "100%",
-                                fontSize: "14px",
+                                fontSize: "18px",
                               }}
                             >
-                              Удалить
+                              ⋮
                             </button>
+                            <CSSTransition
+                              in={openNewsMenuId === news.id}
+                              timeout={300}
+                              classNames="menuFade"
+                              unmountOnExit
+                              nodeRef={nodeRef}
+                            >
+                              <div
+                                ref={nodeRef}
+                                style={{
+                                  position: "absolute",
+                                  top: "24px",
+                                  right: "0",
+                                  background: "#333",
+                                  borderRadius: "12px",
+                                  padding: "5px",
+                                  zIndex: 10,
+                                }}
+                              >
+                                <button
+                                  onClick={() => {
+                                    handleDeleteNews(news.id);
+                                    setOpenNewsMenuId(null);
+                                  }}
+                                  style={{
+                                    display: "block",
+                                    background: "transparent",
+                                    border: "none",
+                                    color: "white",
+                                    cursor: "pointer",
+                                    padding: "5px 10px",
+                                    textAlign: "left",
+                                    width: "100%",
+                                    fontSize: "14px",
+                                  }}
+                                >
+                                  Удалить
+                                </button>
+                              </div>
+                            </CSSTransition>
                           </div>
-                        </CSSTransition>
+                        )}
+                        <span style={{ marginBottom: "5px", color: "white" }}>
+                          {news.title}
+                        </span>
+                        <small style={{ color: "#888" }}>
+                          @anarbot66 {formatDate(news.createdAt?.toDate ? news.createdAt.toDate() : news.createdAt)}
+                        </small>
                       </div>
-                    )}
-                    <span
+                      {news.type === "link" ? (
+                        <a
+                          href={news.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            margin: "10px 15px 0px 15px",
+                            padding: "12px 20px",
+                            backgroundColor: "#212124",
+                            border: "none",
+                            borderRadius: "12px",
+                            color: "white",
+                            cursor: "pointer",
+                            textAlign: "center",
+                            textDecoration: "none",
+                            display: "block",
+                          }}
+                        >
+                          Читать
+                        </a>
+                      ) : (
+                        <button
+                          onClick={() => navigate(`/news/${news.id}`, { state: { news } })}
+                          style={{
+                            margin: "10px 15px 0px 15px",
+                            padding: "12px 20px",
+                            backgroundColor: "#212124",
+                            border: "none",
+                            borderRadius: "12px",
+                            color: "white",
+                            cursor: "pointer",
+                            textAlign: "center",
+                          }}
+                        >
+                          Читать
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  {totalNewsCount > newsItems.length && (
+                    <button
+                      onClick={() => fetchNews(true)}
+                      disabled={newsLoading}
                       style={{
-                        fontWeight: "bold",
-                        marginBottom: "5px",
+                        margin: "20px auto",
+                        padding: "10px 20px",
+                        borderRadius: "10px",
+                        background: "transparent",
                         color: "white",
+                        cursor: "pointer",
+                        display: "block",
                       }}
                     >
-                      {news.title}
-                    </span>
-                    <small style={{ color: "#888" }}>
-                      @anarbot66 {formatDate(news.createdAt?.toDate ? news.createdAt.toDate() : news.createdAt)}
-                    </small>
-                    {news.imageUrl && (
-                      <img
-                        src={news.imageUrl}
-                        alt="news"
-                        style={{
-                          width: "100%",
-                          borderRadius: "8px",
-                          marginTop: "10px",
-                        }}
-                      />
-                    )}
-                    {news.type === "link" ? (
-                      <a
-                        href={news.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          marginTop: "10px",
-                          padding: "12px 20px",
-                          backgroundColor: "#212124",
-                          border: "none",
-                          borderRadius: "12px",
-                          color: "white",
-                          cursor: "pointer",
-                          width: "100%",
-                          textAlign: "center",
-                          textDecoration: "none",
-                          display: "block",
-                        }}
-                      >
-                        Читать
-                      </a>
-                    ) : (
-                      <button
-                        onClick={() => navigate(`/news/${news.id}`, { state: { news } })}
-                        style={{
-                          marginTop: "10px",
-                          padding: "12px 20px",
-                          backgroundColor: "#212124",
-                          border: "none",
-                          borderRadius: "12px",
-                          color: "white",
-                          cursor: "pointer",
-                          width: "100%",
-                          textAlign: "center",
-                        }}
-                      >
-                        Читать
-                      </button>
-                    )}
-                  </div>
-                ))}
-                {totalNewsCount > newsItems.length && (
-                  <button
-                    onClick={() => fetchNews(true)}
-                    disabled={newsLoading}
-                    style={{
-                      margin: "20px auto",
-                      padding: "10px 20px",
-                      borderRadius: "10px",
-                      background: "transparent",
-                      color: "white",
-                      cursor: "pointer",
-                      display: "block",
-                    }}
-                  >
-                    {newsLoading ? " " : "Загрузить ещё"}
-                  </button>
-                )}
+                      {newsLoading ? " " : "Загрузить ещё"}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>

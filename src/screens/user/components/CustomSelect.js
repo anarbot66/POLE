@@ -29,47 +29,34 @@ const CustomSelect = ({ options, value, onChange, style }) => {
         style={{
           padding: "10px",
           borderRadius: "8px",
-          backgroundColor: "#212124",
           color: "white",
           cursor: "pointer",
           userSelect: "none",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          display: "flex", // Размещение текста и иконки рядом
+          alignItems: "center", // Выравнивание по вертикали
         }}
       >
         <span>{selectedOption ? selectedOption.label : "Выберите опцию"}</span>
-        {open ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ marginLeft: "8px" }} // Отступ между текстом и иконкой
+        >
+          {open ? (
             <path d="M18 15l-6-6-6 6" />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+          ) : (
             <path d="M6 9l6 6 6-6" />
-          </svg>
-        )}
+          )}
+        </svg>
       </div>
-      <CSSTransition in={open} timeout={300} classNames="fade" unmountOnExit>
+      <CSSTransition in={open} timeout={300} classNames="menuFade" unmountOnExit>
         <div
           style={{
             position: "absolute",
@@ -99,20 +86,29 @@ const CustomSelect = ({ options, value, onChange, style }) => {
       </CSSTransition>
       <style>
         {`
-          .fade-enter {
+          /* Начальное состояние для анимации menuFade */
+          .menuFade-enter {
             opacity: 0;
+            transform: scale(0.95);
           }
-          .fade-enter-active {
+          
+          .menuFade-enter-active {
             opacity: 1;
-            transition: opacity 300ms;
+            transform: scale(1);
+            transition: opacity 300ms ease, transform 300ms ease;
           }
-          .fade-exit {
+          
+          .menuFade-exit {
             opacity: 1;
+            transform: scale(1);
           }
-          .fade-exit-active {
+          
+          .menuFade-exit-active {
             opacity: 0;
-            transition: opacity 300ms;
+            transform: scale(0.95);
+            transition: opacity 300ms ease, transform 300ms ease;
           }
+          
         `}
       </style>
     </div>

@@ -122,7 +122,7 @@ const UserProfile = ({ currentUser }) => {
         if (!snapshot.empty) {
           setProfileUser(snapshot.docs[0].data());
         } else {
-          console.log("Пользователь не найден.");
+
         }
         await loadFavorites(uid);
         await fetchFollowersCount(uid);
@@ -258,10 +258,10 @@ const UserProfile = ({ currentUser }) => {
       if (!favSnapshot.empty) {
         const favData = favSnapshot.docs[0].data();
         const favoritePilotId = favData.pilotId;
-        console.log("Favorite pilotId из Firestore:", favoritePilotId);
+        
         await fetchPilotData(favoritePilotId);
       } else {
-        console.log("Нет избранного пилота");
+
       }
     } catch (err) {
       console.error("Ошибка загрузки избранного пилота:", err);
@@ -317,10 +317,28 @@ const UserProfile = ({ currentUser }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          color: "white",
         }}
       >
-        Загрузка...
+        <div className="loader"></div>
+        <style>
+          {`
+            .loader {
+              width: 50px;
+              aspect-ratio: 1;
+              --_c: no-repeat radial-gradient(farthest-side, white 92%, transparent);
+              background:
+                var(--_c) top,
+                var(--_c) left,
+                var(--_c) right,
+                var(--_c) bottom;
+              background-size: 12px 12px;
+              animation: l7 1s infinite;
+            }
+            @keyframes l7 {
+              to { transform: rotate(.5turn); }
+            }
+          `}
+        </style>
       </div>
     );
   }
@@ -345,6 +363,7 @@ const UserProfile = ({ currentUser }) => {
 
   return (
     <div
+    className="fade-in"
       style={{
         width: "100vw",
         minHeight: "100vh",

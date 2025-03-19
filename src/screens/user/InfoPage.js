@@ -5,7 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 const InfoPage = () => {
     const navigate = useNavigate();
   return (
-    <div className="container" style={{ color: "#fff", padding: "15px" }}>
+    <div className="fade-in" style={{ color: "#fff", padding: "15px" }}>
         <button
         onClick={() => navigate(-1)}
         style={{

@@ -48,7 +48,7 @@ const BottomNavigation = ({ setActivePage }) => {
         left: "50%",
         transform: "translateX(-50%)",
         width: "100%",
-        height: 80,
+        height: 60,
         background: "#1D1D1F",
         borderRadius: 0,
         display: "flex",

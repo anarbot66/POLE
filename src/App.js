@@ -1,3 +1,4 @@
+// App.js
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
@@ -7,37 +8,39 @@ import ConstructorDetails from "./screens/constructor/ConstructorDetails";
 import RacesList from "./screens/races/RacesList";
 import RaceDetails from "./screens/races/RaceDetails";
 import BottomNavigation from "./screens/components/BottomNavigation";
-import logo from "./screens/recources/images/logo-250.png";
-import Feed from "./screens/user/Feed";
 import PilotDetails from "./screens/pilots/PilotDetails";
 import Auth from "./screens/user/Auth";
+import Feed from "./screens/user/Feed";
 import Profile from "./screens/user/Profile";
 import UserProfile from "./screens/user/UserProfile";
 import FollowersList from "./screens/user/FollowersList";
 import UserSearch from "./screens/user/UserSearch";
 import NewsCreator from "./screens/admin/NewsCreator";
-import NewsDetail from "./screens/user/NewsDetail ";
+import NewsDetail from "./screens/user/NewsDetails";
 import { db } from "./firebase";
 import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
 import Services from "./screens/user/Services";
 import InfoPage from "./screens/user/InfoPage";
+import LoadingScreen from "./screens/components/LoadingScreen";
+
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [activePage, setActivePage] = useState(0);
+  const [, setActivePage] = useState(0);
+  const [, setSelectedRace] = useState(null);
+  const [, setContentLoaded] = useState(false);
   const [selectedConstructor, setSelectedConstructor] = useState(null);
-  const [selectedRace, setSelectedRace] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
-  const [contentLoaded, setContentLoaded] = useState(false);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
   const [dbCheckCompleted, setDbCheckCompleted] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  // Инициализация данных пользователя из Telegram или по умолчанию
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.expand();
@@ -67,11 +70,16 @@ function App() {
         photoUrl: ""
       });
     }
+    // Первичное обновление progress
+    setProgress(10);
   }, []);
+
+  // Загрузка фото пользователя, если его нет
   useEffect(() => {
     const uploadUserPhoto = async () => {
       if (user && !user.photoUrl) {
         try {
+          // Здесь укажите ваш дефолтный URL или base64 строку
           const defaultImage = "DEFAULT_IMAGE_BASE64_OR_URL";
           const formData = new FormData();
           formData.append("image", defaultImage);
@@ -92,8 +100,10 @@ function App() {
             ...prevUser,
             photoUrl: newPhotoUrl,
           }));
+          // Обновляем progress после загрузки фото
+          setProgress((prev) => Math.min(prev + 20, 90));
         } catch (error) {
-          console.error("Ошибка загрузки фото:", error);
+          console.error(" ", error);
         }
       }
     };
@@ -102,6 +112,7 @@ function App() {
     }
   }, [user]);
 
+  // Проверка пользователя в БД
   useEffect(() => {
     if (!user) return;
     const checkUserInDB = async () => {
@@ -111,11 +122,11 @@ function App() {
         const userDoc = querySnapshot.docs[0].data();
         setUser((prevUser) => ({
           ...prevUser,
-          uid: userDoc.uid,            
-          firstName: userDoc.firstName, 
-          lastName: userDoc.lastName,  
+          uid: userDoc.uid,
+          firstName: userDoc.firstName,
+          lastName: userDoc.lastName,
           photoUrl: userDoc.photoUrl,
-          role: userDoc.role ?? null, // Добавляем поле role, если его нет - ставим null
+          role: userDoc.role ?? null,
         }));
         setIsAuthenticated(true);
         if (initialLoad) {
@@ -130,11 +141,13 @@ function App() {
         }
       }
       setDbCheckCompleted(true);
+      // Обновляем progress после проверки в БД
+      setProgress((prev) => Math.min(prev + 30, 90));
     };
     checkUserInDB();
   }, [user, navigate, initialLoad]);
-  
-  
+
+  // Симуляция дополнительных обновлений progress (до 90%), если какие-то операции выполняются дольше
   useEffect(() => {
     if (loading) {
       const interval = setInterval(() => {
@@ -144,18 +157,21 @@ function App() {
     }
   }, [loading]);
 
+  // Завершаем загрузку, когда проверка БД завершена
   useEffect(() => {
     if (dbCheckCompleted) {
       setTimeout(() => {
         setContentLoaded(true);
         setProgress(100);
-      }, 300);
-      setTimeout(() => {
+      }, 500); // Было 300
+  
+      setTimeout(() => { 
         setFadeOut(true);
-        setTimeout(() => setLoading(false), 600);
-      }, 900);
+        setTimeout(() => setLoading(false), 600); // Было 600
+      }, 1500); // Было 900
     }
   }, [dbCheckCompleted]);
+  
 
   const handlePageChange = (page) => {
     setSelectedConstructor(null);
@@ -171,7 +187,6 @@ function App() {
       navigate("/services");
     } else if (page === 4) {
       navigate("/profile");
-
     }
   };
 
@@ -184,20 +199,14 @@ function App() {
     navigate("/constructor-details");
   };
 
-  const handleSelectRace = (race) => {
-    setSelectedRace(race);
-    navigate("/race-details");
-  };
-
 
   const handleBackToConstructors = () => {
     setSelectedConstructor(null);
     navigate("/standings");
   };
 
-
   if (!dbCheckCompleted) {
-    return <div> </div>;
+    return <div></div>;
   }
 
   return (
@@ -210,39 +219,34 @@ function App() {
         background: "#1D1D1F",
       }}
     >
-      {loading && (
-        <div className={`loading-screen ${fadeOut ? "fade-out" : "fade-in"}`}>
-          <img style={{ height: "50px" }} src={logo} alt="Логотип" className="logo" />
-        </div>
-      )}
-
+      {loading && <LoadingScreen progress={progress} fadeOut={fadeOut} />}
       {!loading && (
         <>
           <div className="content-container">
             <TransitionGroup>
               <CSSTransition key={location.pathname} classNames="page" timeout={500}>
                 <div key={location.pathname}>
-                  <Routes location={location}>
-                    <Route path="/" element={<Auth user={user} />} />
-                    <Route path="/feed" element={<Feed currentUser={user} />} />
-                    <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} currentUser={user} />} />
-                    <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
-                    <Route path="/races" element={<RacesList currentUser={user} />} />
-                    <Route
-                      path="/constructor-details"
-                      element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />}
-                    />
-                    <Route path="/races/:raceId" element={<RaceDetails />} />
-                    <Route path="/profile" element={<Profile currentUser={user} />} />
-                    <Route path="/userprofile/:uid" element={<UserProfile currentUser={user} />} />
-                    <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
-                    <Route path="/userprofile/:username/followers" element={<FollowersList currentUser={user}/>} />
-                    <Route path="/news/new" element={<NewsCreator />} />
-                    <Route path="/news/:id" element={<NewsDetail />} />
-                    <Route path="/services" element={<Services currentUser={user}/>} />
-                    <Route path="/info" element={<InfoPage />} />
+                    <Routes location={location}>
+                      <Route path="/" element={<Auth user={user} />} />
+                      <Route
+                        path="/feed"
+                        element={<Feed currentUser={user} onFeedLoad={() => setLoading(false)} />}
+                      />
 
-                  </Routes>
+                      <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} currentUser={user} />} />
+                      <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
+                      <Route path="/races" element={<RacesList currentUser={user} />} />
+                      <Route path="/constructor-details" element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />} />
+                      <Route path="/races/:raceId" element={<RaceDetails />} />
+                      <Route path="/profile" element={<Profile currentUser={user} />} />
+                      <Route path="/userprofile/:uid" element={<UserProfile currentUser={user} />} />
+                      <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
+                      <Route path="/userprofile/:username/followers" element={<FollowersList currentUser={user} />} />
+                      <Route path="/news/new" element={<NewsCreator />} />
+                      <Route path="/news/:id" element={<NewsDetail />} />
+                      <Route path="/services" element={<Services currentUser={user} />} />
+                      <Route path="/info" element={<InfoPage />} />
+                    </Routes>
                 </div>
               </CSSTransition>
             </TransitionGroup>

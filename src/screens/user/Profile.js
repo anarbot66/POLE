@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
-import { CSSTransition } from "react-transition-group";
-import {
+import { 
   collection,
   query,
   where,
@@ -15,8 +14,9 @@ import {
   updateDoc,
   doc
 } from "firebase/firestore";
+import { CSSTransition } from "react-transition-group";
 
-// Константы для оформления и перевода
+// Пример констант (цвета команд, переводы имён и т.д.)
 const teamColors = {
   "McLaren": "#F48021",
   "Ferrari": "#FF0000",
@@ -94,25 +94,27 @@ const normalizeName = (name) => {
 const Profile = ({ currentUser }) => {
   const navigate = useNavigate();
 
-  // Состояния для данных пользователя, избранного пилота и подписчиков
+  // Состояния для данных пользователя и интерфейса
   const [profileUser, setProfileUser] = useState(null);
   const [followersCount, setFollowersCount] = useState(0);
   const [favoritePilot, setFavoritePilot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Состояния для постов
+  // Состояния для постов и формы поста
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState("");
   const [showPostForm, setShowPostForm] = useState(false);
   const [editingPostId, setEditingPostId] = useState(null);
   const [editedText, setEditedText] = useState("");
+  // Состояние для показа меню конкретного поста
   const [openMenuPostId, setOpenMenuPostId] = useState(null);
+  // Ref для CSSTransition меню поста (так как одновременно открыто только одно меню)
+  const menuRef = useRef(null);
 
-  // Получаем username из currentUser
   const username = currentUser.name;
 
-  // Загрузка данных пользователя, избранного пилота и количества подписчиков
+  // Загрузка данных пользователя, избранного пилота и подписчиков
   useEffect(() => {
     const loadData = async () => {
       if (!username) return;
@@ -292,9 +294,28 @@ const Profile = ({ currentUser }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          color: "white",
         }}
-      > 
+      >
+        <div className="loader"></div>
+        <style>
+          {`
+            .loader {
+              width: 50px;
+              aspect-ratio: 1;
+              --_c: no-repeat radial-gradient(farthest-side, white 92%, transparent);
+              background:
+                var(--_c) top,
+                var(--_c) left,
+                var(--_c) right,
+                var(--_c) bottom;
+              background-size: 12px 12px;
+              animation: l7 1s infinite;
+            }
+            @keyframes l7 {
+              to { transform: rotate(.5turn); }
+            }
+          `}
+        </style>
       </div>
     );
   }
@@ -329,7 +350,10 @@ const Profile = ({ currentUser }) => {
   }
 
   return (
-    <div style={{ backgroundColor: "#1D1D1F", color: "white", padding: "0 10px", marginBottom: "80px" }}>
+    <div
+      className="fade-in"
+      style={{ backgroundColor: "#1D1D1F", color: "white", padding: "0 10px", marginBottom: "80px" }}
+    >
       <div
         style={{
           display: "flex",
@@ -337,42 +361,9 @@ const Profile = ({ currentUser }) => {
           alignItems: "center",
           gap: "15px",
           backgroundColor: "#212124",
-          borderRadius: "0 0 15px 15px",
+          borderRadius: "15px",
         }}
       >
-
-      <style>
-        {`
-          .fade-enter {
-            opacity: 0;
-          }
-          .fade-enter-active {
-            opacity: 1;
-            transition: opacity 300ms;
-          }
-          .fade-exit {
-            opacity: 1;
-          }
-          .fade-exit-active {
-            opacity: 0;
-            transition: opacity 300ms;
-          }
-          .page-enter {
-            opacity: 0;
-          }
-          .page-enter-active {
-            opacity: 1;
-            transition: opacity 300ms;
-          }
-          .page-exit {
-            opacity: 1;
-          }
-          .page-exit-active {
-            opacity: 0;
-            transition: opacity 300ms;
-          }
-        `}
-      </style>
         <img
           src={profileUser.photoUrl || "https://placehold.co/80x80"}
           alt="Avatar"
@@ -387,117 +378,144 @@ const Profile = ({ currentUser }) => {
           @{profileUser.username}
         </div>
       </div>
+
       {/* Кликабельное поле "Друзья" */}
       <div
-          style={{
-            background: "#212124",
-            fontSize: "14px",
-            color: "white",
-            cursor: "pointer",
-            marginTop: "20px",
-            padding: "20px",
-            borderRadius: "15px",
-          }}
-          onClick={() =>
-            navigate(`/userprofile/${profileUser.username}/followers`)
-          }
-        >
-          Подписки: {followersCount}
-        </div>
-
-    {favoritePilot && (
-    <>
-    <h3 style={{ marginTop: "20px", marginBottom: "20px", width: "calc(100% - 40px)" }}>
-      Любимый пилот:
-    </h3>
-    <div
-      onClick={() => handlePilotSelect(favoritePilot)}
-      style={{
-        width: "100%",
-        background: "#212124",
-        borderRadius: "20px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: "12px",
-        padding: "10px",
-        cursor: "pointer",
-      }}
-    >
-      <div
         style={{
-          width: "65px",
-          height: "65px",
-          borderRadius: "20px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           background: "#212124",
-        }}
-      >
-        <div
-          style={{
-            color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
-            fontSize: "24px",
-            fontWeight: "600",
-          }}
-        >
-          {favoritePilot.position}
-        </div>
-      </div>
-      <div
-        style={{
+          fontSize: "14px",
+          color: "white",
+          cursor: "pointer",
+          marginTop: "10px",
+          padding: "20px",
+          borderRadius: "15px",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          gap: "4px",
-          flex: 1,
+          alignItems: "center",
+          gap: "10px",
         }}
+        onClick={() =>
+          navigate(`/userprofile/${profileUser.username}/followers`)
+        }
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ color: "white", fontSize: "12px", fontWeight: "300" }}>
-            {driverTranslations[`${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`] ||
-              `${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`}
-          </div>
-          <img
-            src={`https://flagcdn.com/w40/${
-              nationalityToFlag[favoritePilot.Driver.nationality] || "un"
-            }.png`}
-            alt={favoritePilot.Driver.nationality}
-            style={{
-              width: "15px",
-              height: "15px",
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
-          />
-        </div>
-        <div
-          style={{
-            color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
-            fontSize: "12px",
-            fontWeight: "300",
-          }}
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          {favoritePilot.Constructors[0].name}
-        </div>
+          <path
+            d="M7 14C7 14 6 14 6 13C6 12 7 9 11 9C15 9 16 12 16 13C16 14 15 14 15 14H7Z"
+            fill="white"
+          />
+          <path
+            d="M11 8C12.6569 8 14 6.65685 14 5C14 3.34315 12.6569 2 11 2C9.34315 2 8 3.34315 8 5C8 6.65685 9.34315 8 11 8Z"
+            fill="white"
+          />
+          <path
+            d="M5.21636 14C5.07556 13.7159 5 13.3791 5 13C5 11.6445 5.67905 10.2506 6.93593 9.27997C6.3861 9.10409 5.7451 9 5 9C1 9 0 12 0 13C0 14 1 14 1 14H5.21636Z"
+            fill="white"
+          />
+          <path
+            d="M4.5 8C5.88071 8 7 6.88071 7 5.5C7 4.11929 5.88071 3 4.5 3C3.11929 3 2 4.11929 2 5.5C2 6.88071 3.11929 8 4.5 8Z"
+            fill="white"
+          />
+        </svg>
+        {followersCount} Подписчиков
       </div>
-      <div style={{ textAlign: "center", minWidth: "60px" }}>
-        <span style={{ color: "white", fontSize: "16px" }}>
-          {favoritePilot.points}
-        </span>
-        <br />
-        <span style={{ color: teamColors[favoritePilot.Constructors[0].name] }}>
-          PTS
-        </span>
-      </div>
-    </div>
-  </>
-)}
 
+      {favoritePilot && (
+        <>
+          <h3 style={{ marginTop: "10px", marginBottom: "10px", width: "calc(100% - 40px)" }}>
+            Любимый пилот:
+          </h3>
+          <div
+            onClick={() => handlePilotSelect(favoritePilot)}
+            style={{
+              width: "100%",
+              background: "#212124",
+              borderRadius: "20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "12px",
+              padding: "10px",
+              cursor: "pointer",
+            }}
+          >
+            <div
+              style={{
+                width: "65px",
+                height: "65px",
+                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "#212124",
+              }}
+            >
+              <div
+                style={{
+                  color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
+                  fontSize: "24px",
+                  fontWeight: "600",
+                }}
+              >
+                {favoritePilot.position}
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: "4px",
+                flex: 1,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div style={{ color: "white", fontSize: "12px", fontWeight: "300" }}>
+                  {driverTranslations[`${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`] ||
+                    `${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`}
+                </div>
+                <img
+                  src={`https://flagcdn.com/w40/${
+                    nationalityToFlag[favoritePilot.Driver.nationality] || "un"
+                  }.png`}
+                  alt={favoritePilot.Driver.nationality}
+                  style={{
+                    width: "15px",
+                    height: "15px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
+                  fontSize: "12px",
+                  fontWeight: "300",
+                }}
+              >
+                {favoritePilot.Constructors[0].name}
+              </div>
+            </div>
+            <div style={{ textAlign: "center", minWidth: "60px" }}>
+              <span style={{ color: "white", fontSize: "16px" }}>
+                {favoritePilot.points}
+              </span>
+              <br />
+              <span style={{ color: teamColors[favoritePilot.Constructors[0].name] }}>
+                PTS
+              </span>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Форма для создания нового поста */}
-      <div style={{ marginTop: "20px", width: "100%" }}>
+      <div style={{ width: "100%" }}>
         {showPostForm ? (
           <>
             <textarea
@@ -510,7 +528,7 @@ const Profile = ({ currentUser }) => {
                 borderRadius: "12px",
                 padding: "10px",
                 fontSize: "16px",
-                background: "#212124",
+                background: "#212121",
                 color: "white",
                 border: "none",
                 outline: "none",
@@ -553,189 +571,222 @@ const Profile = ({ currentUser }) => {
         )}
       </div>
 
-      {/* Отображение постов */}
-      {posts.length > 0 ? (
-        posts.map((post, index) => (
-          <div
-            key={post.id}
-            style={{
-              width: "100%",
-              marginTop: index === 0 ? "20px" : "10px",
-              padding: "0 0px",
-              position: "relative"
-            }}
-          >
-            {/* Кнопка меню (три точки) */}
-            <div style={{ position: "absolute", top: 0, right: 0 }}>
-              <button
-                onClick={() => toggleMenu(post.id)}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "white",
-                  cursor: "pointer",
-                  fontSize: "18px"
-                }}
-              >
-                ⋮
-              </button>
-              <CSSTransition
-              in={openMenuPostId === post.id}
-              timeout={300}
-              classNames="fade"
-              unmountOnExit
-              >
-              <div
-                style={{
-                  position: "absolute",
-                  top: "24px",
-                  right: "0",
-                  background: "#333",
-                  borderRadius: "12px",
-                  padding: "5px",
-                  zIndex: 10,
-                }}
-              >
+      <div>
+        {/* Отображение постов */}
+        {posts.length > 0 ? (
+          posts.map((post, index) => (
+            <div
+              key={post.id}
+              style={{
+                width: "100%",
+                marginTop: index === 0 ? "20px" : "10px",
+                padding: "0 0px",
+                position: "relative",
+              }}
+            >
+              {/* Кнопка меню (три точки) */}
+              <div style={{ position: "absolute", top: 0, right: 0 }}>
                 <button
-                  onClick={() => handleEditPost(post)}
+                  onClick={() => toggleMenu(post.id)}
                   style={{
-                    display: "block",
                     background: "transparent",
                     border: "none",
                     color: "white",
                     cursor: "pointer",
-                    padding: "5px 10px",
-                    textAlign: "left",
-                    width: "100%",
+                    fontSize: "18px",
                   }}
                 >
-                  Редактировать
+                  ⋮
                 </button>
-                <button
-                  onClick={() => {
-                    handleDeletePost(post.id);
-                    setOpenMenuPostId(null);
-                  }}
-                  style={{
-                    display: "block",
-                    background: "transparent",
-                    border: "none",
-                    color: "white",
-                    cursor: "pointer",
-                    padding: "5px 10px",
-                    textAlign: "left",
-                    width: "100%",
-                  }}
+                {/* Оборачиваем меню в CSSTransition для анимации */}
+                <CSSTransition
+                  in={openMenuPostId === post.id}
+                  timeout={300}
+                  classNames="menuFade"
+                  unmountOnExit
+                  nodeRef={menuRef}
                 >
-                  Удалить
-                </button>
-              </div>
-            </CSSTransition>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-              <img
-                src={profileUser.photoUrl || "https://placehold.co/50x50"}
-                alt="avatar"
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                }}
-              />
-              <div>
-                <strong style={{ fontSize: "14px", color: "#ddd" }}>
-                  {profileUser.firstName} {profileUser.lastName}
-                </strong>
-              </div>
-            </div>
-            <div style={{ flex: 1 }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginTop: "5px",
-                }}
-              >
-                <small style={{ color: "#888" }}>
-                  {formatDate(
-                    post.createdAt?.toDate
-                      ? post.createdAt.toDate()
-                      : post.createdAt
-                  )}
-                </small>
-              </div>
-              {editingPostId === post.id ? (
-                <>
-                  <textarea
-                    value={editedText}
-                    onChange={(e) => setEditedText(e.target.value)}
+                  <div
+                    ref={menuRef}
                     style={{
-                      width: "100%",
+                      position: "absolute",
+                      top: "24px",
+                      right: "0",
+                      background: "#333",
                       borderRadius: "12px",
-                      padding: "10px",
-                      fontSize: "16px",
-                      background: "#2C2C2E",
-                      color: "white",
-                      border: "none",
-                      outline: "none",
-                      marginTop: "5px"
+                      padding: "5px",
+                      zIndex: 10,
                     }}
-                  />
-                  <div style={{ marginTop: "5px", textAlign: "right" }}>
+                  >
                     <button
-                      onClick={() => handleSaveEdit(post.id)}
+                      onClick={() => handleEditPost(post)}
                       style={{
-                        padding: "5px 10px",
-                        backgroundColor: "#27ae60",
-                        color: "white",
+                        display: "block",
+                        background: "transparent",
                         border: "none",
-                        borderRadius: "4px",
+                        color: "white",
                         cursor: "pointer",
-                        marginRight: "5px",
-                        fontSize: "12px"
+                        padding: "5px 10px",
+                        textAlign: "left",
+                        width: "100%",
                       }}
                     >
-                      Сохранить
+                      Редактировать
                     </button>
                     <button
-                      onClick={handleCancelEdit}
+                      onClick={() => {
+                        handleDeletePost(post.id);
+                        setOpenMenuPostId(null);
+                      }}
                       style={{
-                        padding: "5px 10px",
-                        backgroundColor: "#95a5a6",
-                        color: "white",
+                        display: "block",
+                        background: "transparent",
                         border: "none",
-                        borderRadius: "4px",
+                        color: "white",
                         cursor: "pointer",
-                        fontSize: "12px"
+                        padding: "5px 10px",
+                        textAlign: "left",
+                        width: "100%",
                       }}
                     >
-                      Отмена
+                      Удалить
                     </button>
                   </div>
-                </>
-              ) : (
+                </CSSTransition>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                <img
+                  src={profileUser.photoUrl || "https://placehold.co/50x50"}
+                  alt="avatar"
+                  style={{
+                    width: "35px",
+                    height: "35px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+                <div>
+                  <strong style={{ fontSize: "14px", color: "#ddd" }}>
+                    {profileUser.firstName} {profileUser.lastName}
+                  </strong>
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
                 <div
                   style={{
-                    borderRadius: "12px",
-                    padding: "10px 0",
-                    marginTop: "0px",
-                    color: "white",
-                    width: "100%",
-                    wordBreak: "break-word",
-                    overflowWrap: "break-word",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: "15px",
                   }}
                 >
-                  {post.text}
+                  <small style={{ color: "#888" }}>
+                    {formatDate(
+                      post.createdAt?.toDate
+                        ? post.createdAt.toDate()
+                        : post.createdAt
+                    )}
+                  </small>
                 </div>
-              )}
+                {editingPostId === post.id ? (
+                  <>
+                    <textarea
+                      value={editedText}
+                      onChange={(e) => setEditedText(e.target.value)}
+                      style={{
+                        width: "100%",
+                        borderRadius: "12px",
+                        padding: "10px",
+                        fontSize: "16px",
+                        background: "#2C2C2E",
+                        color: "white",
+                        border: "none",
+                        outline: "none",
+                        marginTop: "5px",
+                      }}
+                    />
+                    <div style={{ marginTop: "5px", textAlign: "right" }}>
+                      <button
+                        onClick={() => handleSaveEdit(post.id)}
+                        style={{
+                          padding: "5px 10px",
+                          backgroundColor: "#27ae60",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          marginRight: "5px",
+                          fontSize: "12px",
+                        }}
+                      >
+                        Сохранить
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        style={{
+                          padding: "5px 10px",
+                          backgroundColor: "#95a5a6",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          fontSize: "12px",
+                        }}
+                      >
+                        Отмена
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    style={{
+                      borderRadius: "12px",
+                      padding: "5px 0",
+                      marginTop: "0px",
+                      color: "white",
+                      width: "100%",
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
+                    }}
+                  >
+                    {post.text}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))
-      ) : (
-        <p style={{ textAlign: "center", marginTop: "50px" }}> </p>
-      )}
+          ))
+        ) : (
+          <p style={{ textAlign: "center", marginTop: "50px" }}>Нет постов</p>
+        )}
+      </div>
+      {/* Стили для анимации меню */}
+      <style>
+        {`
+          /* Начальное состояние для анимации menuFade */
+          .menuFade-enter {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          
+          .menuFade-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 300ms ease, transform 300ms ease;
+          }
+          
+          .menuFade-exit {
+            opacity: 1;
+            transform: scale(1);
+          }
+          
+          .menuFade-exit-active {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 300ms ease, transform 300ms ease;
+          }
+          
+        `}
+      </style>
     </div>
   );
 };

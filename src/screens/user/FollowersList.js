@@ -24,7 +24,6 @@ const FollowersList = ({ currentUser }) => {
       setError(null);
       
       try {
-        console.log("Запрашиваем пользователя:", username);
         const userQuery = query(collection(db, "users"), where("username", "==", username));
         const userSnapshot = await getDocs(userQuery);
   
@@ -37,7 +36,6 @@ const FollowersList = ({ currentUser }) => {
         const userData = userSnapshot.docs[0].data();
         const userUid = userData.uid;
   
-        console.log("UID пользователя:", userUid);
         
         const followsQuery = query(collection(db, "follows"), where("followingId", "==", userUid));
         const followsSnapshot = await getDocs(followsQuery);
@@ -81,10 +79,28 @@ const FollowersList = ({ currentUser }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          color: "white",
         }}
       >
-        Загрузка...
+        <div className="loader"></div>
+        <style>
+          {`
+            .loader {
+              width: 50px;
+              aspect-ratio: 1;
+              --_c: no-repeat radial-gradient(farthest-side, white 92%, transparent);
+              background:
+                var(--_c) top,
+                var(--_c) left,
+                var(--_c) right,
+                var(--_c) bottom;
+              background-size: 12px 12px;
+              animation: l7 1s infinite;
+            }
+            @keyframes l7 {
+              to { transform: rotate(.5turn); }
+            }
+          `}
+        </style>
       </div>
     );
   }
@@ -94,7 +110,9 @@ const FollowersList = ({ currentUser }) => {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div
+    className="fade-in"
+    style={{ padding: "20px" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
         <button
           onClick={goBack}

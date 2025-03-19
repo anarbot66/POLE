@@ -132,7 +132,9 @@ const PilotsList = () => {
   if (!pilots.length) return <div> </div>;
 
   return (
-    <div style={{
+    <div 
+    className="fade-in"
+    style={{
       width: "calc(100% - 20px)", 
       margin: "0 auto", 
       marginBottom: "100px", 

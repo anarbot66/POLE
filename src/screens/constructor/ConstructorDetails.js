@@ -228,7 +228,7 @@ const ConstructorDetails = ({ constructor, goBack }) => {
 
   return (
     <div
-      className="constructor-details"
+    className="fade-in"
       style={{
         width: "calc(100% - 20px)",
         margin: "10px 10px 100px",

@@ -153,7 +153,7 @@ const RaceDetails = () => {
   if (!race || loading) {
     return (
       <div style={{ padding: "20px", textAlign: "center", color: "white" }}>
-        Загрузка...
+        
       </div>
     );
   }
@@ -161,7 +161,7 @@ const RaceDetails = () => {
   const countryCode = countryToFlag[race.Circuit.Location.country] || "un";
 
   return (
-    <div className="race-details" style={{
+    <div className="race-details fade-in" style={{
       width: "calc(100% - 20px)", margin: "10px", padding: "10px",
       display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#1D1D1F"
     }}>
@@ -214,7 +214,6 @@ const RaceDetails = () => {
       {/* Контент вкладок */}
       {activeTab === "schedule" && (
         <div>
-          <h3 style={{ color: "white" }}>Расписание уик-энда</h3>
           {sessions.map((session, index) => (
             <div key={index} style={{
               background: "#212124", padding: "15px", borderRadius: "10px",
@@ -237,8 +236,7 @@ const RaceDetails = () => {
           background: "#212124", padding: "15px", borderRadius: "10px",
           color: "white"
         }}>
-          <h3>Рекорд круга</h3>
-          {lapRecordLoading && <p>Загрузка данных рекорда круга...</p>}
+          {lapRecordLoading && <p> </p>}
           {lapRecordError && <p>{lapRecordError}</p>}
           {!lapRecordLoading && !lapRecordError && lapRecord ? (
             <div>

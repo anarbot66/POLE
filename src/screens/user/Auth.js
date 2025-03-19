@@ -48,7 +48,6 @@ const Auth = ({ user }) => {
         const firebaseUser = userCredential.user;
 
         if (user && user.name) {
-          console.log("Начинаем проверку и сохранение данных в Firestore");
 
           const q = query(collection(db, "users"), where("username", "==", user.name));
           const querySnapshot = await getDocs(q);
@@ -63,7 +62,6 @@ const Auth = ({ user }) => {
               uid: firebaseUser.uid
             });
           } else {
-            console.log("Пользователь уже существует");
           }
         }
         navigate("/feed");
@@ -74,12 +72,12 @@ const Auth = ({ user }) => {
         setIsLoading(false); // Возвращаем активное состояние кнопки
       }
     } else {
-      console.log("Checkbox не отмечен, данные не сохраняются.");
     }
   };
 
   return (
     <div
+    className="fade-in"
       style={{
         width: '100vw',
         height: '100vh',
@@ -219,7 +217,7 @@ const Auth = ({ user }) => {
                 wordWrap: 'break-word'
               }}
             >
-              {isLoading ? "Загрузка..." : "Продолжить"}
+              {isLoading ? " " : "Продолжить"}
             </div>
           </div>
         </div>

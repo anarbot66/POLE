@@ -11,7 +11,9 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
   };
 
   return (
-    <div style={{ width: "100%",
+    <div 
+    className="fade-in"
+    style={{ width: "100%",
     margin: "0px",
     marginBottom: "100px",  height: '100%', background: '#1D1D1F' }}>
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '10px', flexDirection: "column", width: 'calc(100% - 20px)', margin: "0px 10px" }}>
@@ -77,10 +79,10 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
         <TransitionGroup>
           <CSSTransition
             key={activeTab}
-            classNames="page"
-            timeout={0}
+            className="fade-in"
+            timeout={300}
           >
-            <div className="page">
+            <div className="fade-in">
               {activeTab === 'pilots' ? (
                 <PilotsList />
               ) : (
@@ -90,6 +92,27 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
           </CSSTransition>
         </TransitionGroup>
       </div>
+      <style>
+      {`
+        .fade-in {
+          animation: fadeIn 1.2s forwards; /* Было 0.5s */
+        }
+        .fade-out {
+          animation: fadeOut 1.2s forwards; /* Было 0.5s */
+        }
+        
+        /* Анимации */
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        `}
+      </style>
     </div>
   );
 };

@@ -120,7 +120,9 @@ const ConstructorsList = ({ onConstructorSelect }) => {
   }
 
   return (
-    <div style={{
+    <div 
+    className="fade-in"
+    style={{
       width: "calc(100% - 20px)", // Убираем отступы по бокам (слева и справа)
       margin: "0 auto", // Центрируем контейнер
       height: "100%",

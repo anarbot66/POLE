@@ -1,41 +1,20 @@
-/* Общие стили для контента */
+
 .content-container {
   width: 100%;
   height: 100%;
 }
 
-.fade-in {
-  animation: fadeIn 0.8s ease-out;
-}
-
 .App {
   display: flex;
-  flex-direction: column; /* Элементы располагаются в колонку */
+  flex-direction: column; 
   width: 100%;
-  min-height: 100vh; /* Занимает всю высоту страницы, включая место под навигацию */
+  min-height: 100vh;
 }
 
-.loading-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background-color: #1D1D1F;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  opacity: 0; /* Начальное состояние — прозрачный */
-}
-
-/* Анимация появления */
 .loading-screen.fade-in {
   animation: fadeIn 0.6s ease-in-out forwards;
 }
 
-/* Анимация затухания */
 .loading-screen.fade-out {
   animation: fadeOut 0.6s ease-in-out forwards;
   pointer-events: none;
@@ -60,22 +39,16 @@
 }
 
 
-
-/* Общие стили для контента */
 .content-container {
   width: 100%;
-  height: 100%;
 }
 
-.fade-in {
-  animation: fadeIn 0.8s ease-out;
-}
 
 .App {
   display: flex;
-  flex-direction: column; /* Элементы располагаются в колонку */
+  flex-direction: column;
   width: 100%;
-  min-height: 100vh; /* Занимает всю высоту страницы, включая место под навигацию */
+  min-height: 100vh;
 }
 
 body {
@@ -85,7 +58,7 @@ body {
 
 .page-enter {
   opacity: 0;
-  position: absolute; /* ✅ Теперь предыдущая страница не будет перекрываться */
+  position: absolute;
   width: 100%;
   pointer-events: none;
   background-color: #1D1D1F;
@@ -120,20 +93,13 @@ body {
   display: none;
 }
 
-
-
-.logo {
-  width: 120px;
-  height: 120px;
-}
-
 .progress-container {
-  width: 80%;           /* Ширину можно настроить под ваш дизайн */
+  width: 80%;
   height: 14px;
   background-color: #e0e0e0;
   border-radius: 10px;
   overflow: hidden;
-  margin: 20px auto 0;  /* Центрирование и отступ сверху */
+  margin: 20px auto 0;
 }
 
 .progress-bar {
@@ -142,4 +108,150 @@ body {
   transition: width 0.4s ease-in-out;
 }
 
+.App {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #1D1D1F;
+}
+
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1D1D1F;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.6s ease;
+}
+
+.logo {
+  width: 150px;
+  height: auto;
+}
+
+.progress-bar-container {
+  width: 80%;
+  max-width: 400px;
+  height: 10px;
+  background: #ccc;
+  border-radius: 5px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #4caf50;
+  transition: width 0.3s ease;
+}
+
+.loader {
+  width: 120px;
+  height: 20px;
+  background:
+    linear-gradient(#000 50%, #0000 0),
+    linear-gradient(#0000 50%, #000 0),
+    linear-gradient(#000 50%, #0000 0),
+    linear-gradient(#0000 50%, #000 0),
+    linear-gradient(#000 50%, #0000 0),
+    linear-gradient(#0000 50%, #000 0)
+    #ddd;
+  background-size: calc(100%/6 + 1px) 200%;
+  background-repeat: no-repeat;
+  animation: l12 2s infinite;
+}
+
+@keyframes l12 {
+  0%     { background-position: calc(0*100%/5) 100%, calc(1*100%/5) 0%, calc(2*100%/5) 100%, calc(3*100%/5) 0%, calc(4*100%/5) 100%, calc(5*100%/5) 0% }
+  16.67% { background-position: calc(0*100%/5) 0%,   calc(1*100%/5) 0%, calc(2*100%/5) 100%, calc(3*100%/5) 0%, calc(4*100%/5) 100%, calc(5*100%/5) 0% }
+  33.33% { background-position: calc(0*100%/5) 0%,   calc(1*100%/5) 100%, calc(2*100%/5) 100%, calc(3*100%/5) 0%, calc(4*100%/5) 100%, calc(5*100%/5) 0% }
+  50%    { background-position: calc(0*100%/5) 0%,   calc(1*100%/5) 100%, calc(2*100%/5) 0%,   calc(3*100%/5) 0%, calc(4*100%/5) 100%, calc(5*100%/5) 0% }
+  66.67% { background-position: calc(0*100%/5) 0%,   calc(1*100%/5) 100%, calc(2*100%/5) 0%,   calc(3*100%/5) 100%, calc(4*100%/5) 100%, calc(5*100%/5) 0% }
+  83.33% { background-position: calc(0*100%/5) 0%,   calc(1*100%/5) 100%, calc(2*100%/5) 0%,   calc(3*100%/5) 100%, calc(4*100%/5) 0%,   calc(5*100%/5) 0% }
+  100%   { background-position: calc(0*100%/5) 0%,   calc(1*100%/5) 100%, calc(2*100%/5) 0%,   calc(3*100%/5) 100%, calc(4*100%/5) 0%,   calc(5*100%/5) 100% }
+}
+
+.menuFade-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.menuFade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.menuFade-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.menuFade-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #1d1d1f;
+}
+
+.logo {
+  margin-bottom: 20px;
+}
+
+.loader {
+  width: 50px;
+  height: 50px;
+  aspect-ratio: 1;
+  --_c: no-repeat radial-gradient(farthest-side, white 92%, transparent);
+  background: 
+    var(--_c) top,
+    var(--_c) left,
+    var(--_c) right,
+    var(--_c) bottom;
+  background-size: 12px 12px;
+  animation: l7 1s infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes l7 {
+  to {
+    transform: rotate(0.5turn);
+  }
+}
+
+.progress-text {
+  color: #fff;
+  font-size: 16px;
+}
+
+.fade-in {
+  animation: fadeIn 0.9s forwards;
+}
+.fade-out {
+  animation: fadeOut 0.9s forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 
