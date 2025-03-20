@@ -161,7 +161,7 @@ const ChampionsList = () => {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ color: "white", fontSize: "12px", fontWeight: "300" }}>
+                  <div style={{ color: "white", fontSize: "14px"}}>
                     {driverFullName}
                   </div>
                   <img
