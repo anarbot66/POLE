@@ -474,7 +474,7 @@ const Profile = ({ currentUser }) => {
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ color: "white", fontSize: "12px", fontWeight: "300" }}>
+                <div style={{ color: "white", fontSize: "12px"}}>
                   {driverTranslations[`${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`] ||
                     `${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`}
                 </div>
@@ -495,7 +495,6 @@ const Profile = ({ currentUser }) => {
                 style={{
                   color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
                   fontSize: "12px",
-                  fontWeight: "300",
                 }}
               >
                 {favoritePilot.Constructors[0].name}

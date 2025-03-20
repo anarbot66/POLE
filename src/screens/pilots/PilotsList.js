@@ -204,8 +204,7 @@ const PilotsList = () => {
               </div>
               <div style={{
                 color: teamColor,
-                fontSize: "12px",
-                fontWeight: "300"
+                fontSize: "12px"
               }}>
                 {pilot.Constructors[0].name}
               </div>

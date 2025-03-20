@@ -385,11 +385,11 @@ const PilotDetails = ({ currentUser }) => {
         </button>
         <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "300" }}>
+            <div style={{ color: "white", fontSize: "16px", fontFamily: "Inter"}}>
               {pilotFirstName} {pilotLastNameDisplay}
             </div>
           </div>
-          <div style={{ color: teamColor, fontSize: "12px", fontFamily: "Inter", fontWeight: "200" }}>
+          <div style={{ color: teamColor, fontSize: "12px", fontFamily: "Inter"}}>
             {pilot.Constructors[0].name}
           </div>
         </div>
@@ -479,7 +479,6 @@ const PilotDetails = ({ currentUser }) => {
             fontSize: "14px",
             color: "white",
             fontFamily: "Arial, sans-serif",
-            fontWeight: "300",
             padding: "10px"
           }}
         >
@@ -570,7 +569,6 @@ const PilotDetails = ({ currentUser }) => {
             fontSize: "14px",
             color: "white",
             fontFamily: "Arial, sans-serif",
-            fontWeight: "300",
             padding: "10px"
           }}
         >

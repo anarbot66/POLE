@@ -174,7 +174,6 @@ const ChampionsList = () => {
                   style={{
                     color: teamColor,
                     fontSize: "12px",
-                    fontWeight: "300",
                   }}
                 >
                   {driver.team}

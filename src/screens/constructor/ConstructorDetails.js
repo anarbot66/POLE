@@ -259,7 +259,7 @@ const ConstructorDetails = ({ constructor, goBack }) => {
           ✕
         </button>
         <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-          <div style={{ color: teamColor, fontSize: "16px", fontFamily: "Inter", fontWeight: "400" }}>
+          <div style={{ color: teamColor, fontSize: "16px", fontFamily: "Inter"}}>
             {constructor.Constructor.name}
           </div>
         </div>

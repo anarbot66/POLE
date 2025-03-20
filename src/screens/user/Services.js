@@ -31,7 +31,7 @@ const Services = () => {
           borderRadius: 15
         }}
       >
-        <span style={{ color: "white", padding: "10px", fontSize: 18, fontWeight: 300 }}>
+        <span style={{ color: "white", padding: "10px", fontSize: 18}}>
           Сервисы
         </span>
       </div>
