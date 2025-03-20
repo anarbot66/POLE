@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from "../recources/images/logo-250.png";
+import logo from "../recources/images/apex-logo.png";
 import { db } from '../../firebase'; // Импорт Firestore
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { getAuth, signInAnonymously } from 'firebase/auth';
@@ -81,7 +81,6 @@ const Auth = ({ user }) => {
       style={{
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#1D1D1F',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -94,19 +93,17 @@ const Auth = ({ user }) => {
           justifyContent: 'center',
           alignItems: 'center',
           height: '100%',
-          backgroundColor: '#1D1D1F'
         }}
       >
         <div
           style={{
             width: 250,
-            height: 300,
+            height: 330,
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
             gap: 25,
             display: 'inline-flex',
-            backgroundColor: '#212124',
             padding: 20,
             borderRadius: 10,
           }}

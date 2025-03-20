@@ -304,7 +304,7 @@ const Services = () => {
         {/* Кнопка "Чемпионы" – пока не реализовано */}
         <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
           <div
-            onClick={handleUnavailableFeature}
+            onClick={() => navigate("/champions")}
             style={{
               width: 60,
               aspectRatio: 1,

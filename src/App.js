@@ -22,6 +22,7 @@ import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
 import Services from "./screens/user/Services";
 import InfoPage from "./screens/user/InfoPage";
 import LoadingScreen from "./screens/components/LoadingScreen";
+import ChampionsList from "./screens/pilots/ChampionsList";
 
 
 function App() {
@@ -58,7 +59,7 @@ function App() {
         });
       } else {
         setUser({
-          name: "",
+          name: "", //
           uid: "",
           photoUrl: ""
         });
@@ -246,6 +247,7 @@ function App() {
                       <Route path="/news/:id" element={<NewsDetail />} />
                       <Route path="/services" element={<Services currentUser={user} />} />
                       <Route path="/info" element={<InfoPage />} />
+                      <Route path="/champions" element={<ChampionsList />} />
                     </Routes>
                 </div>
               </CSSTransition>

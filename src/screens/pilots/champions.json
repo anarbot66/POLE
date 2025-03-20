@@ -1,0 +1,755 @@
+{
+    "champions": [
+        {
+        "year": 2024,
+        "driver": {
+            "firstName": "Макс",
+            "lastName": "Ферстаппен",
+            "nationality": "Dutch",
+            "team": "RedBull"
+        },
+        "points": 437
+        },
+        {
+        "year": 2023,
+        "driver": {
+          "firstName": "Макс",
+          "lastName": "Ферстаппен",
+          "nationality": "Dutch",
+          "team": "RedBull"
+        },
+        "points": 575
+      },
+      {
+        "year": 2022,
+        "driver": {
+          "firstName": "Макс",
+          "lastName": "Ферстаппен",
+          "nationality": "Dutch",
+          "team": "RedBull"
+        },
+        "points": 454
+      },
+      {
+        "year": 2021,
+        "driver": {
+          "firstName": "Макс",
+          "lastName": "Ферстаппен",
+          "nationality": "Dutch",
+          "team": "RedBull"
+        },
+        "points": 395.5
+      },
+      {
+        "year": 2020,
+        "driver": {
+          "firstName": "Льюис",
+          "lastName": "Хэмильтон",
+          "nationality": "British",
+          "team": "Mercedes"
+        },
+        "points": 347
+      },
+      {
+        "year": 2019,
+        "driver": {
+            "firstName": "Льюис",
+          "lastName": "Хэмильтон",
+            "nationality": "British",
+            "team": "Mercedes"
+        },
+        "points": 413
+      },
+      {
+        "year": 2018,
+        "driver": {
+            "firstName": "Льюис",
+          "lastName": "Хэмильтон",
+            "nationality": "British",
+            "team": "Mercedes"
+        },
+        "points": 408
+      },
+      {
+        "year": 2017,
+        "driver": {
+        "firstName": "Льюис",
+        "lastName": "Хэмильтон",
+        "nationality": "British",
+        "team": "Mercedes"
+        },
+        "points": 363
+      },
+      {
+        "year": 2016,
+        "driver": {
+          "firstName": "Нико",
+          "lastName": "Росберг",
+          "nationality": "German",
+          "team": "Mercedes"
+        },
+        "points": 385
+      },
+      {
+        "year": 2015,
+        "driver": {
+            "firstName": "Льюис",
+            "lastName": "Хэмильтон",
+            "nationality": "British",
+            "team": "Mercedes"
+        },
+        "points": 381
+        },
+        {
+        "year": 2014,
+        "driver": {
+            "firstName": "Льюис",
+            "lastName": "Хэмильтон",
+            "nationality": "British",
+            "team": "Mercedes"
+        },
+        "points": 384
+      },
+      {
+        "year": 2013,
+        "driver": {
+          "firstName": "Себастиан",
+          "lastName": "Феттель",
+          "nationality": "German",
+          "team": "RedBull"
+        },
+        "points": 397
+      },
+      {
+        "year": 2012,
+        "driver": {
+            "firstName": "Себастиан",
+            "lastName": "Феттель",
+            "nationality": "German",
+            "team": "RedBull"
+        },
+        "points": 281
+      },
+      {
+        "year": 2011,
+        "driver": {
+            "firstName": "Себастиан",
+            "lastName": "Феттель",
+            "nationality": "German",
+            "team": "RedBull"
+        },
+        "points": 392
+      },
+      {
+        "year": 2010,
+        "driver": {
+            "firstName": "Себастиан",
+            "lastName": "Феттель",
+            "nationality": "German",
+            "team": "RedBull"
+        },
+        "points": 256
+      },
+      {
+        "year": 2009,
+        "driver": {
+            "firstName": "Дженсон",
+          "lastName": "Батттон",
+            "nationality": "British",
+            "team": "BrawnGP"
+        },
+        "points": 95
+      },
+      {
+        "year": 2008,
+        "driver": {
+            "firstName": "Льюис",
+          "lastName": "Хэмильтон",
+            "nationality": "British",
+            "team": "Mclaren"
+        },
+        "points": 98
+      },
+      {
+        "year": 2007,
+        "driver": {
+          "firstName": "Кими",
+          "lastName": "Райкконен",
+          "nationality": "Finnish",
+          "team": "Ferrari"
+        },
+        "points": 110
+      },
+      {
+        "year": 2006,
+        "driver": {
+            "firstName": "Фернандо",
+            "lastName": "Алонсо",
+            "nationality": "Spanish",
+            "team": "Renault"
+        },
+        "points": 134
+        },
+        {
+        "year": 2005,
+        "driver": {
+            "firstName": "Фернандо",
+            "lastName": "Алонсо",
+            "nationality": "Spanish",
+            "team": "Renault"
+        },
+        "points": 133
+      },
+      {
+        "year": 2004,
+        "driver": {
+          "firstName": "Михаэль",
+          "lastName": "Шумахер",
+          "nationality": "German",
+          "team": "Ferrari"
+        },
+        "points": 148
+      },
+      {
+        "year": 2003,
+        "driver": {
+            "firstName": "Михаэль",
+            "lastName": "Шумахер",
+            "nationality": "German",
+            "team": "Ferrari"
+        },
+        "points": 93
+      },
+      {
+        "year": 2002,
+        "driver": {
+            "firstName": "Михаэль",
+            "lastName": "Шумахер",
+            "nationality": "German",
+            "team": "Ferrari"
+        },
+        "points": 144
+      },
+      {
+        "year": 2001,
+        "driver": {
+            "firstName": "Михаэль",
+            "lastName": "Шумахер",
+            "nationality": "German",
+            "team": "Ferrari"
+        },
+        "points": 123
+      },
+      {
+        "year": 2000,
+        "driver": {
+            "firstName": "Михаэль",
+            "lastName": "Шумахер",
+            "nationality": "German",
+            "team": "Ferrari"
+        },
+        "points": 108
+      },
+      {
+        "year": 1999,
+        "driver": {
+        "firstName": "Мика",
+        "lastName": "Хаккиен",
+        "nationality": "Finnish",
+        "team": "Mclaren"
+        },
+        "points": 76
+      },
+      {
+        "year": 1998,
+        "driver": {
+            "firstName": "Мика",
+            "lastName": "Хаккиен",
+            "nationality": "Finnish",
+            "team": "Mclaren"
+        },
+        "points": 100
+      },
+      {
+        "year": 1997,
+        "driver": {
+            "firstName": "Жак",
+            "lastName": "Вильнёв",
+            "nationality": "Canadian",
+            "team": "Williams"
+        },
+        "points": 81
+        },
+        {
+        "year": 1996,
+        "driver": {
+            "firstName": "Дэймон",
+            "lastName": "Хилл",
+            "nationality": "British",
+            "team": "Williams"
+        },
+        "points": 97
+      },
+      {
+        "year": 1995,
+        "driver": {
+          "firstName": "Михаэль",
+          "lastName": "Шумахер",
+          "nationality": "German",
+          "team": "Benetton"
+        },
+        "points": 102
+      },
+      {
+        "year": 1994,
+        "driver": {
+            "firstName": "Михаэль",
+            "lastName": "Шумахер",
+            "nationality": "German",
+            "team": "Benetton"
+        },
+        "points": 92
+      },
+      {
+        "year": 1993,
+        "driver": {
+            "firstName": "Ален",
+            "lastName": "Прост",
+            "nationality": "French",
+            "team": "Williams"
+        },
+        "points": 99
+      },
+      {
+        "year": 1992,
+        "driver": {
+            "firstName": "Найджел",
+            "lastName": "Мэнселл",
+            "nationality": "British",
+            "team": "Williams"
+        },
+        "points": 108
+      },
+      {
+        "year": 1991,
+        "driver": {
+        "firstName": "Айртон",
+        "lastName": "Сенна",
+        "nationality": "Brazilian",
+        "team": "Mclaren"
+        },
+        "points": 96
+      },
+      {
+        "year": 1990,
+        "driver": {
+            "firstName": "Айртон",
+            "lastName": "Сенна",
+            "nationality": "Brazilian",
+            "team": "Mclaren"
+        },
+        "points": 78
+      },
+      {
+        "year": 1989,
+        "driver": {
+            "firstName": "Ален",
+            "lastName": "Прост",
+            "nationality": "French",
+            "team": "Mclaren"
+        },
+        "points": 76
+      },
+      {
+        "year": 1988,
+        "driver": {
+            "firstName": "Айртон",
+            "lastName": "Сенна",
+            "nationality": "Brazilian",
+            "team": "Mclaren"
+        },
+        "points": 90
+        },
+        {
+        "year": 1987,
+        "driver": {
+          "firstName": "Нельсон",
+          "lastName": "Пике",
+          "nationality": "Brazilian",
+          "team": "Williams"
+        },
+        "points": 73
+      },
+      {
+        "year": 1986,
+        "driver": {
+          "firstName": "Ален",
+          "lastName": "Прост",
+          "nationality": "French",
+          "team": "Mclaren"
+        },
+        "points": 72
+      },
+      {
+        "year": 1985,
+        "driver": {
+            "firstName": "Ален",
+            "lastName": "Прост",
+            "nationality": "French",
+            "team": "Mclaren"
+          },
+          "points": 73
+      },
+      {
+        "year": 1984,
+        "driver": {
+            "firstName": "Ники",
+            "lastName": "Лауда",
+            "nationality": "Austrian",
+            "team": "Mclaren"
+          },
+          "points": 72
+      },
+      {
+        "year": 1983,
+        "driver": {
+            "firstName": "Нельсон",
+            "lastName": "Пике",
+            "nationality": "Brazilian",
+            "team": "Brabham"
+          },
+          "points": 59
+      },
+      {
+        "year": 1982,
+        "driver": {
+            "firstName": "Кеке",
+          "lastName": "Росберг",
+            "nationality": "Finnish",
+            "team": "Williams"
+        },
+        "points": 44
+      },
+      {
+        "year": 1981,
+        "driver": {
+            "firstName": "Нельсон",
+            "lastName": "Пике",
+            "nationality": "Brazilian",
+            "team": "Brabham"
+          },
+          "points": 50
+      },
+      {
+        "year": 1980,
+        "driver": {
+          "firstName": "Алан",
+          "lastName": "Джонс",
+          "nationality": "Australian",
+          "team": "Williams"
+        },
+        "points": 67
+      },
+      {
+        "year": 1979,
+        "driver": {
+            "firstName": "Джоди",
+            "lastName": "Шектер",
+            "nationality": "South African",
+            "team": "Ferrari"
+        },
+        "points": 51
+        },
+        {
+        "year": 1978,
+        "driver": {
+            "firstName": "Марио",
+            "lastName": "Андретти",
+            "nationality": "American",
+            "team": "Lotus"
+        },
+        "points": 64
+      },
+      {
+        "year": 1977,
+        "driver": {
+          "firstName": "Ники",
+          "lastName": "Лауда",
+          "nationality": "Austrian",
+          "team": "Ferrari"
+        },
+        "points": 72
+      },
+      {
+        "year": 1976,
+        "driver": {
+            "firstName": "Джеймс",
+            "lastName": "Хант",
+            "nationality": "British",
+            "team": "Mclaren"
+        },
+        "points": 69
+      },
+      {
+        "year": 1975,
+        "driver": {
+            "firstName": "Ники",
+            "lastName": "Лауда",
+            "nationality": "Austrian",
+            "team": "Ferrari"
+          },
+          "points": 64.5
+      },
+      {
+        "year": 1974,
+        "driver": {
+            "firstName": "Эмерсон",
+            "lastName": "Фиттипальди",
+            "nationality": "Brazilian",
+            "team": "Mclaren"
+        },
+        "points": 55
+      },
+      {
+        "year": 1973,
+        "driver": {
+            "firstName": "Джеки",
+            "lastName": "Стюарт",
+            "nationality": "British",
+            "team": "Tyrell"
+        },
+        "points": 71
+      },
+      {
+        "year": 1972,
+        "driver": {
+            "firstName": "Эмерсон",
+            "lastName": "Фиттипальди",
+            "nationality": "Brazilian",
+            "team": "Mclaren"
+        },
+        "points": 61
+      },
+      {
+        "year": 1971,
+        "driver": {
+            "firstName": "Джеки",
+            "lastName": "Стюарт",
+            "nationality": "British",
+            "team": "Tyrell"
+        },
+        "points": 62
+      },
+      {
+        "year": 1970,
+        "driver": {
+            "firstName": "Йохен",
+            "lastName": "Риндт",
+            "nationality": "Austrian",
+            "team": "Lotus"
+        },
+        "points": 45
+        },
+        {
+        "year": 1969,
+        "driver": {
+            "firstName": "Джеки",
+            "lastName": "Стюарт",
+            "nationality": "British",
+            "team": "Matra"
+        },
+        "points": 63
+      },
+      {
+        "year": 1968,
+        "driver": {
+          "firstName": "Грэм",
+          "lastName": "Хилл",
+          "nationality": "British",
+          "team": "Lotus"
+        },
+        "points": 48
+      },
+      {
+        "year": 1967,
+        "driver": {
+            "firstName": "Денни",
+            "lastName": "Халм",
+            "nationality": "New Zealander",
+            "team": "Brabham"
+        },
+        "points": 51
+      },
+      {
+        "year": 1966,
+        "driver": {
+            "firstName": "Джек",
+            "lastName": "Брэбем",
+            "nationality": "Australian",
+            "team": "Brabham"
+        },
+        "points": 42
+      },
+      {
+        "year": 1965,
+        "driver": {
+            "firstName": "Джим",
+            "lastName": "Кларк",
+            "nationality": "British",
+            "team": "Lotus"
+        },
+        "points": 54
+      },
+      {
+        "year": 1964,
+        "driver": {
+            "firstName": "Джон",
+            "lastName": "Сёртис",
+            "nationality": "British",
+            "team": "Ferrari"
+        },
+        "points": 40
+      },
+      {
+        "year": 1963,
+        "driver": {
+            "firstName": "Джим",
+            "lastName": "Кларк",
+            "nationality": "British",
+            "team": "Lotus"
+        },
+        "points": 54
+      },
+      {
+        "year": 1962,
+        "driver": {
+            "firstName": "Грэм",
+            "lastName": "Хилл",
+            "nationality": "British",
+            "team": "BRM"
+          },
+          "points": 42
+      },
+      {
+        "year": 1961,
+        "driver": {
+            "firstName": "Фил",
+            "lastName": "Хилл",
+            "nationality": "American",
+            "team": "Ferrari"
+        },
+        "points": 34
+        },
+        {
+        "year": 1960,
+        "driver": {
+            "firstName": "Джек",
+            "lastName": "Брэбем",
+            "nationality": "Australian",
+            "team": "Cooper"
+        },
+        "points": 43
+      },
+      {
+        "year": 1959,
+        "driver": {
+            "firstName": "Джек",
+            "lastName": "Брэбем",
+            "nationality": "Australian",
+            "team": "Cooper"
+        },
+        "points": 31
+      },
+      {
+        "year": 1958,
+        "driver": {
+            "firstName": "Майк",
+            "lastName": "Хоторн",
+            "nationality": "British",
+            "team": "Ferrari"
+        },
+        "points": 42
+      },
+      {
+        "year": 1957,
+        "driver": {
+            "firstName": "Хуан Мануэль",
+            "lastName": "Фанхио",
+            "nationality": "Argentinian",
+            "team": "Maserati"
+        },
+        "points": 40
+      },
+      {
+        "year": 1956,
+        "driver": {
+            "firstName": "Хуан Мануэль",
+            "lastName": "Фанхио",
+            "nationality": "Argentinian",
+            "team": "Ferrari"
+        },
+        "points": 30
+      },
+      {
+        "year": 1955,
+        "driver": {
+            "firstName": "Хуан Мануэль",
+            "lastName": "Фанхио",
+            "nationality": "Argentinian",
+            "team": "Mercedes"
+        },
+        "points": 40
+      },
+      {
+        "year": 1955,
+        "driver": {
+            "firstName": "Хуан Мануэль",
+            "lastName": "Фанхио",
+            "nationality": "Argentinian",
+            "team": "Mercedes"
+        },
+        "points": 42
+      },
+      {
+        "year": 1953,
+        "driver": {
+            "firstName": "Альберто",
+            "lastName": "Аскари",
+            "nationality": "Italian",
+            "team": "Ferrari"
+        },
+        "points": 34.5
+      },
+      {
+        "year": 1952,
+        "driver": {
+            "firstName": "Альберто",
+            "lastName": "Аскари",
+            "nationality": "Italian",
+            "team": "Ferrari"
+        },
+        "points": 36
+      },
+      {
+        "year": 1951,
+        "driver": {
+            "firstName": "Хуан Мануэль",
+            "lastName": "Фанхио",
+            "nationality": "Argentinian",
+            "team": "Alfa Romeo"
+        },
+        "points": 42
+      },
+      {
+        "year": 1950,
+        "driver": {
+            "firstName": "Джузеппе",
+            "lastName": "Фарина",
+            "nationality": "Italian",
+            "team": "Alfa Romeo"
+        },
+        "points": 30
+      }
+    ]
+  }
+  
