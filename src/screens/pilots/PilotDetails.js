@@ -581,7 +581,7 @@ const PilotDetails = ({ currentUser }) => {
               <div>Гонок: {allTimeData.races}</div>
               <div>Подиумов: {allTimeData.podiums}</div>
               <div>Побед: {allTimeData.wins}</div>
-              <div>Поуло: {allTimeData.poles}</div>
+              <div>Поулов: {allTimeData.poles}</div>
               <div>Очков: {allTimeData.points}</div>
               <div>Гранд-слемов: {allTimeData.grandSlams}</div>
             </div>
