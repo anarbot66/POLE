@@ -196,7 +196,7 @@ const PilotsList = () => {
               display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px", flex: 1
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ color: "white", fontSize: "12px", fontWeight: "300" }}>
+                <div style={{ color: "white", fontSize: "14px"}}>
                   {translatedName}
                 </div>
                 <img src={`https://flagcdn.com/w40/${countryCode}.png`} alt={nationality}
