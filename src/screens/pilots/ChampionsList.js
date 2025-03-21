@@ -67,12 +67,30 @@ const ChampionsList = () => {
 
   return (
     <div>
+      
+
+      <div 
+        style={{
+          width: "calc(100% - 20px)",
+          margin: "0 auto",
+          marginBottom: "100px",
+          height: "100%",
+          overflowY: "auto",
+          padding: "10px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "15px",
+          background: "#1D1D1F",
+          marginTop: "40px"
+        }}
+      >
+        <div style={{ width: "100%", position: "fixed", display: "flex", height: 54}}>
       <button
         onClick={goBack}
         style={{
           color: "white",
           border: "none",
-          padding: "5px 5px",
+          padding: "10px",
           borderRadius: "10px",
           cursor: "pointer",
           zIndex: "1000",
@@ -92,23 +110,7 @@ const ChampionsList = () => {
           />
         </svg>
       </button>
-
-      {/* Добавляем отступ сверху в 40px */}
-      <div 
-        className="fade-in"
-        style={{
-          width: "calc(100% - 20px)",
-          margin: "0 auto",
-          marginBottom: "100px",
-          height: "100%",
-          overflowY: "auto",
-          paddingTop: "50px", // 40px + немного дополнительного отступа для комфортного размещения
-          display: "flex",
-          flexDirection: "column",
-          gap: "15px",
-          background: "#1D1D1F",
-        }}
-      >
+      </div>
         {champions.map((champion, index) => {
           const { year, driver, points } = champion;
           const driverFullName = `${driver.firstName} ${driver.lastName}`;

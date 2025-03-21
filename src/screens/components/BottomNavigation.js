@@ -55,7 +55,7 @@ const BottomNavigation = ({ setActivePage }) => {
         justifyContent: "center",
         alignItems: "center",
         gap: 25,
-        zIndex: 1000,
+        zIndex: 998,
         boxShadow: "none",
       }}
     >

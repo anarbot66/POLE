@@ -59,7 +59,7 @@ function App() {
         });
       } else {
         setUser({
-          name: "", //
+          name: "",
           uid: "",
           photoUrl: ""
         });
@@ -185,9 +185,9 @@ function App() {
     } else if (page === 2) {
       navigate("/races");
     } else if (page === 3) {
-      navigate("/services");
+      navigate(isAuthenticated ?  "/services" : "/");
     } else if (page === 4) {
-      navigate("/profile");
+      navigate(isAuthenticated ? "/profile" : "/");
     }
   };
 

@@ -421,7 +421,7 @@ const Profile = ({ currentUser }) => {
             fill="white"
           />
         </svg>
-        {followersCount} Подписчиков
+        {followersCount} Друзья
       </div>
 
       {favoritePilot && (
@@ -612,7 +612,7 @@ const Profile = ({ currentUser }) => {
                       top: "24px",
                       right: "0",
                       background: "#333",
-                      borderRadius: "12px",
+                      borderRadius: "12px 0px 12px 12px",
                       padding: "5px",
                       zIndex: 10,
                     }}

@@ -462,6 +462,7 @@ const PilotDetails = ({ currentUser }) => {
       )}
 
       {/* Кастомный селект для переключения вкладок */}
+      <div>
       <CustomSelect
         options={tabOptions}
         value={activeTab}
@@ -588,6 +589,7 @@ const PilotDetails = ({ currentUser }) => {
           )}
         </div>
       )}
+      </div>
 
       {/* Кастомное уведомление при попытке повторного добавления в избранное */}
       <CSSTransition
