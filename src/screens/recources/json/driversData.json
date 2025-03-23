@@ -1,0 +1,183 @@
+{
+    "verstappen": {
+      "pos": 2,
+      "point": 36,
+      "wins": 0,
+      "podiums": 1,
+      "poles": 0,
+      "dnf": 0,
+      "nationality": "Dutch"
+    },
+    "norris": {
+        "pos": 1,
+        "point": 44,
+        "wins": 1,
+        "podiums": 2,
+        "poles": 1,
+        "dnf": 0,
+        "nationality": "British"
+    },
+    "leclerc": {
+        "pos": 10,
+        "point": 8,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "Monegasque"
+    },
+    "piastri": {
+        "pos": 4,
+        "point": 34,
+        "wins": 1,
+        "podiums": 1,
+        "poles": 1,
+        "dnf": 0,
+        "nationality": "Australian"
+    },
+    "russell": {
+        "pos": 3,
+        "point": 35,
+        "wins": 0,
+        "podiums": 2,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "British"
+    },
+    "hamilton": {
+        "pos": 9,
+        "point": 9,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "British"
+    },
+    "lawson": {
+        "pos": 17,
+        "point": 0,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 1,
+        "nationality": "New Zealander"
+    },
+    "alonso": {
+        "pos": 20,
+        "point": 0,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 2,
+        "nationality": "Spanish"
+    },
+    "gasly": {
+        "pos": 15,
+        "point": 0,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "French"
+    },
+    "hulkenberg": {
+        "pos": 11,
+        "point": 6,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "German"
+    },
+    "tsunoda": {
+        "pos": 13,
+        "point": 3,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "Japanese"
+    },
+    "stroll": {
+        "pos": 8,
+        "point": 10,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "Canadian"
+    },
+    "ocon": {
+        "pos": 7,
+        "point": 10,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "French"
+    },
+    "bearman": {
+        "pos": 12,
+        "point": 4,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "British"
+    },
+    "albon": {
+        "pos": 6,
+        "point": 16,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "Thai"
+    },
+    "sainz": {
+        "pos": 14,
+        "point": 1,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 1,
+        "nationality": "Spanish"
+    },
+    "hadjar": {
+        "pos": 16,
+        "point": 0,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 1,
+        "nationality": "French"
+    },
+    "bortoleto": {
+        "pos": 19,
+        "point": 0,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 1,
+        "nationality": "Brazilian"
+    },
+    "antonelli": {
+        "pos": 5,
+        "point": 22,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 0,
+        "nationality": "Italian"
+    },
+    "doohan": {
+        "pos": 18,
+        "point": 0,
+        "wins": 0,
+        "podiums": 0,
+        "poles": 0,
+        "dnf": 5,
+        "nationality": "Australian"
+    }
+  }
+  

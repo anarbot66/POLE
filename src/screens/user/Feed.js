@@ -361,37 +361,16 @@ const toggleFriendPostComments = (postId) => {
 
       {activeTab === "news" && (
         <div style={{ position: "relative", margin: "10px 15px 0 15px" }}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            style={{
-              position: "absolute",
-              left: "10px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              stroke: "white",
-              fill: "none",
-              strokeWidth: "2",
-              strokeLinecap: "round",
-              strokeLinejoin: "round",
-              marginLeft: "5px",
-            }}
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
           <input
             type="text"
-            placeholder="Поиск по заголовку или тексту..."
+            placeholder="Ищите что угодно о формуле..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: "100%",
-              padding: "20px 20px 20px 50px",
-              borderRadius: "12px",
-              backgroundColor: "#1D1D1F",
+              padding: "20px 20px 20px 20px",
+              borderRadius: "20px",
+              backgroundColor: "#212124",
               color: "white",
               outline: "none",
               border: "none",
@@ -557,6 +536,7 @@ const toggleFriendPostComments = (postId) => {
                     <div
                       key={news.id}
                       style={{
+                        padding: "0px 15px",
                         marginBottom: "10px",
                         position: "relative",
                         display: "flex",
@@ -571,10 +551,11 @@ const toggleFriendPostComments = (postId) => {
                           style={{
                             width: "100%",
                             marginTop: "10px",
+                            borderRadius: "20px"
                           }}
                         />
                       )}
-                      <div style={{ margin: "10px 15px 0px 15px", display: "flex", flexDirection: "column" }}>
+                      <div style={{ margin: "10px 0px 0px 0px", display: "flex", flexDirection: "column" }}>
                         {(currentUser.role === "admin" || currentUser.role === "owner") && (
                           <div style={{ position: "absolute", top: 0, right: 0 }}>
                             <button
@@ -640,7 +621,7 @@ const toggleFriendPostComments = (postId) => {
                           @anarbot66 {formatDate(news.createdAt?.toDate ? news.createdAt.toDate() : news.createdAt)}
                         </small>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", margin: "10px 15px 0 15px", gap: 15 }}>
+                      <div style={{ display: "flex", alignItems: "center", margin: "10px 0px 0px 0px", gap: 15 }}>
                   {news.type === "link" ? (
                     <a
                       href={news.link}
@@ -730,24 +711,7 @@ const toggleFriendPostComments = (postId) => {
           </div>
         </CSSTransition>
       </TransitionGroup>
-      <style>
-        {`
-          .slideUp-enter {
-            transform: translateY(100%);
-          }
-          .slideUp-enter-active {
-            transform: translateY(0);
-            transition: transform 300ms;
-          }
-          .slideUp-exit {
-            transform: translateY(0);
-          }
-          .slideUp-exit-active {
-            transform: translateY(100%);
-            transition: transform 300ms;
-          }
-        `}
-      </style>
+      
     </div>
   );
 };

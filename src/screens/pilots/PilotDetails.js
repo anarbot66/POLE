@@ -14,71 +14,121 @@ import {
 import biographies from "../recources/json/bio"; // данные о биографиях
 import seasonsData from "../recources/json/seasons"; // данные о сезонах
 import allTimeStats from "../recources/json/allTimeStats.json"; // статистика за всё время для 2025 года
-import SocialIcons from "../recources/SocialIcons";
 import pilotSocialData from "../recources/json/social.json";
 import CustomSelect from "../user/components/CustomSelect"; // импорт кастомного селекта
 import { CSSTransition } from "react-transition-group";
 
+// Импорт локальных данных о пилотах
+import pilotStats from "../recources/json/driversData.json";
 
-// Словари для перевода имен на русский
-const firstNameTranslations = {
-  "Max": "Макс",
-  "Lando": "Ландо",
-  "Charles": "Шарль",
-  "Oscar": "Оскар",
-  "Carlos": "Карлос",
-  "George": "Джордж",
-  "Lewis": "Льюис",
-  "Sergio": "Серхио",
-  "Fernando": "Фернандо",
-  "Pierre": "Пьер",
-  "Nico": "Нико",
-  "Yuki": "Юки",
-  "Lance": "Лэнс",
-  "Esteban": "Эстебан",
-  "Kevin": "Кевин",
-  "Alexander": "Александер",
-  "Daniel": "Даниэль",
-  "Oliver": "Оливер",
-  "Franco": "Франко",
-  "Guanyu": "Гуанью",
-  "Liam": "Лиам",
-  "Valtteri": "Валттери",
-  "Logan": "Логан",
-  "Jack": "Джек",
-  "Andrea Kimi" : "Кими",
-  "Gabriel" : "Габриэль",
-  "Isack": "Исак"
+// Функция нормализации (приведения к нижнему регистру без диакритики)
+const normalizeName = (name) => {
+  if (name === "Magnussen") return "kevin_magnussen";
+  if (name === "Verstappen") return "max_verstappen";
+  return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 };
 
-const lastNameTranslations = {
-  "Verstappen": "Ферстаппен",
-  "Norris": "Норрис",
-  "Leclerc": "Леклер",
-  "Piastri": "Пиастри",
-  "Sainz": "Сайнс",
-  "Russell": "Расселл",
-  "Hamilton": "Хэмилтон",
-  "Pérez": "Перес",
-  "Alonso": "Алонсо",
-  "Gasly": "Гасли",
-  "Hülkenberg": "Хюлькенберг",
-  "Tsunoda": "Цунода",
-  "Stroll": "Стролл",
-  "Ocon": "Окон",
-  "Magnussen": "Магнуссен",
-  "Albon": "Албон",
-  "Ricciardo": "Риккьярдо",
-  "Bearman": "Бирман",
-  "Colapinto": "Колапинто",
-  "Zhou": "Джоу",
-  "Lawson": "Лоусон",
-  "Bottas": "Боттас",
-  "Sargeant": "Сарджент",
-  "Doohan": "Дуэн",
-  "Antonelli": "Антонелли",
-  "Bortoleto": "Бортолето",
-  "Hadjar": "Хаджар"
+// Функция для преобразования ключа (например, "max_verstappen") в "Max Verstappen"
+const formatDriverName = (key) => {
+  return key
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+// Словари для перевода имен пилотов (используются в PilotsList, можно адаптировать под детали)
+const driverTranslations = {
+  "Verstappen": "Макс Ферстаппен",
+  "Norris": "Ландо Норрис",
+  "Leclerc": "Шарль Леклер",
+  "Piastri": "Оскар Пиастри",
+  "Sainz": "Карлос Сайнс",
+  "Russell": "Джордж Расселл",
+  "Hamilton": "Льюис Хэмилтон",
+  "Pérez": "Серхио Перес",
+  "Alonso": "Фернандо Алонсо",
+  "Gasly": "Пьер Гасли",
+  "Hülkenberg": "Нико Хюлькенберг",
+  "Tsunoda": "Юки Цунода",
+  "Stroll": "Лэнс Стролл",
+  "Ocon": "Эстебан Окон",
+  "Magnussen": "Кевин Магнуссен",
+  "Albon": "Александер Албон",
+  "Ricciardo": "Даниэль Риккьярдо",
+  "Bearman": "Оливер Бирман",
+  "Colapinto": "Франко Колапинто",
+  "Zhou": "Гуанью Джоу",
+  "Lawson": "Лиам Лоусон",
+  "Bottas": "Валттери Боттас",
+  "Sargeant": "Логан Сарджент",
+  "Doohan": "Джек Дуэн",
+  "Antonelli": "Кими Антонелли",
+  "Bortoleto": "Габриэль Бортолето",
+  "Hadjar": "Исак Хаджар"
+};
+
+// Словарь цветов команд
+const teamColors = {
+  "McLaren": "#F48021",
+  "Ferrari": "#FF0000",
+  "Red Bull": "#2546FF",
+  "Mercedes": "#00A19C",
+  "Aston Martin": "#00594F",
+  "Alpine F1 Team": "#F60195",
+  "Haas F1 Team": "#8B8B8B",
+  "RB F1 Team": "#1434CB",
+  "Williams": "#00A3E0",
+  "Sauber": "#00E701"
+};
+
+// Маппинг пилотов к конструкторам (при необходимости можно корректировать)
+const driverToConstructor = {
+  "verstappen": "Red Bull",
+  "norris": "McLaren",
+  "leclerc": "Ferrari",
+  "piastri": "McLaren",
+  "russell": "Mercedes",
+  "hamilton": "Ferrari",
+  "lawson": "Red Bull",
+  "alonso": "Aston Martin",
+  "gasly": "Alpine F1 Team",
+  "hulkenberg": "Sauber",
+  "tsunoda": "RB F1 Team",
+  "stroll": "Aston Martin",
+  "ocon": "Haas F1 Team",
+  "bearman": "Haas F1 Team",
+  "albon": "Williams",
+  "sainz": "Williams",
+  "hadjar": "RB F1 Team",
+  "bortoleto": "Sauber",
+  "antonelli": "Mercedes",
+  "doohan": "Alpine F1 Team"
+};
+
+// Маппинг национальностей для отображения флага
+const nationalityToFlag = {
+  "British": "gb",
+  "Dutch": "nl",
+  "Spanish": "es",
+  "Monegasque": "mc",
+  "Mexican": "mx",
+  "French": "fr",
+  "German": "de",
+  "Finnish": "fi",
+  "Australian": "au",
+  "Canadian": "ca",
+  "Japanese": "jp",
+  "Danish": "dk",
+  "Chinese": "cn",
+  "Thai": "th",
+  "American": "us",
+  "Brazilian": "br",
+  "Italian": "it",
+  "Austrian": "at",
+  "Swiss": "ch",
+  "New Zealander": "nz",
+  "Argentinian": "ar",
+  "South African": "za"
 };
 
 const PilotDetails = ({ currentUser }) => {
@@ -100,13 +150,7 @@ const PilotDetails = ({ currentUser }) => {
   // Состояние для кастомного уведомления
   const [showFavoriteAlert, setShowFavoriteAlert] = useState(false);
 
-  // Функция нормализации имени
-  const normalizeName = (name) => {
-    if (name === "Magnussen") return "kevin_magnussen";
-    if (name === "Verstappen") return "max_verstappen";
-    return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  };
-
+  // Функция для получения ссылок на соцсети пилота
   const getPilotSocial = (pilot) => {
     if (!pilot) return null;
     const driverName = normalizeName(pilot.Driver.familyName);
@@ -114,28 +158,35 @@ const PilotDetails = ({ currentUser }) => {
     return driver ? driver.social : null;
   };
 
-  // Загрузка данных о пилоте из API
+  // Загрузка данных о пилоте из локального JSON вместо API
   useEffect(() => {
-    const fetchPilotInfo = async () => {
-      try {
-        const response = await fetch(`https://api.jolpi.ca/ergast/f1/2025/drivers/${lastName}/driverStandings.json`);
-        if (!response.ok) throw new Error("Ошибка загрузки данных о пилоте");
-        const data = await response.json();
-        const pilotData = data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings[0];
-        if (pilotData) {
-          setPilot(pilotData);
-        } else {
-          throw new Error("Пилот не найден");
-        }
-      } catch (error) {
-        console.error("Ошибка загрузки пилота:", error);
-        setError("Ошибка загрузки пилота");
-      } finally {
-        setLoading(false);
+    if (lastName) {
+      // В pilotStats ключи – это нормализованные фамилии (например, "max_verstappen")
+      const stats = pilotStats[lastName];
+      if (stats) {
+        const constructorName = driverToConstructor[lastName] || "Unknown";
+        const fullName = formatDriverName(lastName);
+        const translatedName = driverTranslations[fullName] || fullName;
+        const pilotObj = {
+          Driver: {
+            givenName: fullName.split(" ")[0] || "",
+            familyName: fullName.split(" ")[1] || fullName,
+            translatedName: translatedName,
+            nationality: stats.nationality
+          },
+          Constructors: [
+            { name: constructorName }
+          ],
+          position: stats.pos,
+          points: stats.point,
+          extraStats: { ...stats }
+        };
+        setPilot(pilotObj);
+      } else {
+        setError("Пилот не найден");
       }
-    };
-
-    if (lastName) fetchPilotInfo();
+      setLoading(false);
+    }
   }, [lastName]);
 
   // Загрузка биографии, сезонов и статистики после загрузки пилота
@@ -150,22 +201,27 @@ const PilotDetails = ({ currentUser }) => {
 
       if (pilotSeasons.length > 0) {
         setSelectedYear(pilotSeasons[0]);
+        // Для выбранных сезонов (не текущего) оставляем загрузку через API
         fetchPilotResults(lastNameNormalized, pilotSeasons[0], false);
         fetchPilotStandings(lastNameNormalized, pilotSeasons[0]);
       }
-      // Загружаем данные для текущего сезона (2024)
-      fetchPilotResults(lastNameNormalized, "2024", true);
-      fetchPilotStandings(lastNameNormalized, "2024");
+      // Для текущего сезона (например, "2024") можно также использовать локальные данные,
+      // если они есть (аналогично примеру с PilotsList)
+      // Здесь можно подставить данные из локального файла, если таковой имеется.
+      // Например:
+      // const currentStats = currentSeasonLocalData[lastNameNormalized];
+      // if (currentStats) { setCurrentSeasonStats(currentStats); } else { ... }
+
+      // Если нет локальных данных для текущего сезона, оставляем значения по умолчанию
+      setCurrentSeasonStats(pilot.extraStats);
     }
   }, [pilot]);
 
-  // Функция для получения данных о позициях пилота за сезон
+  // Функция для получения данных о позициях пилота за сезон (для выбранного года, не для текущего)
   const fetchPilotStandings = useCallback(async (name, year) => {
     try {
       if (year !== "2024") {
         setSelectedSeasonStats(prev => ({ ...prev, position: " ", points: " " }));
-      } else {
-        setCurrentSeasonStats(prev => ({ ...prev, position: " ", points: " " }));
       }
       const response = await fetch(`https://api.jolpi.ca/ergast/f1/${year}/driverStandings.json`);
       if (!response.ok) throw new Error("Ошибка загрузки данных о чемпионате");
@@ -182,22 +238,18 @@ const PilotDetails = ({ currentUser }) => {
         points: pilotData.points || "-" 
       };
 
-      if (year === "2024") {
-        setCurrentSeasonStats(prev => ({ ...prev, position: results.position, points: results.points }));
-      } else {
+      if (year !== "2024") {
         setSelectedSeasonStats(prev => ({ ...prev, position: results.position, points: results.points }));
       }
     } catch (error) {
       console.error("Ошибка загрузки standings:", error);
-      if (year === "2024") {
-        setCurrentSeasonStats(prev => ({ ...prev, position: "-", points: "-" }));
-      } else {
+      if (year !== "2024") {
         setSelectedSeasonStats(prev => ({ ...prev, position: "-", points: "-" }));
       }
     }
   }, []);
 
-  // Функция для получения результатов пилота за сезон
+  // Функция для получения результатов пилота за сезон (для выбранного года, не для текущего)
   const fetchPilotResults = async (lastName, year, isCurrentSeason) => {
     try {
       const lastNameNormalized = lastName.toLowerCase();
@@ -218,22 +270,16 @@ const PilotDetails = ({ currentUser }) => {
           return status !== "Finished" && !status.toLowerCase().includes("+1 lap") && !status.toLowerCase().includes("+2 laps");
         }).length;
   
-        if (isCurrentSeason) {
-          setCurrentSeasonStats(prev => ({ ...prev, wins, podiums, poles, dnf }));
-        } else {
+        if (!isCurrentSeason) {
           setSelectedSeasonStats({ wins, podiums, poles, dnf, position: selectedSeasonStats.position, points: selectedSeasonStats.points });
         }
       } else {
-        if (isCurrentSeason) {
-          setCurrentSeasonStats({ wins: 0, podiums: 0, poles: 0, dnf: 0, position: "-", points: "-" });
-        } else {
+        if (!isCurrentSeason) {
           setSelectedSeasonStats({ wins: 0, podiums: 0, poles: 0, dnf: 0, position: "-", points: "-" });
         }
       }
     } catch (error) {
-      if (isCurrentSeason) {
-        setCurrentSeasonStats({ wins: 0, podiums: 0, poles: 0, dnf: 0, position: "-", points: "-" });
-      } else {
+      if (!isCurrentSeason) {
         setSelectedSeasonStats({ wins: 0, podiums: 0, poles: 0, dnf: 0, position: "-", points: "-" });
       }
     }
@@ -290,7 +336,6 @@ const PilotDetails = ({ currentUser }) => {
       const q = query(userFavoritesRef, where("userId", "==", currentUser.uid));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        // Вместо стандартного alert – показываем кастомное уведомление
         setShowFavoriteAlert(true);
         return;
       }
@@ -326,23 +371,11 @@ const PilotDetails = ({ currentUser }) => {
   if (loading || !pilot) return <div> </div>;
   if (error) return <div>{error}</div>;
 
-  // Словарь цветов команд
-  const teamColors = {
-    "McLaren": "#F48021",
-    "Ferrari": "#FF0000",
-    "Red Bull": "#2546FF",
-    "Mercedes": "#00A19C",
-    "Aston Martin": "#00594F",
-    "Alpine F1 Team": "#0078C1",
-    "Haas F1 Team": "#8B8B8B",
-    "RB F1 Team": "#1434CB",
-    "Williams": "#00A3E0",
-    "Sauber": "#00E701"
-  };
-
+  // Определяем цвета и переводы для заголовка
   const teamColor = teamColors[pilot.Constructors[0].name] || "#000000";
-  const pilotFirstName = firstNameTranslations[pilot.Driver.givenName] || pilot.Driver.givenName;
-  const pilotLastNameDisplay = lastNameTranslations[pilot.Driver.familyName] || pilot.Driver.familyName;
+  // Используем имеющиеся переводы для имени (или можно комбинировать словари)
+  const pilotFirstName = pilot.Driver.translatedName.split(" ")[0];
+  const pilotLastNameDisplay = pilot.Driver.translatedName.split(" ")[1] || pilot.Driver.familyName;
   const pilotSocialLinks = pilot ? getPilotSocial(pilot) : null;
 
   // Данные для вкладки "За всё время"
@@ -351,11 +384,11 @@ const PilotDetails = ({ currentUser }) => {
 
   return (
     <div
-    className="fade-in"
+      className="fade-in"
       style={{
         width: "calc(100% - 20px)",
         margin: "10px",
-        padding: "15px",  
+        padding: "15px",
         background: "#212124",
         height: "100%",
         marginBottom: "100px",
@@ -385,21 +418,21 @@ const PilotDetails = ({ currentUser }) => {
         </button>
         <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ color: "white", fontSize: "16px", fontFamily: "Inter"}}>
+            <div style={{ color: "white", fontSize: "16px", fontFamily: "Inter" }}>
               {pilotFirstName} {pilotLastNameDisplay}
             </div>
           </div>
-          <div style={{ color: teamColor, fontSize: "12px", fontFamily: "Inter"}}>
+          <div style={{ color: teamColor, fontSize: "12px", fontFamily: "Inter" }}>
             {pilot.Constructors[0].name}
           </div>
         </div>
-        {pilotSocialLinks && <SocialIcons social={pilotSocialLinks} />}
+        {pilotSocialLinks && <div>{/* Компонент SocialIcons можно оставить */}</div>}
       </div>
       
       {/* Полоска в цвет команды */}
       <div style={{ width: "100%", height: "5px", background: teamColor }} />
 
-      {/* Статистика пилота (текущий сезон) */}
+      {/* Статистика пилота (текущий сезон) – данные из локального JSON */}
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: "12px", width: "100%" }}>
         <div style={{ width: "65px", textAlign: "center" }}>
           <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
@@ -463,135 +496,134 @@ const PilotDetails = ({ currentUser }) => {
 
       {/* Кастомный селект для переключения вкладок */}
       <div>
-      <CustomSelect
-        options={tabOptions}
-        value={activeTab}
-        onChange={handleTabChange}
-        style={{ width: "100%", margin: "10px 0" }}
-      />
+        <CustomSelect
+          options={tabOptions}
+          value={activeTab}
+          onChange={handleTabChange}
+          style={{ width: "100%", margin: "10px 0" }}
+        />
 
-      {/* Контент вкладок */}
-      {activeTab === "biography" && (
-        <div
-          style={{
-            width: "100%",
-            backgroundColor: "#212124",
-            borderRadius: "8px",
-            fontSize: "14px",
-            color: "white",
-            fontFamily: "Arial, sans-serif",
-            padding: "10px"
-          }}
-        >
-          <p>{biography}</p>
-        </div>
-      )}
-      
-      {activeTab === "seasons" && (
-        <>
-          <div>
-            <select
-              value={selectedYear}
-              onChange={handleYearChange}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "8px",
-                border: `2px solid #1D1D1F`,
-                backgroundColor: "#1D1D1F",
-                fontSize: "14px",
-                color: "white",
-                cursor: "pointer",
-              }}
-            >
-              {seasons.map((year, index) => (
-                <option key={index} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Контент вкладок */}
+        {activeTab === "biography" && (
           <div
             style={{
-              display: "flex",
-              flexDirection: "row",
-              marginTop: "10px",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: "12px",
-              width: "100%"
+              width: "100%",
+              backgroundColor: "#212124",
+              borderRadius: "8px",
+              fontSize: "14px",
+              color: "white",
+              fontFamily: "Arial, sans-serif",
+              padding: "10px"
             }}
           >
-            <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                {selectedYear === "2024" ? currentSeasonStats.position || " " : selectedSeasonStats.position || " "}
-              </span>
-              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОЗИЦИЯ</div>
-            </div>
-            <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                {selectedYear === "2024" ? currentSeasonStats.points || " " : selectedSeasonStats.points || " "}
-              </span>
-              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
-            </div>
-            <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                {selectedSeasonStats.wins}
-              </span>
-              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
-            </div>
-            <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                {selectedSeasonStats.podiums || 0}
-              </span>
-              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
-            </div>
-            <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                {selectedSeasonStats.poles || 0}
-              </span>
-              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>
-            </div>
-            <div style={{ width: "65px", textAlign: "center" }}>
-              <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                {selectedSeasonStats.dnf || 0}
-              </span>
-              <div style={{ color: "#B9B9B9", fontSize: "10px" }}>DNF</div>
-            </div>
+            <p>{biography}</p>
           </div>
-        </>
-      )}
-      {activeTab === "allTime" && (
-        <div
-          style={{
-            width: "100%",
-            backgroundColor: "#212124",
-            borderRadius: "8px",
-            fontSize: "14px",
-            color: "white",
-            fontFamily: "Arial, sans-serif",
-            padding: "10px"
-          }}
-        >
-          {allTimeData ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px"}}>
-              <div>WDC (Чемпионства): {allTimeData.personalChampionships}</div>
-              <div>WCC (Кубки конструкторов): {allTimeData.constructorsChampionships}</div>
-              <div>Гонок: {allTimeData.races}</div>
-              <div>Подиумов: {allTimeData.podiums}</div>
-              <div>Побед: {allTimeData.wins}</div>
-              <div>Поулов: {allTimeData.poles}</div>
-              <div>Очков: {allTimeData.points}</div>
-              <div>Гранд-слемов: {allTimeData.grandSlams}</div>
+        )}
+        
+        {activeTab === "seasons" && (
+          <>
+            <div>
+              <select
+                value={selectedYear}
+                onChange={handleYearChange}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  border: `2px solid #1D1D1F`,
+                  backgroundColor: "#1D1D1F",
+                  fontSize: "14px",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                {seasons.map((year, index) => (
+                  <option key={index} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
             </div>
-          ) : (
-            <div>Статистика не найдена</div>
-          )}
-        </div>
-      )}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                marginTop: "10px",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "12px",
+                width: "100%"
+              }}
+            >
+              <div style={{ width: "65px", textAlign: "center" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                  {selectedYear === "2024" ? currentSeasonStats.position || " " : selectedSeasonStats.position || " "}
+                </span>
+                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОЗИЦИЯ</div>
+              </div>
+              <div style={{ width: "65px", textAlign: "center" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                  {selectedYear === "2024" ? currentSeasonStats.points || " " : selectedSeasonStats.points || " "}
+                </span>
+                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
+              </div>
+              <div style={{ width: "65px", textAlign: "center" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                  {selectedSeasonStats.wins}
+                </span>
+                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
+              </div>
+              <div style={{ width: "65px", textAlign: "center" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                  {selectedSeasonStats.podiums || 0}
+                </span>
+                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
+              </div>
+              <div style={{ width: "65px", textAlign: "center" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                  {selectedSeasonStats.poles || 0}
+                </span>
+                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>
+              </div>
+              <div style={{ width: "65px", textAlign: "center" }}>
+                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
+                  {selectedSeasonStats.dnf || 0}
+                </span>
+                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>DNF</div>
+              </div>
+            </div>
+          </>
+        )}
+        {activeTab === "allTime" && (
+          <div
+            style={{
+              width: "100%",
+              backgroundColor: "#212124",
+              borderRadius: "8px",
+              fontSize: "14px",
+              color: "white",
+              fontFamily: "Arial, sans-serif",
+              padding: "10px"
+            }}
+          >
+            {allTimeData ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px"}}>
+                <div>WDC (Чемпионства): {allTimeData.personalChampionships}</div>
+                <div>WCC (Кубки конструкторов): {allTimeData.constructorsChampionships}</div>
+                <div>Гонок: {allTimeData.races}</div>
+                <div>Подиумов: {allTimeData.podiums}</div>
+                <div>Побед: {allTimeData.wins}</div>
+                <div>Поулов: {allTimeData.poles}</div>
+                <div>Очков: {allTimeData.points}</div>
+                <div>Гранд-слемов: {allTimeData.grandSlams}</div>
+              </div>
+            ) : (
+              <div>Статистика не найдена</div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Кастомное уведомление при попытке повторного добавления в избранное */}
       <CSSTransition
         in={showFavoriteAlert}
         timeout={300}
@@ -639,7 +671,7 @@ const PilotDetails = ({ currentUser }) => {
             </button>
           </div>
         </div>
-        </CSSTransition>
+      </CSSTransition>
 
       <style>
         {`

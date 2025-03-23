@@ -11,6 +11,8 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import { CSSTransition } from "react-transition-group";
+import CommentsSection from "./components/CommentsSection"; // Импорт компонента комментариев
 
 // Цвета команд и другие данные
 const teamColors = {
@@ -85,11 +87,11 @@ const normalizeName = (name) => {
 };
 
 const formatDate = (dateInput) => {
-    const date = typeof dateInput === "object" ? dateInput : new Date(dateInput);
-    const dayMonth = date.toLocaleString("ru-RU", { day: "numeric", month: "long" });
-    const time = date.toLocaleString("ru-RU", { hour: "2-digit", minute: "2-digit" });
-    return `${dayMonth} в ${time}`;
-  };
+  const date = typeof dateInput === "object" ? dateInput : new Date(dateInput);
+  const dayMonth = date.toLocaleString("ru-RU", { day: "numeric", month: "long" });
+  const time = date.toLocaleString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  return `${dayMonth} в ${time}`;
+};
 
 const UserProfile = ({ currentUser }) => {
   const navigate = useNavigate();
@@ -110,7 +112,8 @@ const UserProfile = ({ currentUser }) => {
   const [error, setError] = useState(null);
   const [followersCount, setFollowersCount] = useState(0);
   const [followsYou, setFollowsYou] = useState(false);
-
+  // Состояние для отображения комментариев под постами
+  const [activeCommentsPostId, setActiveCommentsPostId] = useState(null);
 
   // Загружаем данные профиля, избранного пилота, подписчиков и посты
   useEffect(() => {
@@ -121,8 +124,6 @@ const UserProfile = ({ currentUser }) => {
         const snapshot = await getDocs(q);
         if (!snapshot.empty) {
           setProfileUser(snapshot.docs[0].data());
-        } else {
-
         }
         await loadFavorites(uid);
         await fetchFollowersCount(uid);
@@ -136,8 +137,6 @@ const UserProfile = ({ currentUser }) => {
     };
     fetchProfileData();
   }, [uid]);
-
-  
 
   // Проверяем, подписан ли текущий пользователь на данного пользователя
   useEffect(() => {
@@ -177,7 +176,6 @@ const UserProfile = ({ currentUser }) => {
       checkIfTheyFollowYou();
     }
   }, [currentUser, uid, currentUserUid]);
-  
 
   // Получаем количество подписчиков
   const fetchFollowersCount = async (uid) => {
@@ -258,10 +256,7 @@ const UserProfile = ({ currentUser }) => {
       if (!favSnapshot.empty) {
         const favData = favSnapshot.docs[0].data();
         const favoritePilotId = favData.pilotId;
-        
         await fetchPilotData(favoritePilotId);
-      } else {
-
       }
     } catch (err) {
       console.error("Ошибка загрузки избранного пилота:", err);
@@ -305,7 +300,11 @@ const UserProfile = ({ currentUser }) => {
       });
     }
   };
-  
+
+  // Функция переключения отображения комментариев для поста
+  const togglePostComments = (postId) => {
+    setActiveCommentsPostId((prev) => (prev === postId ? null : postId));
+  };
 
   if (loading) {
     return (
@@ -363,7 +362,7 @@ const UserProfile = ({ currentUser }) => {
 
   return (
     <div
-    className="fade-in"
+      className="fade-in"
       style={{
         width: "100vw",
         minHeight: "100vh",
@@ -373,7 +372,7 @@ const UserProfile = ({ currentUser }) => {
         alignItems: "center",
         padding: "20px",
         color: "white",
-        marginBottom: "100px"
+        marginBottom: "100px",
       }}
     >
       <button
@@ -418,28 +417,34 @@ const UserProfile = ({ currentUser }) => {
           @{profileUser.username}
         </div>
         <div
-          style={{ fontSize: 14, color: "#7E7E7E", textAlign: "center", cursor: "pointer" }}
+          style={{
+            fontSize: 14,
+            color: "#7E7E7E",
+            textAlign: "center",
+            cursor: "pointer",
+          }}
           onClick={handleFollowersClick}
         >
           Подписчики: {followersCount}
         </div>
         <button
-        onClick={isFollowing ? handleUnfollow : handleFollow}
-        style={{
-          marginTop: "20px",
-          backgroundColor: isFollowing ? "#1D1D1F" : "#0077FF",
-          color: "white",
-          border: "none",
-          padding: "10px 20px",
-          borderRadius: "10px",
-          cursor: "pointer",
-        }}
-      >
-        {isFollowing
-          ? "Вы подписаны"
-          : (followsYou ? "Подписаться в ответ" : "Подписаться")}
-      </button>
-
+          onClick={isFollowing ? handleUnfollow : handleFollow}
+          style={{
+            marginTop: "20px",
+            backgroundColor: isFollowing ? "#1D1D1F" : "#0077FF",
+            color: "white",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "10px",
+            cursor: "pointer",
+          }}
+        >
+          {isFollowing
+            ? "Вы подписаны"
+            : followsYou
+            ? "Подписаться в ответ"
+            : "Подписаться"}
+        </button>
       </div>
 
       {/* Блок с любимым пилотом */}
@@ -481,8 +486,7 @@ const UserProfile = ({ currentUser }) => {
           >
             <div
               style={{
-                color:
-                  teamColors[favoritePilot.Constructors[0].name] || "#000000",
+                color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
                 fontSize: "24px",
                 fontWeight: "600",
               }}
@@ -500,7 +504,7 @@ const UserProfile = ({ currentUser }) => {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div style={{ color: "white", fontSize: "12px"}}>
+              <div style={{ color: "white", fontSize: "12px" }}>
                 {driverTranslations[`${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`] ||
                   `${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`}
               </div>
@@ -509,13 +513,18 @@ const UserProfile = ({ currentUser }) => {
                   nationalityToFlag[favoritePilot.Driver.nationality] || "un"
                 }.png`}
                 alt={favoritePilot.Driver.nationality}
-                style={{ width: "15px", height: "15px", borderRadius: "50%", objectFit: "cover" }}
+                style={{
+                  width: "15px",
+                  height: "15px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
               />
             </div>
             <div
               style={{
                 color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
-                fontSize: "12px"
+                fontSize: "12px",
               }}
             >
               {favoritePilot.Constructors[0].name}
@@ -546,34 +555,23 @@ const UserProfile = ({ currentUser }) => {
                 marginBottom: "20px",
               }}
             >
-              <div
-              style={{
-                display: "flex", alignItems: "center", gap: "15px"
-              }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
                 {/* Аватарка пользователя */}
-              <img
-                src={profileUser.photoUrl || "https://placehold.co/50x50"}
-                alt="avatar"
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                }}
-              />
-                  <div>
-                    <strong style={{ fontSize: "14px", color: "#ddd" }}>
+                <img
+                  src={profileUser.photoUrl || "https://placehold.co/50x50"}
+                  alt="avatar"
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+                <div>
+                  <strong style={{ fontSize: "14px", color: "#ddd" }}>
                     {profileUser.firstName} {profileUser.lastName}
-                    </strong>
-                    <span
-                      style={{
-                        fontSize: "16px",
-                        color: "white",
-                        marginLeft: "10px",
-                      }}
-                    >
-                    </span>
-                  </div>
+                  </strong>
+                </div>
               </div>
               <div style={{ flex: 1 }}>
                 <div
@@ -585,7 +583,9 @@ const UserProfile = ({ currentUser }) => {
                   }}
                 >
                   <small style={{ color: "#888" }}>
-                  {formatDate(post.createdAt?.toDate ? post.createdAt.toDate() : post.createdAt)}
+                    {formatDate(
+                      post.createdAt?.toDate ? post.createdAt.toDate() : post.createdAt
+                    )}
                   </small>
                 </div>
                 <div
@@ -597,6 +597,35 @@ const UserProfile = ({ currentUser }) => {
                 >
                   {post.text}
                 </div>
+                {/* Кнопка для переключения комментариев */}
+                <div style={{ marginTop: "10px" }}>
+                  <button
+                    onClick={() => togglePostComments(post.id)}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "#0078C1",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                    }}
+                  >
+                  <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                   <path d="M3.68209 15.2515C3.97139 15.5469 4.11624 15.9583 4.0772 16.3735C3.98969 17.3041 3.78815 18.2726 3.52931 19.1723C5.44728 18.7209 6.61867 18.1973 7.15112 17.9226C7.45336 17.7667 7.8015 17.7299 8.12876 17.8192C9.03329 18.0661 9.9973 18.2 11 18.2C16.4939 18.2 20.625 14.2694 20.625 9.8C20.625 5.33056 16.4939 1.4 11 1.4C5.50605 1.4 1.375 5.33056 1.375 9.8C1.375 11.8553 2.22379 13.7625 3.68209 15.2515ZM3.00423 20.7185C2.99497 20.7204 2.9857 20.7222 2.97641 20.7241C2.85015 20.7494 2.72143 20.7744 2.59025 20.7988C2.40625 20.8332 2.21738 20.8665 2.02362 20.8988C1.74997 20.9445 1.5405 20.653 1.6486 20.393C1.71922 20.2231 1.78884 20.0451 1.85666 19.8605C1.89975 19.7432 1.94212 19.6233 1.98356 19.5012C1.98534 19.4959 1.98713 19.4906 1.98891 19.4854C2.32956 18.4778 2.60695 17.3196 2.70845 16.2401C1.02171 14.5178 0 12.2652 0 9.8C0 4.38761 4.92487 0 11 0C17.0751 0 22 4.38761 22 9.8C22 15.2124 17.0751 19.6 11 19.6C9.87696 19.6 8.79323 19.4501 7.77265 19.1714C7.05838 19.54 5.51971 20.2108 3.00423 20.7185Z" fill="white"/>
+                   </svg>
+                  </button>
+                </div>
+                <CSSTransition
+                  in={activeCommentsPostId === post.id}
+                  timeout={300}
+                  classNames="slideUp"
+                  unmountOnExit
+                >
+                    <CommentsSection
+                      parentId={post.id}
+                      currentUser={currentUser}
+                      onClose={() => setActiveCommentsPostId(null)}
+                    />
+                </CSSTransition>
               </div>
             </div>
           ))

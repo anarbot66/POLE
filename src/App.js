@@ -23,6 +23,8 @@ import Services from "./screens/user/Services";
 import InfoPage from "./screens/user/InfoPage";
 import LoadingScreen from "./screens/components/LoadingScreen";
 import ChampionsList from "./screens/pilots/ChampionsList";
+import CreatorForm from "./screens/user/creators/CreatorForm.js";
+import CreatorView from "./screens/user/creators/CreatorView.js";
 
 
 function App() {
@@ -248,6 +250,8 @@ function App() {
                       <Route path="/services" element={<Services currentUser={user} />} />
                       <Route path="/info" element={<InfoPage />} />
                       <Route path="/champions" element={<ChampionsList />} />
+                      <Route path="/creatorForm" element={<CreatorForm currentUser={user}/>} />
+                      <Route path="/creatorView" element={<CreatorView currentUser={user}/>} />
                     </Routes>
                 </div>
               </CSSTransition>

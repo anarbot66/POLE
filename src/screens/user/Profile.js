@@ -15,6 +15,8 @@ import {
   doc
 } from "firebase/firestore";
 import { CSSTransition } from "react-transition-group";
+import CommentsSection from "./components/CommentsSection";
+
 
 // Пример констант (цвета команд, переводы имён и т.д.)
 const teamColors = {
@@ -93,28 +95,21 @@ const normalizeName = (name) => {
 
 const Profile = ({ currentUser }) => {
   const navigate = useNavigate();
-
-  // Состояния для данных пользователя и интерфейса
   const [profileUser, setProfileUser] = useState(null);
   const [followersCount, setFollowersCount] = useState(0);
   const [favoritePilot, setFavoritePilot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Состояния для постов и формы поста
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState("");
-  const [showPostForm, setShowPostForm] = useState(false);
   const [editingPostId, setEditingPostId] = useState(null);
   const [editedText, setEditedText] = useState("");
-  // Состояние для показа меню конкретного поста
+  const [showFavoriteAlert, setShowFavoriteAlert] = useState(false);
   const [openMenuPostId, setOpenMenuPostId] = useState(null);
-  // Ref для CSSTransition меню поста (так как одновременно открыто только одно меню)
+  const [activeCommentsPostId, setActiveCommentsPostId] = useState(null);
   const menuRef = useRef(null);
-
   const username = currentUser.name;
-
-  // Загрузка данных пользователя, избранного пилота и подписчиков
+  
   useEffect(() => {
     const loadData = async () => {
       if (!username) return;
@@ -130,7 +125,6 @@ const Profile = ({ currentUser }) => {
     });
   }, [currentUser, username]);
 
-  // Подписка на обновления постов
   useEffect(() => {
     if (!currentUser?.uid) return;
     const postsQuery = query(
@@ -230,7 +224,6 @@ const Profile = ({ currentUser }) => {
         createdAt: serverTimestamp(),
       });
       setNewPost("");
-      setShowPostForm(false);
     } catch (err) {
       console.error("Ошибка публикации поста:", err);
     }
@@ -267,6 +260,11 @@ const Profile = ({ currentUser }) => {
 
   const toggleMenu = (postId) => {
     setOpenMenuPostId((prev) => (prev === postId ? null : postId));
+  };
+
+  // Новая функция для переключения отображения комментариев под постом
+  const togglePostComments = (postId) => {
+    setActiveCommentsPostId((prev) => (prev === postId ? null : postId));
   };
 
   const handlePilotSelect = (pilot) => {
@@ -474,7 +472,7 @@ const Profile = ({ currentUser }) => {
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ color: "white", fontSize: "12px"}}>
+                <div style={{ color: "white", fontSize: "12px" }}>
                   {driverTranslations[`${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`] ||
                     `${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`}
                 </div>
@@ -515,8 +513,6 @@ const Profile = ({ currentUser }) => {
 
       {/* Форма для создания нового поста */}
       <div style={{ width: "100%" }}>
-        {showPostForm ? (
-          <>
             <textarea
               value={newPost}
               onChange={(e) => setNewPost(e.target.value)}
@@ -527,10 +523,11 @@ const Profile = ({ currentUser }) => {
                 borderRadius: "12px",
                 padding: "10px",
                 fontSize: "16px",
-                background: "#212121",
+                background: "#212124",
                 color: "white",
                 border: "none",
                 outline: "none",
+                marginTop: 10
               }}
             />
             <button
@@ -549,25 +546,6 @@ const Profile = ({ currentUser }) => {
             >
               Опубликовать
             </button>
-          </>
-        ) : (
-          <button
-            onClick={() => setShowPostForm(true)}
-            style={{
-              marginTop: "20px",
-              width: "100%",
-              padding: "10px",
-              backgroundColor: "#0078C1",
-              color: "white",
-              borderRadius: "12px",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "16px",
-            }}
-          >
-            Есть мысли?
-          </button>
-        )}
       </div>
 
       <div>
@@ -751,6 +729,36 @@ const Profile = ({ currentUser }) => {
                     {post.text}
                   </div>
                 )}
+
+                {/* Кнопка для открытия/закрытия комментариев */}
+                <div style={{ marginTop: "10px" }}>
+                  <button
+                    onClick={() => togglePostComments(post.id)}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "#0078C1",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                    }}
+                  >
+                  <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                   <path d="M3.68209 15.2515C3.97139 15.5469 4.11624 15.9583 4.0772 16.3735C3.98969 17.3041 3.78815 18.2726 3.52931 19.1723C5.44728 18.7209 6.61867 18.1973 7.15112 17.9226C7.45336 17.7667 7.8015 17.7299 8.12876 17.8192C9.03329 18.0661 9.9973 18.2 11 18.2C16.4939 18.2 20.625 14.2694 20.625 9.8C20.625 5.33056 16.4939 1.4 11 1.4C5.50605 1.4 1.375 5.33056 1.375 9.8C1.375 11.8553 2.22379 13.7625 3.68209 15.2515ZM3.00423 20.7185C2.99497 20.7204 2.9857 20.7222 2.97641 20.7241C2.85015 20.7494 2.72143 20.7744 2.59025 20.7988C2.40625 20.8332 2.21738 20.8665 2.02362 20.8988C1.74997 20.9445 1.5405 20.653 1.6486 20.393C1.71922 20.2231 1.78884 20.0451 1.85666 19.8605C1.89975 19.7432 1.94212 19.6233 1.98356 19.5012C1.98534 19.4959 1.98713 19.4906 1.98891 19.4854C2.32956 18.4778 2.60695 17.3196 2.70845 16.2401C1.02171 14.5178 0 12.2652 0 9.8C0 4.38761 4.92487 0 11 0C17.0751 0 22 4.38761 22 9.8C22 15.2124 17.0751 19.6 11 19.6C9.87696 19.6 8.79323 19.4501 7.77265 19.1714C7.05838 19.54 5.51971 20.2108 3.00423 20.7185Z" fill="white"/>
+                   </svg>
+                  </button>
+                </div>
+                <CSSTransition
+                  in={activeCommentsPostId === post.id}
+                  timeout={300}
+                  classNames="slideUp"
+                  unmountOnExit
+                >
+                    <CommentsSection
+                      parentId={post.id}
+                      currentUser={currentUser}
+                      onClose={() => setActiveCommentsPostId(null)}
+                    />
+                </CSSTransition>
               </div>
             </div>
           ))
@@ -758,34 +766,55 @@ const Profile = ({ currentUser }) => {
           <p style={{ textAlign: "center", marginTop: "50px" }}>Нет постов</p>
         )}
       </div>
-      {/* Стили для анимации меню */}
-      <style>
-        {`
-          /* Начальное состояние для анимации menuFade */
-          .menuFade-enter {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          
-          .menuFade-enter-active {
-            opacity: 1;
-            transform: scale(1);
-            transition: opacity 300ms ease, transform 300ms ease;
-          }
-          
-          .menuFade-exit {
-            opacity: 1;
-            transform: scale(1);
-          }
-          
-          .menuFade-exit-active {
-            opacity: 0;
-            transform: scale(0.95);
-            transition: opacity 300ms ease, transform 300ms ease;
-          }
-          
-        `}
-      </style>
+
+      <CSSTransition
+        in={showFavoriteAlert}
+        timeout={300}
+        classNames="fade"
+        unmountOnExit
+      >
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 2000
+          }}
+        >
+          <div
+            style={{
+              background: "#1D1D1F",
+              padding: "20px",
+              borderRadius: "20px",
+              textAlign: "center",
+              color: "white",
+              maxWidth: "300px"
+            }}
+          >
+            <p style={{ marginBottom: "20px" }}>Вы уже выбрали любимого пилота</p>
+            <button
+              onClick={() => setShowFavoriteAlert(false)}
+              style={{
+                background: "#212124",
+                color: "white",
+                border: "none",
+                padding: "10px 20px",
+                borderRadius: "15px",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              Хорошо
+            </button>
+          </div>
+        </div>
+      </CSSTransition>
     </div>
   );
 };

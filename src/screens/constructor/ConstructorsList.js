@@ -26,7 +26,7 @@ const ConstructorsList = ({ onConstructorSelect }) => {
     "Red Bull": "#001690",
     "Mercedes": "#00A19C",
     "Aston Martin": "#00594F",
-    "Alpine F1 Team": "#0078C1",
+    "Alpine F1 Team": "#F60195",
     "Haas F1 Team": "#8B8B8B",
     "RB F1 Team": "#1434CB",
     "Williams": "#00A3E0",
@@ -123,29 +123,18 @@ const ConstructorsList = ({ onConstructorSelect }) => {
     <div 
     className="fade-in"
     style={{
-      width: "calc(100% - 20px)", // Убираем отступы по бокам (слева и справа)
+      width: "calc(100% - 30px)", // Убираем отступы по бокам (слева и справа)
       margin: "0 auto", // Центрируем контейнер
       height: "100%",
       marginBottom: "100px",
       overflowY: "auto",
-      paddingTop: "10px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "flex-start",
       gap: "15px",
-      backgroundColor: "#1D1D1F"
+      backgroundColor: "#1D1D1F",
+      paddingTop: "20px"
     }}>
-      <div style={{
-          width: "calc(100% - 20px)",
-          margin: "0 auto",
-          paddingTop: "10px",
-          display: "flex",
-          flexDirection: "column"
-        }}>
-        <h4 style={{ fontSize: "12px", color: "lightgray" }}>
-          Кликни по конструктору чтобы узнать подробнее
-        </h4>
-      </div>
       {constructors.map((constructor, index) => {
         const teamColor = teamColors[constructor.Constructor.name] || "#000000";
         
@@ -165,7 +154,7 @@ const ConstructorsList = ({ onConstructorSelect }) => {
             <div style={{
               width: "100%",
               background: "#212124",
-              borderRadius: "20px",
+              borderRadius: "30px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -195,10 +184,10 @@ const ConstructorsList = ({ onConstructorSelect }) => {
                   </div>
                 </div>
                 <div style={{
-                  color: "#B9B9B9", // Серый цвет для имен пилотов
+                  color: "#B9B9B9",
                   fontSize: "10px"
                 }}>
-                  {pilotNames} {/* Имена пилотов, разделённые & */}
+                  {pilotNames}
                 </div>
               </div>
 

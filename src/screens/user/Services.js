@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 
-const Services = () => {
+const Services = ({currentUser}) => {
   const navigate = useNavigate();
   const [showNotification, setShowNotification] = useState(false);
+  const isAdminOrOwner = currentUser && (currentUser.role === "admin" || currentUser.role === "owner");
 
   // Функция-обработчик для кнопок, где нет своей логики
   const handleUnavailableFeature = () => {
@@ -225,7 +226,7 @@ const Services = () => {
         {/* Кнопка "Креаторство" – пока не реализовано */}
         <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
           <div
-            onClick={handleUnavailableFeature}
+            onClick={() => navigate("/creatorForm")}
             style={{
               width: 60,
               aspectRatio: 1,
@@ -340,7 +341,7 @@ const Services = () => {
         {/* Кнопка "Мой пилот" – навигация */}
         <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
           <div
-            onClick={handleUnavailableFeature}
+            onClick={() => navigate("/creatorView")}
             style={{
               width: 60,
               aspectRatio: 1,
@@ -350,7 +351,8 @@ const Services = () => {
               justifyContent: "center",
               alignItems: "center",
               cursor: "pointer",
-              transition: "background 0.3s ease, transform 0.2s ease"
+              opacity: isAdminOrOwner ? 1 : 0,  // Если роль не admin/owner, кнопка станет прозрачной
+              pointerEvents: isAdminOrOwner ? "auto" : "none" // Отключаем клики, если кнопка скрыта
             }}
           >
             <span
@@ -376,11 +378,10 @@ const Services = () => {
               </svg>
             </span>
           </div>
-          <div style={{ marginTop: "8px", color: "white", fontSize: "10px" }}>Мой пилот</div>
+          <div style={{ marginTop: "8px", color: "white", fontSize: "10px", opacity: isAdminOrOwner ? 1 : 0}}>Заявки</div>
         </div>
       </div>
 
-      {/* Модальное окно с уведомлением */}
       <CSSTransition
         in={showNotification}
         timeout={300}

@@ -16,16 +16,13 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
     style={{ width: "100%",
     margin: "0px",
     marginBottom: "100px",  height: '100%', background: '#1D1D1F' }}>
-      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '10px', flexDirection: "column", width: 'calc(100% - 20px)', margin: "0px 10px" }}>
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '10px', flexDirection: "column", width: 'calc(100% - 20px)', margin: "0px 15px" }}>
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: "10px",
-          padding: "10px",
-          backgroundColor: "#212124",
           borderRadius: 15,
-          width: "100%"
         }}
       >
         <img
@@ -50,9 +47,9 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
               background: activeTab === 'pilots' ? '#212124' : 'transparent',
               color: 'white',
               border: 'none',
-              borderRadius: '10px',
+              borderRadius: '20px',
               cursor: 'pointer',
-              transition: 'background 0.3s ease',
+              transition: 'background 1.2s ease',
               fontSize: 12
             }}
           >
@@ -65,9 +62,9 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
               background: activeTab === 'constructors' ? '#212124' : 'transparent',
               color: 'white',
               border: 'none',
-              borderRadius: '15px',
+              borderRadius: '20px',
               cursor: 'pointer',
-              transition: 'background 0.3s ease',
+              transition: 'background 1.2s ease',
               fontSize: 12
             }}
           >

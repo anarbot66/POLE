@@ -75,7 +75,7 @@ const teamColors = {
   "McLaren": "#F48021",
   "Ferrari": "#FF0000",
   "Aston Martin": "#00594F",
-  "Alpine F1 Team": "#0078C1",
+  "Alpine F1 Team": "#F60195",
   "Haas F1 Team": "#8B8B8B",
   "RB F1 Team": "#1434CB",
   "Williams": "#00A3E0",

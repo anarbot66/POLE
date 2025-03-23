@@ -114,7 +114,6 @@ const RacesList = ({ currentUser }) => {
     ? Math.ceil((new Date(nextRace.FirstPractice.date) - today) / (1000 * 60 * 60 * 24))
     : null;
 
-  // Данные для флага следующей гонки
   let nextRaceCountry = "";
   let nextRaceCountryCode = "";
   if (nextRace) {
@@ -123,7 +122,6 @@ const RacesList = ({ currentUser }) => {
     nextRaceCountryCode = countryToFlag[nextRaceCountry] || "un";
   }
 
-  // Исключаем следующую гонку из общего списка
   const filteredRaces = races.filter((race) => race !== nextRace);
 
   return (
@@ -143,8 +141,8 @@ const RacesList = ({ currentUser }) => {
     >
       <div
         style={{
-          width: "calc(100% - 20px)",
-          margin: "0px 10px",
+          width: "calc(100% - 30px)",
+          margin: "0px 15px",
           paddingTop: "10px",
           display: "flex",
           flexDirection: "column"
@@ -156,10 +154,7 @@ const RacesList = ({ currentUser }) => {
           display: "flex",
           alignItems: "center",
           gap: "10px",
-          padding: "10px",
-          backgroundColor: "#212124",
           borderRadius: 15,
-          width: "100%"
         }}
       >
         <img
@@ -189,7 +184,7 @@ const RacesList = ({ currentUser }) => {
                 height: "100%",
                 padding: 20,
                 background: "#212124",
-                borderRadius: 15,
+                borderRadius: 35,
                 display: "flex",
                 flexDirection: "column",
                 gap: 10
@@ -243,7 +238,7 @@ const RacesList = ({ currentUser }) => {
                   width: 121,
                   height: 80,
                   background: "#0077FF",
-                  borderRadius: 10,
+                  borderRadius: 15,
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -258,7 +253,6 @@ const RacesList = ({ currentUser }) => {
         )}
       </div>
 
-      {/* Список остальных гонок (без следующей) */}
       {filteredRaces.map((race, index) => {
         let countryName = race.Circuit.Location.country;
         if (countryName === "Great Britain") countryName = "United Kingdom";
@@ -271,11 +265,11 @@ const RacesList = ({ currentUser }) => {
             key={index}
             onClick={() => handleRaceSelect(race)}
             style={{
-              width: "calc(100% - 20px)",
-              margin: "0px 10px",
+              width: "calc(100% - 30px)",
+              margin: "0px 15px",
               display: "flex",
               background: "#212124",
-              borderRadius: "20px",
+              borderRadius: "30px",
               justifyContent: "space-between",
               alignItems: "center",
               gap: "12px",

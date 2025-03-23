@@ -103,9 +103,9 @@ const NewsDetail = () => {
     <div
       className="fade-in"
       style={{
-        width: "calc(100% - 40px)",
+        width: "calc(100% - 30px)",
         maxWidth: "600px",
-        margin: "20px auto",
+        margin: "15px auto",
         borderRadius: "12px",
         color: "white",
       }}
@@ -123,39 +123,6 @@ const NewsDetail = () => {
       >
         ← Назад
       </button>
-      {news.imageUrl && (
-        <img
-          src={news.imageUrl}
-          alt="Новость"
-          style={{
-            width: "100%",
-            borderRadius: "8px",
-            marginBottom: "20px",
-          }}
-        />
-      )}
-      <h1
-        style={{
-          fontSize: "24px",
-          fontWeight: "bold",
-          marginBottom: "20px",
-        }}
-      >
-        {news.title}
-      </h1>
-      {/* Если поле news.text используется, выводим его */}
-      {news.text && (
-        <div
-          style={{
-            fontSize: "16px",
-            lineHeight: "1.6",
-            whiteSpace: "pre-wrap",
-            marginBottom: "20px",
-          }}
-        >
-          {news.text}
-        </div>
-      )}
       {/* Отображение абзацев новости */}
       {news.paragraphs &&
         news.paragraphs.map((para, index) => (
@@ -166,13 +133,13 @@ const NewsDetail = () => {
                 alt={`Абзац ${index + 1}`}
                 style={{
                   width: "100%",
-                  borderRadius: "8px",
+                  borderRadius: "20px",
                   marginBottom: "10px",
                 }}
               />
             )}
-            {para.paraTitle && <h3>{para.paraTitle}</h3>}
-            <p style={{ whiteSpace: "pre-wrap" }}>{para.paraText}</p>
+            {para.paraTitle && <h3 style={{fontSize: 30}}>{para.paraTitle}</h3>}
+            <p style={{ whiteSpace: "pre-wrap", marginTop: "10px" }}>{para.paraText}</p>
           </div>
         ))}
 

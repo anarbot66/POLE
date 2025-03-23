@@ -255,3 +255,49 @@ body {
   to { opacity: 0; }
 }
 
+.slideUp-enter {
+  transform: translateY(100%);
+}
+.slideUp-enter-active {
+  transform: translateY(0);
+  transition: transform 300ms;
+}
+.slideUp-exit {
+  transform: translateY(0);
+}
+.slideUp-exit-active {
+  transform: translateY(100%);
+  transition: transform 300ms;
+}
+
+.menuFade-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.menuFade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.menuFade-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.menuFade-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.creatorFormInput {
+  padding: 10px;
+  color: white;
+  background: #1D1D1F;
+  width: 100%;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}

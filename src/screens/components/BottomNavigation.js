@@ -57,6 +57,7 @@ const BottomNavigation = ({ setActivePage }) => {
         gap: 25,
         zIndex: 998,
         boxShadow: "none",
+        borderTop: "1px solid #2e2e31" 
       }}
     >
       {buttons.map((button) => (
