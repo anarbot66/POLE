@@ -89,7 +89,7 @@ const UserSearch = ({ currentUser }) => {
   return (
     <div
     className="fade-in"
-    style={{ padding: "10px", marginBottom: 50 }}>
+    style={{ padding: "10px 15px", marginBottom: 50 }}>
       
       <div style={{ width: "100%", position: "fixed", display: "flex"}}>
         

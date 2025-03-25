@@ -48,7 +48,7 @@ const driverTranslations = {
   "Pérez": "Серхио Перес",
   "Alonso": "Фернандо Алонсо",
   "Gasly": "Пьер Гасли",
-  "Hülkenberg": "Нико Хюлькенберг",
+  "Hulkenberg": "Нико Хюлькенберг",
   "Tsunoda": "Юки Цунода",
   "Stroll": "Лэнс Стролл",
   "Ocon": "Эстебан Окон",
@@ -627,7 +627,7 @@ const PilotDetails = ({ currentUser }) => {
       <CSSTransition
         in={showFavoriteAlert}
         timeout={300}
-        classNames="fade"
+        classNames="window-fade"
         unmountOnExit
       >
         <div
@@ -675,17 +675,17 @@ const PilotDetails = ({ currentUser }) => {
 
       <style>
         {`
-          .fade-enter {
+          .window-fade-enter {
             opacity: 0;
           }
-          .fade-enter-active {
+          .window-fade-enter-active {
             opacity: 1;
             transition: opacity 300ms;
           }
-          .fade-exit {
+          .window-fade-exit {
             opacity: 1;
           }
-          .fade-exit-active {
+          .window-fade-exit-active {
             opacity: 0;
             transition: opacity 300ms;
           }

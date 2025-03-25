@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../firebase";
 import {
@@ -13,6 +13,8 @@ import {
 } from "firebase/firestore";
 import { CSSTransition } from "react-transition-group";
 import CommentsSection from "./components/CommentsSection"; // Импорт компонента комментариев
+import RoleIcon, { roleIcons } from "./components/RoleIcon";
+
 
 // Цвета команд и другие данные
 const teamColors = {
@@ -99,6 +101,9 @@ const UserProfile = ({ currentUser }) => {
   const location = useLocation();
   // Если в state передали currentUserUid, используем его, иначе currentUser.uid
   const currentUserUid = location.state?.currentUserUid || currentUser?.uid;
+
+  const [activeRole, setActiveRole] = useState(null);
+  const [visibleRole, setVisibleRole] = useState(null);
 
   const goBack = () => {
     navigate(-1);
@@ -267,7 +272,7 @@ const UserProfile = ({ currentUser }) => {
   const fetchPilotData = async (favoritePilotId) => {
     try {
       const response = await fetch(
-        "https://api.jolpi.ca/ergast/f1/2024/driverStandings.json"
+        "https://api.jolpi.ca/ergast/f1/2025/driverStandings.json"
       );
       if (!response.ok)
         throw new Error("Ошибка получения данных пилотов");
@@ -304,6 +309,22 @@ const UserProfile = ({ currentUser }) => {
   // Функция переключения отображения комментариев для поста
   const togglePostComments = (postId) => {
     setActiveCommentsPostId((prev) => (prev === postId ? null : postId));
+  };
+
+  const roles = useMemo(() => profileUser?.role ? profileUser.role.split(",") : [], [profileUser]);
+
+  const handleIconClick = (role) => {
+    setActiveRole(role);
+  };
+
+  useEffect(() => {
+    if (activeRole) {
+      setVisibleRole(activeRole);
+    }
+  }, [activeRole]);
+
+  const closeRoleModal = () => {
+    setActiveRole(null);
   };
 
   if (loading) {
@@ -410,8 +431,16 @@ const UserProfile = ({ currentUser }) => {
           alt="Аватар"
           style={{ width: 80, height: 80, borderRadius: "50%" }}
         />
-        <div style={{ fontSize: 18, fontWeight: "500", textAlign: "center" }}>
-          {profileUser.firstName} {profileUser.lastName}
+        <div style={{ fontSize: 18, textAlign: "center", display: "flex", alignItems: "center", gap: "10px "  }}>
+          {profileUser.firstName} {profileUser.lastName} {roles.map((role) => (
+    <RoleIcon
+      key={role}
+      role={role}
+      onClick={() => handleIconClick(role)}
+      style={{ cursor: "pointer" }}
+      size={16}
+    />
+  ))}
         </div>
         <div style={{ fontSize: 14, color: "#7E7E7E", textAlign: "center" }}>
           @{profileUser.username}
@@ -561,16 +590,16 @@ const UserProfile = ({ currentUser }) => {
                   src={profileUser.photoUrl || "https://placehold.co/50x50"}
                   alt="avatar"
                   style={{
-                    width: "50px",
-                    height: "50px",
+                    width: "30px",
+                    height: "30px",
                     borderRadius: "50%",
                     objectFit: "cover",
                   }}
                 />
                 <div>
-                  <strong style={{ fontSize: "14px", color: "#ddd" }}>
+                  <p style={{ fontSize: "14px", color: "#ddd" }}>
                     {profileUser.firstName} {profileUser.lastName}
-                  </strong>
+                  </p>
                 </div>
               </div>
               <div style={{ flex: 1 }}>
@@ -633,6 +662,71 @@ const UserProfile = ({ currentUser }) => {
           <p>Постов пока нет.</p>
         )}
       </div>
+      <CSSTransition
+        in={!!activeRole}
+        timeout={300}
+        classNames="window-fade"
+        unmountOnExit
+        onExited={() => setVisibleRole(null)}
+      >
+        <div
+          onClick={closeRoleModal}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 2000,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "#1D1D1F",
+              padding: "20px",
+              borderRadius: "20px",
+              textAlign: "center",
+              color: "white",
+              maxWidth: "300px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "15px",
+            }}
+          >
+            {visibleRole && (
+              <>
+                <RoleIcon role={visibleRole} size={32} fullWidth />
+                <div>
+                  <h3>
+                    {profileUser.firstName} {roleIcons[visibleRole].name}
+                  </h3>
+                  <p>{roleIcons[visibleRole].description}</p>
+                </div>
+              </>
+            )}
+            <button
+              onClick={closeRoleModal}
+              style={{
+                background: "#212124",
+                color: "white",
+                border: "none",
+                padding: "10px 20px",
+                borderRadius: "15px",
+                cursor: "pointer",
+                width: "100%",
+              }}
+            >
+              Понятно ^^
+            </button>
+          </div>
+        </div>
+      </CSSTransition>
+
     </div>
   );
 };

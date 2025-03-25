@@ -31,7 +31,7 @@ const CreatorView = () => {
     <div>
       <h2>Список заявок</h2>
       {applications.map(app => (
-        <div key={app.id} style={{ border: '1px solid #ccc', marginBottom: '10px', padding: '10px' }}>
+        <div key={app.id} style={{ marginBottom: '10px', padding: '10px', color: "white" }}>
           <p><strong>Telegram Tag:</strong> {app.telegramTag}</p>
           {app.telegramLink && <p><strong>Telegram Link:</strong> {app.telegramLink}</p>}
           {app.tiktokLink && <p><strong>TikTok Link:</strong> {app.tiktokLink}</p>}

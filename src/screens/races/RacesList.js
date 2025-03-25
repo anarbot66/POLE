@@ -143,7 +143,7 @@ const RacesList = ({ currentUser }) => {
         style={{
           width: "calc(100% - 30px)",
           margin: "0px 15px",
-          paddingTop: "10px",
+          paddingTop: "15px",
           display: "flex",
           flexDirection: "column"
         }}
@@ -184,7 +184,7 @@ const RacesList = ({ currentUser }) => {
                 height: "100%",
                 padding: 20,
                 background: "#212124",
-                borderRadius: 35,
+                borderRadius: 15,
                 display: "flex",
                 flexDirection: "column",
                 gap: 10
@@ -238,7 +238,7 @@ const RacesList = ({ currentUser }) => {
                   width: 121,
                   height: 80,
                   background: "#0077FF",
-                  borderRadius: 15,
+                  borderRadius: 8,
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -269,7 +269,7 @@ const RacesList = ({ currentUser }) => {
               margin: "0px 15px",
               display: "flex",
               background: "#212124",
-              borderRadius: "30px",
+              borderRadius: "15px",
               justifyContent: "space-between",
               alignItems: "center",
               gap: "12px",

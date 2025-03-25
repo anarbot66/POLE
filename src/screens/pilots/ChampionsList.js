@@ -71,7 +71,7 @@ const ChampionsList = () => {
 
       <div 
         style={{
-          width: "calc(100% - 20px)",
+          width: "calc(100% - 10px)",
           margin: "0 auto",
           marginBottom: "100px",
           height: "100%",

@@ -12,6 +12,8 @@ import {
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../firebase";
+import RoleIcon from "../components/RoleIcon";
+
 
 const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const [comments, setComments] = useState([]);
@@ -47,10 +49,11 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
       await addDoc(collection(db, "comments"), {
         parentId,
         authorId: currentUser.uid,
-        authorName: currentUser.name || "Аноним",
+        authorName: currentUser.firstName + currentUser.lastName || "Аноним",
         authorPhotoUrl: currentUser.photoUrl || "",
         text: newComment,
         createdAt: serverTimestamp(),
+        role: currentUser.role
       });
       setNewComment("");
     } catch (err) {
@@ -96,12 +99,20 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
             />
             <div style={styles.commentContent}>
               <div style={styles.commentHeader}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <p 
                   style={styles.commentAuthor}
                   onClick={() => handleProfileClick(comment.authorId)}
                 >
                   {comment.authorName}
                 </p>
+                <RoleIcon 
+                  role={comment.role} 
+                  style={{ marginLeft: "5px", pointerEvents: "none" }} 
+                  size={16}
+                />
+              </div>
+
                 {(currentUser.uid === comment.authorId ||
                   currentUser.role === "admin" ||
                   currentUser.role === "owner") && (

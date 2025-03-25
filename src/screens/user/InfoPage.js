@@ -6,23 +6,23 @@ const InfoPage = () => {
     const navigate = useNavigate();
   return (
     <div className="fade-in" style={{ color: "#fff", padding: "15px" }}>
+        <div style={{width: "100%"}}>
         <button
-        onClick={() => navigate(-1)}
-        style={{
-          background: "transparent",
-          border: "none",
-          color: "white",
-          fontSize: "18px",
-          cursor: "pointer",
-          marginBottom: "20px"
-        }}
-      >
-        ← Назад
-      </button>
-      {/* Раздел "О приложении" */}
+          onClick={() => navigate(-1)}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "white",
+            fontSize: "18px",
+            cursor: "pointer",
+            marginBottom: "20px"
+          }}
+        >
+          ← Назад
+        </button>
+        </div>
       <div className="mb-4">
         <h1 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Иконка информации */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -38,10 +38,8 @@ const InfoPage = () => {
         </h1>
       </div>
 
-      {/* Раздел "Использование API Jopica" */}
       <div className="mb-4">
         <h2 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Иконка GitHub */}
           <svg
             width="24"
             height="24"
@@ -58,10 +56,8 @@ const InfoPage = () => {
         </p>
       </div>
 
-      {/* Раздел "Использование Bootstrap Icons" */}
       <div>
         <h2 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Иконка Bootstrap */}
           <svg
             width="24"
             height="24"

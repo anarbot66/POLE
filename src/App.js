@@ -25,6 +25,7 @@ import LoadingScreen from "./screens/components/LoadingScreen";
 import ChampionsList from "./screens/pilots/ChampionsList";
 import CreatorForm from "./screens/user/creators/CreatorForm.js";
 import CreatorView from "./screens/user/creators/CreatorView.js";
+import CreatePost from "./screens/user/components/CreatePost.js";
 
 
 function App() {
@@ -61,7 +62,7 @@ function App() {
         });
       } else {
         setUser({
-          name: "",
+          name: "anarbot66",
           uid: "",
           photoUrl: ""
         });
@@ -252,6 +253,7 @@ function App() {
                       <Route path="/champions" element={<ChampionsList />} />
                       <Route path="/creatorForm" element={<CreatorForm currentUser={user}/>} />
                       <Route path="/creatorView" element={<CreatorView currentUser={user}/>} />
+                      <Route path="/create-post" element={<CreatePost currentUser={user}/>} />
                     </Routes>
                 </div>
               </CSSTransition>

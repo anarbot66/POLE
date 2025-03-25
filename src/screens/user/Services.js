@@ -20,7 +20,7 @@ const Services = ({currentUser}) => {
         height: "100%",
         margin: "0 auto",
         marginBottom: "100px",
-        paddingTop: "10px"
+        paddingTop: "15px"
       }}
     >
       <div

@@ -14,17 +14,27 @@ import {
   getCountFromServer,
 } from "firebase/firestore";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import CustomSelect from "./components/CustomSelect"; // проверьте путь
 import CommentsSection from "./components/CommentsSection";
+import RoleIcon from "./components/RoleIcon";
+import friendsImage from "./images/friendsImage.png";
+import creatorsImage from "./images/creatorsImage.png";
+import newsImage from "./images/newsImage.png";
+import randomRoutes from "./dict/randomRoutes";
 
 const formatDate = (dateInput) => {
   if (!dateInput) return "—";
-  const date = typeof dateInput === "object" ? dateInput : new Date(dateInput);
-  const dayMonth = date.toLocaleString("ru-RU", { day: "numeric", month: "long" });
-  const time = date.toLocaleString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  const date =
+    typeof dateInput === "object" ? dateInput : new Date(dateInput);
+  const dayMonth = date.toLocaleString("ru-RU", {
+    day: "numeric",
+    month: "long",
+  });
+  const time = date.toLocaleString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
   return `${dayMonth} в ${time}`;
 };
-
 
 const Feed = ({ currentUser, onFeedLoad }) => {
   // Состояния для постов друзей
@@ -45,6 +55,7 @@ const Feed = ({ currentUser, onFeedLoad }) => {
 
   // Состояния для поиска и переключения вкладок
   const [searchQuery, setSearchQuery] = useState("");
+  // Возможные вкладки: "news", "creators", "followers"
   const [activeTab, setActiveTab] = useState("news");
 
   const navigate = useNavigate();
@@ -57,20 +68,32 @@ const Feed = ({ currentUser, onFeedLoad }) => {
   const onFeedLoadCalled = useRef(false);
 
   const [activeCommentsNewsId, setActiveCommentsNewsId] = useState(null);
-  const [activeCommentsFriendPostId, setActiveCommentsFriendPostId] = useState(null);
+  const [activeCommentsFriendPostId, setActiveCommentsFriendPostId] =
+    useState(null);
 
-  // Добавьте это к остальным функциям, например, после строки 48.
-const toggleFriendPostComments = (postId) => {
-  setActiveCommentsFriendPostId((prev) => (prev === postId ? null : postId));
-};
+  const toggleFriendPostComments = (postId) => {
+    setActiveCommentsFriendPostId((prev) =>
+      prev === postId ? null : postId
+    );
+  };
 
   // Функция для форматирования текущей даты
   const getFormattedDate = () => {
     const now = new Date();
     const day = now.getDate();
     const monthNames = [
-      "января", "февраля", "марта", "апреля", "мая", "июня",
-      "июля", "августа", "сентября", "октября", "ноября", "декабря",
+      "января",
+      "февраля",
+      "марта",
+      "апреля",
+      "мая",
+      "июня",
+      "июля",
+      "августа",
+      "сентября",
+      "октября",
+      "ноября",
+      "декабря",
     ];
     const month = monthNames[now.getMonth()];
     const year = now.getFullYear();
@@ -163,7 +186,10 @@ const toggleFriendPostComments = (postId) => {
         );
       }
       const snapshot = await getDocs(postsQuery);
-      const postsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const postsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       if (loadMore) {
         setFriendPosts((prev) => [...prev, ...postsData]);
       } else {
@@ -205,7 +231,10 @@ const toggleFriendPostComments = (postId) => {
           );
         }
         const snapshot = await getDocs(newsQuery);
-        const newsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const newsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
         if (loadMore) {
           setNewsItems((prev) => [...prev, ...newsData]);
         } else {
@@ -242,16 +271,27 @@ const toggleFriendPostComments = (postId) => {
     }
   }, [activeTab, followers]);
 
+  const allRoutes = [
+    ...Object.values(randomRoutes.pilotdetails)
+  ];
+
+  const handleRandomNavigation = () => {
+    const randomIndex = Math.floor(Math.random() * allRoutes.length);
+    const selectedRoute = allRoutes[randomIndex];
+    navigate(selectedRoute);
+  };
+
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    // Сбрасываем флаг, чтобы onFeedLoad можно было вызвать заново для новой вкладки
     onFeedLoadCalled.current = false;
   };
 
   const handleDeleteNews = async (newsId) => {
     try {
       await deleteDoc(doc(db, "news", newsId));
-      setNewsItems((prevItems) => prevItems.filter((item) => item.id !== newsId));
+      setNewsItems((prevItems) =>
+        prevItems.filter((item) => item.id !== newsId)
+      );
       setTotalNewsCount((prev) => prev - 1);
     } catch (err) {
       console.error("Ошибка при удалении новости:", err);
@@ -302,7 +342,7 @@ const toggleFriendPostComments = (postId) => {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div
@@ -317,11 +357,6 @@ const toggleFriendPostComments = (postId) => {
     );
   }
 
-  const tabOptions = [
-    { value: "news", label: "Новости" },
-    { value: "followers", label: "Друзья" },
-  ];
-
   return (
     <div
       className="fade-in"
@@ -331,10 +366,10 @@ const toggleFriendPostComments = (postId) => {
         margin: "0 auto",
         marginBottom: "100px",
         overflowY: "auto",
-        paddingTop: "10px",
+        paddingTop: "15px",
         display: "flex",
         flexDirection: "column",
-        background: "#1D1D1F",
+        background: "#1D1D1F"
       }}
     >
       <div
@@ -343,24 +378,124 @@ const toggleFriendPostComments = (postId) => {
           alignItems: "center",
           gap: "10px",
           borderRadius: 15,
+          padding: "0px 15px 5px 15px",
+          justifyContent: "space-between",
+          height: "30px"
+        }}
+      >
+        <div onClick={handleRandomNavigation} style={{background: "#212124", borderRadius: 50, width: 30, height: 30, alignItems: "center", justifyContent: "center", display: "flex" }}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9.49998 2.67157C9.49998 2.94771 9.72384 3.17157 9.99998 3.17157C10.2761 3.17157 10.5 2.94771 10.5 2.67157V0.843139C10.5 0.566997 10.2761 0.34314 9.99998 0.34314C9.72384 0.34314 9.49998 0.566997 9.49998 0.84314V2.67157Z" fill="white"/>
+          <path d="M14 2.7071C14.1952 2.51184 14.1952 2.19526 14 1.99999C13.8047 1.80473 13.4881 1.80473 13.2929 1.99999L12 3.29289C11.8047 3.48815 11.8047 3.80473 12 3.99999C12.1952 4.19526 12.5118 4.19526 12.7071 3.99999L14 2.7071Z" fill="white"/>
+          <path d="M7.29287 4C7.48814 4.19526 7.80472 4.19526 7.99998 4C8.19524 3.80473 8.19524 3.48815 7.99998 3.29289L6.70709 1.99999C6.51182 1.80473 6.19524 1.80473 5.99998 2C5.80472 2.19526 5.80472 2.51184 5.99998 2.7071L7.29287 4Z" fill="white"/>
+          <path d="M6.67155 6.49999C6.9477 6.49999 7.17155 6.27614 7.17155 5.99999C7.17155 5.72385 6.94769 5.49999 6.67155 5.49999H4.84312C4.56698 5.49999 4.34313 5.72385 4.34313 5.99999C4.34313 6.27614 4.56698 6.49999 4.84313 6.49999H6.67155Z" fill="white"/>
+          <path d="M15.1568 6.49999C15.433 6.49999 15.6568 6.27614 15.6568 5.99999C15.6568 5.72385 15.433 5.49999 15.1568 5.49999H13.3284C13.0523 5.49999 12.8284 5.72385 12.8284 5.99999C12.8284 6.27614 13.0523 6.49999 13.3284 6.49999H15.1568Z" fill="white"/>
+          <path d="M13.2929 10C13.4881 10.1953 13.8047 10.1953 14 10C14.1952 9.80473 14.1952 9.48815 14 9.29289L12.7071 7.99999C12.5118 7.80473 12.1952 7.80473 12 8C11.8047 8.19526 11.8047 8.51184 12 8.7071L13.2929 10Z" fill="white"/>
+          <path d="M9.49998 11.1568C9.49998 11.433 9.72384 11.6568 9.99998 11.6568C10.2761 11.6568 10.5 11.433 10.5 11.1568V9.32842C10.5 9.05228 10.2761 8.82842 9.99998 8.82842C9.72384 8.82842 9.49998 9.05228 9.49998 9.32842V11.1568Z" fill="white"/>
+          <path d="M11.3536 6.06065C11.5488 5.86539 11.5488 5.54881 11.3536 5.35355L10.6464 4.64644C10.4512 4.45118 10.1346 4.45118 9.93934 4.64644L8.64645 5.93933C8.45118 6.13459 8.45118 6.45118 8.64645 6.64644L9.35355 7.35355C9.54882 7.54881 9.8654 7.54881 10.0607 7.35355L11.3536 6.06065Z" fill="white"/>
+          <path d="M8.35355 9.06065C8.54882 8.86539 8.54882 8.54881 8.35355 8.35355L7.64645 7.64644C7.45118 7.45118 7.1346 7.45118 6.93934 7.64644L0.646446 13.9393C0.451184 14.1346 0.451185 14.4512 0.646447 14.6464L1.35355 15.3535C1.54882 15.5488 1.8654 15.5488 2.06066 15.3535L8.35355 9.06065Z" fill="white"/>
+        </svg>
+
+        </div>
+
+        <img
+          onClick={() => navigate("/profile")}
+          src={currentUser.photoUrl || "https://placehold.co/80x80"}
+          alt="Avatar"
+          style={{ width: "30px", height: "30px", borderRadius: "50%", alignContent: "right" }}
+        />
+      </div>
+      <div style={{width: "100%", height: 80, padding: "0px 15px", flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+        <div style={{color: 'white', fontSize: 24, fontWeight: '500', wordWrap: 'break-word'}}>Привет, {currentUser.firstName}!</div>
+        <div style={{color: 'white', fontSize: 24, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}>Что посмотрим сегодня?</div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
           margin: "0px 15px",
         }}
       >
-        <img
-          src={currentUser.photoUrl || "https://placehold.co/80x80"}
-          alt="Avatar"
-          style={{ width: "30px", height: "30px", borderRadius: "50%" }}
-        />
-        <CustomSelect
-          options={tabOptions}
-          value={activeTab}
-          onChange={(val) => handleTabChange(val)}
-          style={{ flexGrow: 1 }}
-        />
+        <div
+        style={{
+          justifyContent: "flex-start",
+          alignItems: "center",
+          gap: 10,
+          display: "inline-flex",
+          width: "100%"
+        }}
+      >
+        {[
+  { key: "news", label: "Новости", image: newsImage },
+  { key: "creators", label: "Креаторы", image: creatorsImage },
+  { key: "followers", label: "Друзья", image: friendsImage }
+].map(({ key, label, image }) => {
+  const isActive = activeTab === key;
+
+  return (
+    <div
+      key={key}
+      onClick={key !== "creators" ? () => handleTabChange(key) : undefined}
+      style={{
+        position: "relative",
+        width: "100%",
+        aspectRatio: 1,
+        padding: 7,
+        borderRadius: 12,
+        backgroundImage: `url(${image})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        alignItems: "flex-start",
+        gap: 6,
+        display: "inline-flex",
+        cursor: "pointer",
+        overflow: "hidden",
+      }}
+    >
+      {/* Затемняющий слой с анимацией */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0,0,0,0.5)",
+          opacity: isActive ? 0 : 1,
+          transition: "opacity 0.7s ease-in-out",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Текст */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          textAlign: "right",
+          color: "white",
+          fontSize: 15,
+          fontFamily: "Inter",
+          fontWeight: "400",
+          wordWrap: "break-word",
+        }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+})}
+
+      </div>
+
       </div>
 
       {activeTab === "news" && (
-        <div style={{ position: "relative", margin: "10px 15px 0 15px" }}>
+        <div className="fade-in" style={{ position: "relative", margin: "10px 15px 0 15px" }}>
           <input
             type="text"
             placeholder="Ищите что угодно о формуле..."
@@ -368,8 +503,8 @@ const toggleFriendPostComments = (postId) => {
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: "100%",
-              padding: "20px 20px 20px 20px",
-              borderRadius: "20px",
+              padding: "20px",
+              borderRadius: "12px",
               backgroundColor: "#212124",
               color: "white",
               outline: "none",
@@ -379,14 +514,17 @@ const toggleFriendPostComments = (postId) => {
         </div>
       )}
 
+      
       <TransitionGroup>
-        <CSSTransition key={activeTab} classNames="page" timeout={300}>
+        <CSSTransition key={activeTab} className="fade-in" timeout={300}>
           <div style={{ position: "relative", minHeight: "calc(100% - 70px)" }}>
             {activeTab === "followers" && (
-              <div style={{ margin: "20px 15px 0px 15px" }}>
+              <div className="fade-in" style={{ margin: "20px 15px 0px 15px" }}>
                 {friendPosts.length > 0 ? (
                   friendPosts.map((post) => {
-                    const friend = followers.find((user) => user.uid === post.uid);
+                    const friend = followers.find(
+                      (user) => user.uid === post.uid
+                    );
                     return (
                       <div
                         key={post.id}
@@ -411,7 +549,10 @@ const toggleFriendPostComments = (postId) => {
                           }}
                         >
                           <img
-                            src={friend?.photoUrl || "https://placehold.co/50x50"}
+                            src={
+                              friend?.photoUrl ||
+                              "https://placehold.co/50x50"
+                            }
                             alt="avatar"
                             style={{
                               width: "35px",
@@ -421,14 +562,29 @@ const toggleFriendPostComments = (postId) => {
                             }}
                           />
                           <div>
-                            <strong style={{ fontSize: "14px", color: "#ddd" }}>
+                            <strong
+                              style={{
+                                fontSize: "14px",
+                                color: "#ddd",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                              }}
+                            >
                               {friend
                                 ? `${friend.firstName} ${friend.lastName}`
                                 : "Неизвестный пользователь"}
+                              {friend && friend.role && (
+                                <RoleIcon
+                                  role={friend.role}
+                                  style={{ marginLeft: "5px" }}
+                                  size={14}
+                                />
+                              )}
                             </strong>
                           </div>
                         </div>
-                        <div style={{ flex: 1}}>
+                        <div style={{ flex: 1 }}>
                           <div
                             style={{
                               display: "flex",
@@ -449,25 +605,36 @@ const toggleFriendPostComments = (postId) => {
                             style={{
                               borderRadius: "12px",
                               color: "white",
-                              marginTop: 7
+                              marginTop: 7,
                             }}
                           >
                             {post.text}
                           </div>
                           <button
-                            onClick={() => toggleFriendPostComments(post.id)}
+                            onClick={() =>
+                              toggleFriendPostComments(post.id)
+                            }
                             style={{
                               background: "transparent",
                               border: "none",
                               color: "white",
                               cursor: "pointer",
                               fontSize: "20px",
-                              marginTop: 7
+                              marginTop: 7,
                             }}
                           >
-                          <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M3.68209 15.2515C3.97139 15.5469 4.11624 15.9583 4.0772 16.3735C3.98969 17.3041 3.78815 18.2726 3.52931 19.1723C5.44728 18.7209 6.61867 18.1973 7.15112 17.9226C7.45336 17.7667 7.8015 17.7299 8.12876 17.8192C9.03329 18.0661 9.9973 18.2 11 18.2C16.4939 18.2 20.625 14.2694 20.625 9.8C20.625 5.33056 16.4939 1.4 11 1.4C5.50605 1.4 1.375 5.33056 1.375 9.8C1.375 11.8553 2.22379 13.7625 3.68209 15.2515ZM3.00423 20.7185C2.99497 20.7204 2.9857 20.7222 2.97641 20.7241C2.85015 20.7494 2.72143 20.7744 2.59025 20.7988C2.40625 20.8332 2.21738 20.8665 2.02362 20.8988C1.74997 20.9445 1.5405 20.653 1.6486 20.393C1.71922 20.2231 1.78884 20.0451 1.85666 19.8605C1.89975 19.7432 1.94212 19.6233 1.98356 19.5012C1.98534 19.4959 1.98713 19.4906 1.98891 19.4854C2.32956 18.4778 2.60695 17.3196 2.70845 16.2401C1.02171 14.5178 0 12.2652 0 9.8C0 4.38761 4.92487 0 11 0C17.0751 0 22 4.38761 22 9.8C22 15.2124 17.0751 19.6 11 19.6C9.87696 19.6 8.79323 19.4501 7.77265 19.1714C7.05838 19.54 5.51971 20.2108 3.00423 20.7185Z" fill="white"/>
-                          </svg>
+                            <svg
+                              width="22"
+                              height="21"
+                              viewBox="0 0 22 21"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M3.68209 15.2515C3.97139 15.5469 4.11624 15.9583 4.0772 16.3735C3.98969 17.3041 3.78815 18.2726 3.52931 19.1723C5.44728 18.7209 6.61867 18.1973 7.15112 17.9226C7.45336 17.7667 7.8015 17.7299 8.12876 17.8192C9.03329 18.0661 9.9973 18.2 11 18.2C16.4939 18.2 20.625 14.2694 20.625 9.8C20.625 5.33056 16.4939 1.4 11 1.4C5.50605 1.4 1.375 5.33056 1.375 9.8C1.375 11.8553 2.22379 13.7625 3.68209 15.2515ZM3.00423 20.7185C2.99497 20.7204 2.9857 20.7222 2.97641 20.7241C2.85015 20.7494 2.72143 20.7744 2.59025 20.7988C2.40625 20.8332 2.21738 20.8665 2.02362 20.8988C1.74997 20.9445 1.5405 20.653 1.6486 20.393C1.71922 20.2231 1.78884 20.0451 1.85666 19.8605C1.89975 19.7432 1.94212 19.6233 1.98356 19.5012C1.98534 19.4959 1.98713 19.4906 1.98891 19.4854C2.32956 18.4778 2.60695 17.3196 2.70845 16.2401C1.02171 14.5178 0 12.2652 0 9.8C0 4.38761 4.92487 0 11 0C17.0751 0 22 4.38761 22 9.8C22 15.2124 17.0751 19.6 11 19.6C9.87696 19.6 8.79323 19.4501 7.77265 19.1714C7.05838 19.54 5.51971 20.2108 3.00423 20.7185Z"
+                                fill="white"
+                              />
+                            </svg>
                           </button>
                         </div>
                         <CSSTransition
@@ -479,15 +646,23 @@ const toggleFriendPostComments = (postId) => {
                           <CommentsSection
                             parentId={activeCommentsFriendPostId}
                             currentUser={currentUser}
-                            onClose={() => setActiveCommentsFriendPostId(null)}
+                            onClose={() =>
+                              setActiveCommentsFriendPostId(null)
+                            }
                           />
                         </CSSTransition>
                       </div>
-                      
                     );
                   })
                 ) : (
-                  <p style={{ textAlign: "center", marginTop: "100px", color: "white", fontSize: 12 }}>
+                  <p
+                    style={{
+                      textAlign: "center",
+                      marginTop: "100px",
+                      color: "white",
+                      fontSize: 12,
+                    }}
+                  >
                     Ваши друзья ничего не публиковали
                   </p>
                 )}
@@ -512,8 +687,9 @@ const toggleFriendPostComments = (postId) => {
               </div>
             )}
             {activeTab === "news" && (
-              <div style={{ marginTop: "20px" }}>
-                {(currentUser.role === "admin" || currentUser.role === "owner") && (
+              <div className="fade-in" style={{ marginTop: "10px" }}>
+                {(currentUser.role === "admin" ||
+                  currentUser.role === "owner") && (
                   <button
                     onClick={() => navigate("/news/new")}
                     style={{
@@ -531,7 +707,13 @@ const toggleFriendPostComments = (postId) => {
                     Новая новость
                   </button>
                 )}
-                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
                   {filteredNews.map((news) => (
                     <div
                       key={news.id}
@@ -549,18 +731,26 @@ const toggleFriendPostComments = (postId) => {
                           src={news.imageUrl}
                           alt="news"
                           style={{
-                            width: "100%",
-                            marginTop: "10px",
-                            borderRadius: "20px"
+                            width: "100%",  
+                            borderRadius: "12px",
                           }}
                         />
                       )}
-                      <div style={{ margin: "10px 0px 0px 0px", display: "flex", flexDirection: "column" }}>
-                        {(currentUser.role === "admin" || currentUser.role === "owner") && (
+                      <div
+                        style={{
+                          margin: "10px 0px 0px 0px",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        {(currentUser.role === "admin" ||
+                          currentUser.role === "owner") && (
                           <div style={{ position: "absolute", top: 0, right: 0 }}>
                             <button
                               onClick={() =>
-                                setOpenNewsMenuId((prev) => (prev === news.id ? null : news.id))
+                                setOpenNewsMenuId((prev) =>
+                                  prev === news.id ? null : news.id
+                                )
                               }
                               style={{
                                 background: "transparent",
@@ -618,62 +808,123 @@ const toggleFriendPostComments = (postId) => {
                           {news.title}
                         </span>
                         <small style={{ color: "#888" }}>
-                          @anarbot66 {formatDate(news.createdAt?.toDate ? news.createdAt.toDate() : news.createdAt)}
+                          {news.creatorUsername}{" "}
+                          {formatDate(
+                            news.createdAt?.toDate
+                              ? news.createdAt.toDate()
+                              : news.createdAt
+                          )}
                         </small>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", margin: "10px 0px 0px 0px", gap: 15 }}>
-                  {news.type === "link" ? (
-                    <a
-                      href={news.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        border: "none",
-                        borderRadius: "12px",
-                        color: "white",
-                        cursor: "pointer",
-                        textAlign: "center",
-                        textDecoration: "none",
-                        display: "block"
-                      }}
-                    >
-                  <svg width="25" height="19" viewBox="0 0 25 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M25 9.5C25 9.5 20.3125 0.90625 12.5 0.90625C4.6875 0.90625 0 9.5 0 9.5C0 9.5 4.6875 18.0938 12.5 18.0938C20.3125 18.0938 25 9.5 25 9.5ZM1.83234 9.5C1.92129 9.36439 2.02272 9.21371 2.13636 9.05065C2.65962 8.29989 3.43173 7.30141 4.42517 6.30798C6.43911 4.29403 9.18847 2.46875 12.5 2.46875C15.8115 2.46875 18.5609 4.29403 20.5748 6.30798C21.5683 7.30141 22.3404 8.29989 22.8636 9.05065C22.9773 9.21371 23.0787 9.36439 23.1677 9.5C23.0787 9.63561 22.9773 9.78629 22.8636 9.94935C22.3404 10.7001 21.5683 11.6986 20.5748 12.692C18.5609 14.706 15.8115 16.5312 12.5 16.5312C9.18847 16.5312 6.43911 14.706 4.42517 12.692C3.43173 11.6986 2.65962 10.7001 2.13636 9.94935C2.02272 9.78629 1.92129 9.63561 1.83234 9.5Z" fill="white"/>
-                  <path d="M12.5 5.59375C10.3426 5.59375 8.59375 7.34264 8.59375 9.5C8.59375 11.6574 10.3426 13.4062 12.5 13.4062C14.6574 13.4062 16.4062 11.6574 16.4062 9.5C16.4062 7.34264 14.6574 5.59375 12.5 5.59375ZM7.03125 9.5C7.03125 6.47969 9.47969 4.03125 12.5 4.03125C15.5203 4.03125 17.9688 6.47969 17.9688 9.5C17.9688 12.5203 15.5203 14.9688 12.5 14.9688C9.47969 14.9688 7.03125 12.5203 7.03125 9.5Z" fill="white"/>
-                  </svg>
-                    </a>
-                  ) : (
-                    <button
-                      onClick={() => navigate(`/news/${news.id}`, { state: { news } })}
-                      style={{
-                        border: "none",
-                        borderRadius: "12px",
-                        color: "white",
-                        cursor: "pointer",
-                        textAlign: "center"
-                      }}
-                    >
-                    <svg width="25" height="19" viewBox="0 0 25 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M25 9.5C25 9.5 20.3125 0.90625 12.5 0.90625C4.6875 0.90625 0 9.5 0 9.5C0 9.5 4.6875 18.0938 12.5 18.0938C20.3125 18.0938 25 9.5 25 9.5ZM1.83234 9.5C1.92129 9.36439 2.02272 9.21371 2.13636 9.05065C2.65962 8.29989 3.43173 7.30141 4.42517 6.30798C6.43911 4.29403 9.18847 2.46875 12.5 2.46875C15.8115 2.46875 18.5609 4.29403 20.5748 6.30798C21.5683 7.30141 22.3404 8.29989 22.8636 9.05065C22.9773 9.21371 23.0787 9.36439 23.1677 9.5C23.0787 9.63561 22.9773 9.78629 22.8636 9.94935C22.3404 10.7001 21.5683 11.6986 20.5748 12.692C18.5609 14.706 15.8115 16.5312 12.5 16.5312C9.18847 16.5312 6.43911 14.706 4.42517 12.692C3.43173 11.6986 2.65962 10.7001 2.13636 9.94935C2.02272 9.78629 1.92129 9.63561 1.83234 9.5Z" fill="white"/>
-                    <path d="M12.5 5.59375C10.3426 5.59375 8.59375 7.34264 8.59375 9.5C8.59375 11.6574 10.3426 13.4062 12.5 13.4062C14.6574 13.4062 16.4062 11.6574 16.4062 9.5C16.4062 7.34264 14.6574 5.59375 12.5 5.59375ZM7.03125 9.5C7.03125 6.47969 9.47969 4.03125 12.5 4.03125C15.5203 4.03125 17.9688 6.47969 17.9688 9.5C17.9688 12.5203 15.5203 14.9688 12.5 14.9688C9.47969 14.9688 7.03125 12.5203 7.03125 9.5Z" fill="white"/>
-                    </svg>
-                    </button>
-                  )}
-                  <button
-                    onClick={() => toggleComments(news.id)}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "white",
-                      cursor: "pointer",
-                      fontSize: "20px",
-                    }}
-                  >
-                   <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                   <path d="M3.68209 15.2515C3.97139 15.5469 4.11624 15.9583 4.0772 16.3735C3.98969 17.3041 3.78815 18.2726 3.52931 19.1723C5.44728 18.7209 6.61867 18.1973 7.15112 17.9226C7.45336 17.7667 7.8015 17.7299 8.12876 17.8192C9.03329 18.0661 9.9973 18.2 11 18.2C16.4939 18.2 20.625 14.2694 20.625 9.8C20.625 5.33056 16.4939 1.4 11 1.4C5.50605 1.4 1.375 5.33056 1.375 9.8C1.375 11.8553 2.22379 13.7625 3.68209 15.2515ZM3.00423 20.7185C2.99497 20.7204 2.9857 20.7222 2.97641 20.7241C2.85015 20.7494 2.72143 20.7744 2.59025 20.7988C2.40625 20.8332 2.21738 20.8665 2.02362 20.8988C1.74997 20.9445 1.5405 20.653 1.6486 20.393C1.71922 20.2231 1.78884 20.0451 1.85666 19.8605C1.89975 19.7432 1.94212 19.6233 1.98356 19.5012C1.98534 19.4959 1.98713 19.4906 1.98891 19.4854C2.32956 18.4778 2.60695 17.3196 2.70845 16.2401C1.02171 14.5178 0 12.2652 0 9.8C0 4.38761 4.92487 0 11 0C17.0751 0 22 4.38761 22 9.8C22 15.2124 17.0751 19.6 11 19.6C9.87696 19.6 8.79323 19.4501 7.77265 19.1714C7.05838 19.54 5.51971 20.2108 3.00423 20.7185Z" fill="white"/>
-                   </svg>
-                  </button>
-                </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          margin: "10px 0px 0px 0px",
+                          gap: 15,
+                        }}
+                      >
+                        {news.type === "link" ? (
+                          <a
+                            href={news.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              border: "none",
+                              borderRadius: "12px",
+                              color: "white",
+                              cursor: "pointer",
+                              textAlign: "center",
+                              textDecoration: "none",
+                              display: "block",
+                            }}
+                          >
+                            <svg
+                              width="25"
+                              height="19"
+                              viewBox="0 0 25 19"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M25 9.5C25 9.5 20.3125 0.90625 12.5 0.90625C4.6875 0.90625 0 9.5 0 9.5C0 9.5 4.6875 18.0938 12.5 18.0938C20.3125 18.0938 25 9.5 25 9.5ZM1.83234 9.5C1.92129 9.36439 2.02272 9.21371 2.13636 9.05065C2.65962 8.29989 3.43173 7.30141 4.42517 6.30798C6.43911 4.29403 9.18847 2.46875 12.5 2.46875C15.8115 2.46875 18.5609 4.29403 20.5748 6.30798C21.5683 7.30141 22.3404 8.29989 22.8636 9.05065C22.9773 9.21371 23.0787 9.36439 23.1677 9.5C23.0787 9.63561 22.9773 9.78629 22.8636 9.94935C22.3404 10.7001 21.5683 11.6986 20.5748 12.692C18.5609 14.706 15.8115 16.5312 12.5 16.5312C9.18847 16.5312 6.43911 14.706 4.42517 12.692C3.43173 11.6986 2.65962 10.7001 2.13636 9.94935C2.02272 9.78629 1.92129 9.63561 1.83234 9.5Z"
+                                fill="white"
+                              />
+                              <path
+                                d="M12.5 5.59375C10.3426 5.59375 8.59375 7.34264 8.59375 9.5C8.59375 11.6574 10.3426 13.4062 12.5 13.4062C14.6574 13.4062 16.4062 11.6574 16.4062 9.5C16.4062 7.34264 14.6574 5.59375 12.5 5.59375ZM7.03125 9.5C7.03125 6.47969 9.47969 4.03125 12.5 4.03125C15.5203 4.03125 17.9688 6.47969 17.9688 9.5C17.9688 12.5203 15.5203 14.9688 12.5 14.9688C9.47969 14.9688 7.03125 12.5203 7.03125 9.5Z"
+                                fill="white"
+                              />
+                            </svg>
+                          </a>
+                        ) : (
+                          <button
+                            onClick={() =>
+                              navigate(`/news/${news.id}`, {
+                                state: { news },
+                              })
+                            }
+                            style={{
+                              border: "none",
+                              borderRadius: "12px",
+                              color: "white",
+                              cursor: "pointer",
+                              textAlign: "center",
+                            }}
+                          >
+                            <svg
+                              width="25"
+                              height="19"
+                              viewBox="0 0 25 19"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M25 9.5C25 9.5 20.3125 0.90625 12.5 0.90625C4.6875 0.90625 0 9.5 0 9.5C0 9.5 4.6875 18.0938 12.5 18.0938C20.3125 18.0938 25 9.5 25 9.5ZM1.83234 9.5C1.92129 9.36439 2.02272 9.21371 2.13636 9.05065C2.65962 8.29989 3.43173 7.30141 4.42517 6.30798C6.43911 4.29403 9.18847 2.46875 12.5 2.46875C15.8115 2.46875 18.5609 4.29403 20.5748 6.30798C21.5683 7.30141 22.3404 8.29989 22.8636 9.05065C22.9773 9.21371 23.0787 9.36439 23.1677 9.5C23.0787 9.63561 22.9773 9.78629 22.8636 9.94935C22.3404 10.7001 21.5683 11.6986 20.5748 12.692C18.5609 14.706 15.8115 16.5312 12.5 16.5312C9.18847 16.5312 6.43911 14.706 4.42517 12.692C3.43173 11.6986 2.65962 10.7001 2.13636 9.94935C2.02272 9.78629 1.92129 9.63561 1.83234 9.5Z"
+                                fill="white"
+                              />
+                              <path
+                                d="M12.5 5.59375C10.3426 5.59375 8.59375 7.34264 8.59375 9.5C8.59375 11.6574 10.3426 13.4062 12.5 13.4062C14.6574 13.4062 16.4062 11.6574 16.4062 9.5C16.4062 7.34264 14.6574 5.59375 12.5 5.59375ZM7.03125 9.5C7.03125 6.47969 9.47969 4.03125 12.5 4.03125C15.5203 4.03125 17.9688 6.47969 17.9688 9.5C17.9688 12.5203 15.5203 14.9688 12.5 14.9688C9.47969 14.9688 7.03125 12.5203 7.03125 9.5Z"
+                                fill="white"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                        <button
+                          onClick={() => toggleComments(news.id)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            color: "white",
+                            cursor: "pointer",
+                            fontSize: "20px",
+                          }}
+                        >
+                          <svg
+                            width="22"
+                            height="21"
+                            viewBox="0 0 22 21"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M3.68209 15.2515C3.97139 15.5469 4.11624 15.9583 4.0772 16.3735C3.98969 17.3041 3.78815 18.2726 3.52931 19.1723C5.44728 18.7209 6.61867 18.1973 7.15112 17.9226C7.45336 17.7667 7.8015 17.7299 8.12876 17.8192C9.03329 18.0661 9.9973 18.2 11 18.2C16.4939 18.2 20.625 14.2694 20.625 9.8C20.625 5.33056 16.4939 1.4 11 1.4C5.50605 1.4 1.375 5.33056 1.375 9.8C1.375 11.8553 2.22379 13.7625 3.68209 15.2515ZM3.00423 20.7185C2.99497 20.7204 2.9857 20.7222 2.97641 20.7241C2.85015 20.7494 2.72143 20.7744 2.59025 20.7988C2.40625 20.8332 2.21738 20.8665 2.02362 20.8988C1.74997 20.9445 1.5405 20.653 1.6486 20.393C1.71922 20.2231 1.78884 20.0451 1.85666 19.8605C1.89975 19.7432 1.94212 19.6233 1.98356 19.5012C1.98534 19.4959 1.98713 19.4906 1.98891 19.4854C2.32956 18.4778 2.60695 17.3196 2.70845 16.2401C1.02171 14.5178 0 12.2652 0 9.8C0 4.38761 4.92487 0 11 0C17.0751 0 22 4.38761 22 9.8C22 15.2124 17.0751 19.6 11 19.6C9.87696 19.6 8.79323 19.4501 7.77265 19.1714C7.05838 19.54 5.51971 20.2108 3.00423 20.7185Z"
+                              fill="white"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <CSSTransition
+                        in={!!activeCommentsNewsId}
+                        timeout={300}
+                        classNames="slideUp"
+                        unmountOnExit
+                      >
+                        <CommentsSection
+                          parentId={activeCommentsNewsId}
+                          currentUser={currentUser}
+                          onClose={() => setActiveCommentsNewsId(null)}
+                        />
+                      </CSSTransition>
                     </div>
                   ))}
                   {totalNewsCount > newsItems.length && (
@@ -693,25 +944,12 @@ const toggleFriendPostComments = (postId) => {
                       {newsLoading ? " " : "Загрузить ещё"}
                     </button>
                   )}
-                  <CSSTransition
-                          in={!!activeCommentsNewsId}
-                          timeout={300}
-                          classNames="slideUp"
-                          unmountOnExit
-                        >
-                    <CommentsSection
-                      parentId={activeCommentsNewsId}
-                      currentUser={currentUser}
-                      onClose={() => setActiveCommentsNewsId(null)}
-                    />
-                  </CSSTransition>
                 </div>
               </div>
             )}
           </div>
         </CSSTransition>
       </TransitionGroup>
-      
     </div>
   );
 };

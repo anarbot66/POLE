@@ -16,7 +16,7 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
     style={{ width: "100%",
     margin: "0px",
     marginBottom: "100px",  height: '100%', background: '#1D1D1F' }}>
-      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '10px', flexDirection: "column", width: 'calc(100% - 20px)', margin: "0px 15px" }}>
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '15px', flexDirection: "column", width: 'calc(100% - 20px)', margin: "0px 15px" }}>
       <div
         style={{
           display: "flex",
@@ -47,10 +47,10 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
               background: activeTab === 'pilots' ? '#212124' : 'transparent',
               color: 'white',
               border: 'none',
-              borderRadius: '20px',
+              borderRadius: '10px',
               cursor: 'pointer',
               transition: 'background 1.2s ease',
-              fontSize: 12
+              fontSize: 14
             }}
           >
             Пилоты
@@ -62,10 +62,10 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
               background: activeTab === 'constructors' ? '#212124' : 'transparent',
               color: 'white',
               border: 'none',
-              borderRadius: '20px',
+              borderRadius: '10px',
               cursor: 'pointer',
               transition: 'background 1.2s ease',
-              fontSize: 12
+              fontSize: 14
             }}
           >
             Конструкторы

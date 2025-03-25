@@ -216,7 +216,7 @@ const PilotsList = () => {
             style={{
               width: "100%",
               background: "#212124",
-              borderRadius: "30px",
+              borderRadius: "15px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
