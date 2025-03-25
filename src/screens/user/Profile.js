@@ -393,7 +393,7 @@ const Profile = ({ currentUser }) => {
         }}
       >
         <div style={{ width: "100%" }}>
-          <div style={{ fontSize: "36px", display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ fontSize: "25px", display: "flex", alignItems: "center", gap: "10px" }}>
             <span>{profileUser.firstName} {profileUser.lastName}</span>{" "}
             {roles.map((role) => (
               <RoleIcon key={role} role={role} onClick={handleIconClick} />
