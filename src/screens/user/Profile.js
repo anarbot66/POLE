@@ -393,7 +393,7 @@ const Profile = ({ currentUser }) => {
         }}
       >
         <div style={{ width: "100%" }}>
-          <div style={{ fontSize: "36px", display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ fontSize: "25px", display: "flex", alignItems: "center", gap: "10px" }}>
             <span>{profileUser.firstName} {profileUser.lastName}</span>{" "}
             {roles.map((role) => (
               <RoleIcon key={role} role={role} onClick={handleIconClick} />
@@ -512,7 +512,7 @@ const Profile = ({ currentUser }) => {
       </div>
 
       {/* Контейнер для слайдера */}
-      <div style={{ position: "relative", overflow: "hidden", minHeight: "300px" }}>
+      <div style={{ position: "relative", overflow: "hidden" }}>
         <TransitionGroup>
           {activeTab === "posts" ? (
             <CSSTransition
@@ -521,7 +521,7 @@ const Profile = ({ currentUser }) => {
               timeout={500}
               unmountOnExit
             >
-              <div style={{ position: "absolute", top: 0, left: 0, width: "100%" }}>
+              <div style={{ top: 0, left: 0, width: "100%" }}>
                 {posts.length > 0 ? (
                   posts.map((post, index) => (
                     <div
@@ -743,7 +743,7 @@ const Profile = ({ currentUser }) => {
               timeout={500}
               unmountOnExit
             >
-              <div style={{ position: "absolute", top: 0, left: 0, width: "100%", marginTop: "10px" }}>
+              <div style={{ top: 0, left: 0, width: "100%", marginTop: "10px" }}>
                 {favoritePilot ? (
                   <>
                     <h3 style={{ marginTop: "10px", marginBottom: "10px", width: "calc(100% - 40px)" }}>
@@ -918,6 +918,7 @@ const Profile = ({ currentUser }) => {
     }
     .slider-posts-exit {
       transform: translateX(0%);
+      opacity: 0;
     }
     .slider-posts-exit-active {
       transform: translateX(-100%);
@@ -934,6 +935,7 @@ const Profile = ({ currentUser }) => {
     }
     .slider-favorites-exit {
       transform: translateX(0%);
+      opacity: 0;
     }
     .slider-favorites-exit-active {
       transform: translateX(100%);
