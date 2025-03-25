@@ -62,7 +62,7 @@ function App() {
         });
       } else {
         setUser({
-          name: "anarbot66",
+          name: "",
           uid: "",
           photoUrl: ""
         });
