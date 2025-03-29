@@ -101,7 +101,6 @@ const NewsDetail = () => {
 
   return (
     <div
-      className="fade-in"
       style={{
         width: "calc(100% - 30px)",
         maxWidth: "600px",

@@ -5,7 +5,7 @@ import { CSSTransition } from "react-transition-group";
 const Services = ({currentUser}) => {
   const navigate = useNavigate();
   const [showNotification, setShowNotification] = useState(false);
-  const isAdminOrOwner = currentUser && (currentUser.role === "admin" || currentUser.role === "owner");
+  const isAdminOrOwner = currentUser && (currentUser.role === "owner");
 
   // Функция-обработчик для кнопок, где нет своей логики
   const handleUnavailableFeature = () => {
@@ -14,7 +14,6 @@ const Services = ({currentUser}) => {
 
   return (
     <div
-      className="fade-in"
       style={{
         width: "calc(100% - 20px)",
         height: "100%",

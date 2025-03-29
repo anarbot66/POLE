@@ -377,9 +377,10 @@ const Profile = ({ currentUser }) => {
     translatedName = driverTranslations[pilotFullName] || pilotFullName;
   }
 
+  //{profileUser.firstName} {profileUser.lastName}
+
   return (
     <div
-      className="fade-in"
       style={{ backgroundColor: "#1D1D1F", color: "white", padding: "0 15px", marginBottom: "80px" }}
     >
       <div
@@ -394,7 +395,7 @@ const Profile = ({ currentUser }) => {
       >
         <div style={{ width: "100%" }}>
           <div style={{ fontSize: "25px", display: "flex", alignItems: "center", gap: "10px" }}>
-            <span>{profileUser.firstName} {profileUser.lastName}</span>{" "}
+            <span className="truncate">{profileUser.firstName} {profileUser.lastName}</span>{" "} 
             {roles.map((role) => (
               <RoleIcon key={role} role={role} onClick={handleIconClick} />
             ))}
@@ -488,7 +489,7 @@ const Profile = ({ currentUser }) => {
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
-            transition: "background 1.2s ease",
+            transition: 'background 0.4s ease',
             fontSize: 14
           }}
         >
@@ -503,7 +504,7 @@ const Profile = ({ currentUser }) => {
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
-            transition: "background 1.2s ease",
+            transition: 'background 0.4s ease',
             fontSize: 14
           }}
         >
@@ -511,16 +512,11 @@ const Profile = ({ currentUser }) => {
         </button>
       </div>
 
-      {/* Контейнер для слайдера */}
+      
       <div style={{ position: "relative", overflow: "hidden" }}>
-        <TransitionGroup>
+      <TransitionGroup>
           {activeTab === "posts" ? (
-            <CSSTransition
-              key="posts"
-              classNames="slider-posts"
-              timeout={500}
-              unmountOnExit
-            >
+            <CSSTransition key="posts" timeout={400} classNames="tab" unmountOnExit>
               <div style={{ top: 0, left: 0, width: "100%" }}>
                 {posts.length > 0 ? (
                   posts.map((post, index) => (
@@ -735,15 +731,11 @@ const Profile = ({ currentUser }) => {
                   <p style={{ textAlign: "center", marginTop: "50px" }}>Нет постов</p>
                 )}
               </div>
-            </CSSTransition>
+              </CSSTransition>
           ) : (
-            <CSSTransition
-              key="favorites"
-              classNames="slider-favorites"
-              timeout={500}
-              unmountOnExit
-            >
+            <CSSTransition key="favorites" timeout={400} classNames="tab" unmountOnExit>
               <div style={{ top: 0, left: 0, width: "100%", marginTop: "10px" }}>
+                
                 {favoritePilot ? (
                   <>
                     <h3 style={{ marginTop: "10px", marginBottom: "10px", width: "calc(100% - 40px)" }}>
@@ -835,10 +827,11 @@ const Profile = ({ currentUser }) => {
                   <p style={{ textAlign: "center", marginTop: "50px" }}>Нет избранного пилота</p>
                 )}
               </div>
-            </CSSTransition>
+              </CSSTransition>
           )}
-        </TransitionGroup>
+          </TransitionGroup>
       </div>
+      
 
       <CSSTransition
         in={!!activeRole}
@@ -904,48 +897,8 @@ const Profile = ({ currentUser }) => {
           </div>
         </div>
       </CSSTransition>
-
-      {/* Стили анимаций слайдера */}
-      <style>
-  {`
-    /* Для постов */
-    .slider-posts-enter {
-      transform: translateX(-100%);
-    }
-    .slider-posts-enter-active {
-      transform: translateX(0%);
-      transition: transform 500ms ease;
-    }
-    .slider-posts-exit {
-      transform: translateX(0%);
-      opacity: 0;
-    }
-    .slider-posts-exit-active {
-      transform: translateX(-100%);
-      transition: transform 500ms ease;
-    }
-    
-    /* Для любимых */
-    .slider-favorites-enter {
-      transform: translateX(100%);
-    }
-    .slider-favorites-enter-active {
-      transform: translateX(0%);
-      transition: transform 500ms ease;
-    }
-    .slider-favorites-exit {
-      transform: translateX(0%);
-      opacity: 0;
-    }
-    .slider-favorites-exit-active {
-      transform: translateX(100%);
-      transition: transform 500ms ease;
-    }
-    
-    
-  `}
-      </style>
     </div>
+    
   );
 };
 

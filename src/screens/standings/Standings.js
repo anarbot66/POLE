@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import PilotsList from '../pilots/PilotsList';
-import ConstructorsList from '../constructor/ConstructorsList';
+import PilotsList from '../pilots/driverList/PilotsList';
+import ConstructorsList from '../constructor/teamList/ConstructorsList';
 
 const Standings = ({ onConstructorSelect, currentUser }) => {
   const [activeTab, setActiveTab] = useState('pilots');
@@ -12,7 +12,6 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
 
   return (
     <div 
-    className="fade-in"
     style={{ width: "100%",
     margin: "0px",
     marginBottom: "100px",  height: '100%', background: '#1D1D1F' }}>
@@ -49,7 +48,7 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
               border: 'none',
               borderRadius: '10px',
               cursor: 'pointer',
-              transition: 'background 1.2s ease',
+              transition: 'background 0.4s ease',
               fontSize: 14
             }}
           >
@@ -64,7 +63,7 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
               border: 'none',
               borderRadius: '10px',
               cursor: 'pointer',
-              transition: 'background 1.2s ease',
+              transition: 'background 0.4s ease',
               fontSize: 14
             }}
           >
@@ -76,10 +75,10 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
         <TransitionGroup>
           <CSSTransition
             key={activeTab}
-            className="fade-in"
-            timeout={300}
+            classNames="tab"
+            timeout={400}
           >
-            <div className="fade-in">
+            <div className="">
               {activeTab === 'pilots' ? (
                 <PilotsList />
               ) : (
@@ -89,27 +88,7 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
           </CSSTransition>
         </TransitionGroup>
       </div>
-      <style>
-      {`
-        .fade-in {
-          animation: fadeIn 1.2s forwards; /* Было 0.5s */
-        }
-        .fade-out {
-          animation: fadeOut 1.2s forwards; /* Было 0.5s */
-        }
-        
-        /* Анимации */
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes fadeOut {
-          from { opacity: 1; }
-          to { opacity: 0; }
-        }
-        `}
-      </style>
+      
     </div>
   );
 };

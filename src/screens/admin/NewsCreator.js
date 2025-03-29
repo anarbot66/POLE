@@ -38,6 +38,11 @@ const NewsCreator = ({ currentUser }) => {
     ]);
   };
 
+  // Функция удаления абзаца по индексу
+  const removeParagraph = (index) => {
+    setParagraphs(paragraphs.filter((_, i) => i !== index));
+  };
+
   // Обновление данных абзаца
   const handleParagraphChange = (index, field, value) => {
     const updatedParagraphs = paragraphs.map((para, i) =>
@@ -101,6 +106,21 @@ const NewsCreator = ({ currentUser }) => {
         minHeight: "100vh",
       }}
     >
+      <div style={{ width: "100%" }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "white",
+            fontSize: "18px",
+            cursor: "pointer",
+            marginBottom: "20px",
+          }}
+        >
+          ← Назад
+        </button>
+      </div>
       <h2>Создание новости</h2>
       {error && <div style={{ color: "red" }}>{error}</div>}
       {/* Основной заголовок новости */}
@@ -182,37 +202,53 @@ const NewsCreator = ({ currentUser }) => {
               }
             />
           </div>
+          {/* Кнопка удаления абзаца */}
+          <button
+            onClick={() => removeParagraph(index)}
+            style={{
+              padding: "6px 12px",
+              backgroundColor: "#D9534F",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Удалить абзац
+          </button>
         </div>
       ))}
-      <button
-        onClick={addParagraph}
-        style={{
-          padding: "8px 16px",
-          marginBottom: "20px",
-          backgroundColor: "#0078C1",
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-        }}
-      >
-        Добавить абзац
-      </button>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <button
+          onClick={addParagraph}
+          style={{
+            padding: "8px 16px",
+            marginBottom: "20px",
+            backgroundColor: "#0078C1",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+          }}
+        >
+          Добавить абзац
+        </button>
 
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#0078C1",
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-        }}
-      >
-        {loading ? "Публикация..." : "Опубликовать"}
-      </button>
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#0078C1",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+          }}
+        >
+          {loading ? "Публикация..." : "Опубликовать"}
+        </button>
+      </div>
     </div>
   );
 };

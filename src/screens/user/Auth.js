@@ -77,7 +77,6 @@ const Auth = ({ user }) => {
 
   return (
     <div
-    className="fade-in"
       style={{
         width: '100vw',
         height: '100vh',

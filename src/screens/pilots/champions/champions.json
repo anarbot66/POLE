@@ -6,7 +6,7 @@
             "firstName": "Макс",
             "lastName": "Ферстаппен",
             "nationality": "Dutch",
-            "team": "RedBull"
+            "team": "Red Bull"
         },
         "points": 437
         },
@@ -16,7 +16,7 @@
           "firstName": "Макс",
           "lastName": "Ферстаппен",
           "nationality": "Dutch",
-          "team": "RedBull"
+          "team": "Red Bull"
         },
         "points": 575
       },
@@ -26,7 +26,7 @@
           "firstName": "Макс",
           "lastName": "Ферстаппен",
           "nationality": "Dutch",
-          "team": "RedBull"
+          "team": "Red Bull"
         },
         "points": 454
       },
@@ -36,7 +36,7 @@
           "firstName": "Макс",
           "lastName": "Ферстаппен",
           "nationality": "Dutch",
-          "team": "RedBull"
+          "team": "Red Bull"
         },
         "points": 395.5
       },
@@ -116,7 +116,7 @@
           "firstName": "Себастиан",
           "lastName": "Феттель",
           "nationality": "German",
-          "team": "RedBull"
+          "team": "Red Bull"
         },
         "points": 397
       },
@@ -126,7 +126,7 @@
             "firstName": "Себастиан",
             "lastName": "Феттель",
             "nationality": "German",
-            "team": "RedBull"
+            "team": "Red Bull"
         },
         "points": 281
       },
@@ -166,7 +166,7 @@
             "firstName": "Льюис",
           "lastName": "Хэмильтон",
             "nationality": "British",
-            "team": "Mclaren"
+            "team": "McLaren"
         },
         "points": 98
       },
@@ -256,7 +256,7 @@
         "firstName": "Мика",
         "lastName": "Хаккиен",
         "nationality": "Finnish",
-        "team": "Mclaren"
+        "team": "McLaren"
         },
         "points": 76
       },
@@ -266,7 +266,7 @@
             "firstName": "Мика",
             "lastName": "Хаккиен",
             "nationality": "Finnish",
-            "team": "Mclaren"
+            "team": "McLaren"
         },
         "points": 100
       },
@@ -336,7 +336,7 @@
         "firstName": "Айртон",
         "lastName": "Сенна",
         "nationality": "Brazilian",
-        "team": "Mclaren"
+        "team": "McLaren"
         },
         "points": 96
       },
@@ -346,7 +346,7 @@
             "firstName": "Айртон",
             "lastName": "Сенна",
             "nationality": "Brazilian",
-            "team": "Mclaren"
+            "team": "McLaren"
         },
         "points": 78
       },
@@ -356,7 +356,7 @@
             "firstName": "Ален",
             "lastName": "Прост",
             "nationality": "French",
-            "team": "Mclaren"
+            "team": "McLaren"
         },
         "points": 76
       },
@@ -366,7 +366,7 @@
             "firstName": "Айртон",
             "lastName": "Сенна",
             "nationality": "Brazilian",
-            "team": "Mclaren"
+            "team": "McLaren"
         },
         "points": 90
         },
@@ -386,7 +386,7 @@
           "firstName": "Ален",
           "lastName": "Прост",
           "nationality": "French",
-          "team": "Mclaren"
+          "team": "McLaren"
         },
         "points": 72
       },
@@ -396,7 +396,7 @@
             "firstName": "Ален",
             "lastName": "Прост",
             "nationality": "French",
-            "team": "Mclaren"
+            "team": "McLaren"
           },
           "points": 73
       },
@@ -406,7 +406,7 @@
             "firstName": "Ники",
             "lastName": "Лауда",
             "nationality": "Austrian",
-            "team": "Mclaren"
+            "team": "McLaren"
           },
           "points": 72
       },
@@ -486,7 +486,7 @@
             "firstName": "Джеймс",
             "lastName": "Хант",
             "nationality": "British",
-            "team": "Mclaren"
+            "team": "McLaren"
         },
         "points": 69
       },
@@ -506,7 +506,7 @@
             "firstName": "Эмерсон",
             "lastName": "Фиттипальди",
             "nationality": "Brazilian",
-            "team": "Mclaren"
+            "team": "McLaren"
         },
         "points": 55
       },
@@ -526,7 +526,7 @@
             "firstName": "Эмерсон",
             "lastName": "Фиттипальди",
             "nationality": "Brazilian",
-            "team": "Mclaren"
+            "team": "McLaren"
         },
         "points": 61
       },

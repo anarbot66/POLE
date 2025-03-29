@@ -111,7 +111,7 @@ const FollowersList = ({ currentUser }) => {
 
   return (
     <div
-    className="fade-in"
+    className=""
     style={{ padding: "20px" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
         <button

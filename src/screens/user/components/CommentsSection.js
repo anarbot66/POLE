@@ -154,14 +154,13 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
 const styles = {
   commentsSection: {
     position: "fixed",
-    bottom: 50,
+    bottom: 0,
     left: 0,
     width: "100%",
     background: "#1D1D1F",
     borderTopLeftRadius: "20px",
     borderTopRightRadius: "20px",
     padding: "15px",
-    boxShadow: "0 -2px 10px rgba(0,0,0,0.5)",
     display: "flex",
     flexDirection: "column",
     zIndex: 999,

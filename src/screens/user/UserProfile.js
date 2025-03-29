@@ -383,7 +383,6 @@ const UserProfile = ({ currentUser }) => {
 
   return (
     <div
-      className="fade-in"
       style={{
         width: "100vw",
         minHeight: "100vh",

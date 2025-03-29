@@ -4,11 +4,11 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Standings from "./screens/standings/Standings";
-import ConstructorDetails from "./screens/constructor/ConstructorDetails";
+import ConstructorDetails from "./screens/constructor/teamDetails/ConstructorDetails.js";
 import RacesList from "./screens/races/RacesList";
 import RaceDetails from "./screens/races/RaceDetails";
 import BottomNavigation from "./screens/components/BottomNavigation";
-import PilotDetails from "./screens/pilots/PilotDetails";
+import PilotDetails from "./screens/pilots/driverDetails/PilotDetails.js";
 import Auth from "./screens/user/Auth";
 import Feed from "./screens/user/Feed";
 import Profile from "./screens/user/Profile";
@@ -22,10 +22,16 @@ import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
 import Services from "./screens/user/Services";
 import InfoPage from "./screens/user/InfoPage";
 import LoadingScreen from "./screens/components/LoadingScreen";
-import ChampionsList from "./screens/pilots/ChampionsList";
+import ChampionsList from "./screens/pilots/champions/ChampionsList.js";
 import CreatorForm from "./screens/user/creators/CreatorForm.js";
 import CreatorView from "./screens/user/creators/CreatorView.js";
 import CreatePost from "./screens/user/components/CreatePost.js";
+import CreatorPanel from "./screens/user/creators/creatorPanel/CreatorPanel.js";
+import ArticleCreator from "./screens/user/creators/creatorPanel/ArticleCreator.js";
+import EditArticle from "./screens/user/creators/creatorPanel/EditArticle.js";
+import ArticlesList from "./screens/user/creators/creatorPanel/ArticlesList.js";
+import ArticleView from "./screens/user/creators/creatorPanel/ArticleView.js";
+
 
 
 function App() {
@@ -62,7 +68,7 @@ function App() {
         });
       } else {
         setUser({
-          name: "",
+          name: "anarbot66",
           uid: "",
           photoUrl: ""
         });
@@ -74,7 +80,6 @@ function App() {
         photoUrl: ""
       });
     }
-    // Первичное обновление progress
     setProgress(10);
   }, []);
 
@@ -254,6 +259,11 @@ function App() {
                       <Route path="/creatorForm" element={<CreatorForm currentUser={user}/>} />
                       <Route path="/creatorView" element={<CreatorView currentUser={user}/>} />
                       <Route path="/create-post" element={<CreatePost currentUser={user}/>} />
+                      <Route path="/creator-panel" element={<CreatorPanel currentUser={user}/>} />
+                      <Route path="/creator-new-post" element={<ArticleCreator currentUser={user}/>} />
+                      <Route path="/articles/edit/:id" element={<EditArticle currentUser={user}/>} />
+                      <Route path="/articles" element={<ArticlesList currentUser={user}/>} />
+                      <Route path="/articles/view/:articleId" element={<ArticleView />} />
                     </Routes>
                 </div>
               </CSSTransition>

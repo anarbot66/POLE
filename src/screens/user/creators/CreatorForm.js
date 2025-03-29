@@ -59,11 +59,11 @@ const CreatorForm = ({ currentUser }) => {
   };
 
   if (loading) {
-    return <p>Загрузка...</p>;
+    return <p> </p>;
   }
 
   if (existingApp) {
-    return <div className="fade-in" style={{display: "flex", flexDirection: "column", gap: 15, alignItems: 'center', justifyContent: "center", width: "100vw", height: "100vh"}}>
+    return <div  style={{display: "flex", flexDirection: "column", gap: 15, alignItems: 'center', justifyContent: "center", width: "100vw", height: "100vh"}}>
       <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M71.6428 22.3294C73.2686 20.6819 75.9047 20.6819 77.5306 22.3294C79.1365 23.9567 79.1562 26.5827 77.5897 28.2345L44.3264 67.5547C44.2944 67.5952 44.2602 67.6339 44.224 67.6706C42.5981 69.3181 39.9621 69.3181 38.3362 67.6706L18.0944 47.1593C16.4685 45.5118 16.4685 42.8407 18.0944 41.1931C19.7203 39.5456 22.3564 39.5456 23.9822 41.1931L41.1547 58.5942L71.5323 22.4556C71.5666 22.4113 71.6035 22.3692 71.6428 22.3294Z" fill="#00A80B"/>
       </svg>
@@ -73,7 +73,7 @@ const CreatorForm = ({ currentUser }) => {
   }
 
   return (
-    <div className="fade-in" style={{padding: "10px", color: "white", marginBottom: 70}}>
+    <div style={{padding: "10px", color: "white", marginBottom: 70}}>
       <div style={{justifyContent: "center",
       alignItems: "center", display: "flex", flexDirection: "column", gap: 20}}>
       <img src={logo} alt={""}

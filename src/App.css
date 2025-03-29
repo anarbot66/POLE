@@ -318,36 +318,36 @@ body {
   transition: opacity 300ms;
 }
 
-/* Для новостей – как для постов */
-.slider-news-enter {
-  transform: translateX(-100%);
+.tab-enter {
+  opacity: 0;
 }
-.slider-news-enter-active {
-  transform: translateX(0%);
-  transition: transform 500ms ease;
-}
-.slider-news-exit {
-  transform: translateX(0%);
-}
-.slider-news-exit-active {
-  transform: translateX(-100%);
-  transition: transform 500ms ease;
+.tab-enter-active {
+  opacity: 1;
+  transition: opacity 0.4s ease-in-out;
 }
 
-/* Для друзей – как для любимых */
-.slider-friends-enter {
-  transform: translateX(100%);
+.tab-exit {
+  opacity: 0;
 }
-.slider-friends-enter-active {
-  transform: translateX(0%);
-  transition: transform 500ms ease;
+.tab-exit-active {
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
 }
-.slider-friends-exit {
-  transform: translateX(0%);
+
+.truncate {
+  display: inline-block;
+  max-width: 200px; /* Укажи подходящую ширину */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.slider-friends-exit-active {
-  transform: translateX(100%);
-  transition: transform 500ms ease;
-}
+
+
+
+
+
+
+
+
 
 

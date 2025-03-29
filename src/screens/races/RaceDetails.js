@@ -161,7 +161,7 @@ const RaceDetails = () => {
   const countryCode = countryToFlag[race.Circuit.Location.country] || "un";
 
   return (
-    <div className="race-details fade-in" style={{
+    <div className="race-details" style={{
       width: "calc(100% - 20px)", margin: "10px", padding: "10px",
       display: "flex", flexDirection: "column", gap: "15px", backgroundColor: "#1D1D1F"
     }}>

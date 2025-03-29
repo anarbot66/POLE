@@ -189,7 +189,6 @@ const PilotsList = () => {
 
   return (
     <div 
-      className="fade-in"
       style={{
         width: "calc(100% - 30px)", 
         margin: "0 auto", 

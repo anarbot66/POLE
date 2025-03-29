@@ -25,7 +25,6 @@ const CreatePost = ({ currentUser }) => {
 
   return (
     <div
-      className="fade-in"
       style={{
         backgroundColor: "#1D1D1F",
         color: "white",
