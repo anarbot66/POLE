@@ -122,26 +122,21 @@ const NewsDetail = () => {
       >
         ← Назад
       </button>
-      {/* Отображение абзацев новости */}
-      {news.paragraphs &&
-        news.paragraphs.map((para, index) => (
-          <div key={index} style={{ marginBottom: "20px" }}>
-            {para.paraImageUrl && (
-              <img
-                src={para.paraImageUrl}
-                alt={`Абзац ${index + 1}`}
-                style={{
-                  width: "100%",
-                  borderRadius: "20px",
-                  marginBottom: "10px",
-                }}
-              />
-            )}
-            {para.paraTitle && <h3 style={{fontSize: 30}}>{para.paraTitle}</h3>}
-            <p style={{ whiteSpace: "pre-wrap", marginTop: "10px" }}>{para.paraText}</p>
-          </div>
-        ))}
-
+      {news.imageUrl && (
+        <img
+          src={news.imageUrl}
+          alt="Новость"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginBottom: "20px",
+          }}
+        />
+      )}
+      <h2>{news.title}</h2>
+      <p style={{ whiteSpace: "pre-wrap", marginTop: "10px" }}>
+        {news.text}
+      </p>
       <div
         style={{
           marginTop: "20px",
@@ -151,7 +146,9 @@ const NewsDetail = () => {
         }}
       >
         {formatDate(
-          news.createdAt?.toDate ? news.createdAt.toDate() : news.createdAt
+          news.createdAt?.toDate
+            ? news.createdAt.toDate()
+            : news.createdAt
         )}
       </div>
     </div>

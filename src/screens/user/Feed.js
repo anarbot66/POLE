@@ -714,6 +714,11 @@ const Feed = ({ currentUser, onFeedLoad }) => {
                       borderRadius: "8px",
                     }}
                   >
+                    <div onClick={() =>
+                            navigate(`/news/${news.id}`, {
+                              state: { news },
+                            })
+                          }>
                     {news.imageUrl && (
                       <img
                         src={news.imageUrl}
@@ -795,6 +800,12 @@ const Feed = ({ currentUser, onFeedLoad }) => {
                       <span style={{ marginBottom: "5px", color: "white" }}>
                         {news.title}
                       </span>
+                      {news.text && (
+                      <div style={{ margin: "5px 0 10px 0", color: "white", fontSize: "14px" }}>
+                        {news.text}
+                      </div>
+                    )}
+
                       <small style={{ color: "#888" }}>
                         {news.creatorUsername}{" "}
                         {formatDate(
@@ -804,6 +815,7 @@ const Feed = ({ currentUser, onFeedLoad }) => {
                         )}
                       </small>
                     </div>
+                    </div>
                     <div
                       style={{
                         display: "flex",
@@ -812,63 +824,7 @@ const Feed = ({ currentUser, onFeedLoad }) => {
                         gap: 15,
                       }}
                     >
-                      {news.type === "link" ? (
-                        <a
-                          href={news.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            border: "none",
-                            borderRadius: "12px",
-                            color: "white",
-                            cursor: "pointer",
-                            textAlign: "center",
-                            textDecoration: "none",
-                            display: "block",
-                          }}
-                        >
-                          <svg
-                            width="25"
-                            height="19"
-                            viewBox="0 0 25 19"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M25 9.5C25 9.5 20.3125 0.90625 12.5 0.90625C4.6875 0.90625 0 9.5 0 9.5C0 9.5 4.6875 18.0938 12.5 18.0938C20.3125 18.0938 25 9.5 25 9.5ZM1.83234 9.5C1.92129 9.36439 2.02272 9.21371 2.13636 9.05065C2.65962 8.29989 3.43173 7.30141 4.42517 6.30798C6.43911 4.29403 9.18847 2.46875 12.5 2.46875C15.8115 2.46875 18.5609 4.29403 20.5748 6.30798C21.5683 7.30141 22.3404 8.29989 22.8636 9.05065C22.9773 9.21371 23.0787 9.36439 23.1677 9.5C23.0787 9.63561 22.9773 9.78629 22.8636 9.94935C22.3404 10.7001 21.5683 11.6986 20.5748 12.692C18.5609 14.706 15.8115 16.5312 12.5 16.5312C9.18847 16.5312 6.43911 14.706 4.42517 12.692C3.43173 11.6986 2.65962 10.7001 2.13636 9.94935C2.02272 9.78629 1.92129 9.63561 1.83234 9.5Z"
-                              fill="white"
-                            />
-                          </svg>
-                        </a>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            navigate(`/news/${news.id}`, {
-                              state: { news },
-                            })
-                          }
-                          style={{
-                            border: "none",
-                            borderRadius: "12px",
-                            color: "white",
-                            cursor: "pointer",
-                            textAlign: "center",
-                          }}
-                        >
-                          <svg
-                            width="25"
-                            height="19"
-                            viewBox="0 0 25 19"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M25 9.5C25 9.5 20.3125 0.90625 12.5 0.90625C4.6875 0.90625 0 9.5 0 9.5C0 9.5 4.6875 18.0938 12.5 18.0938C20.3125 18.0938 25 9.5 25 9.5ZM1.83234 9.5C1.92129 9.36439 2.02272 9.21371 2.13636 9.05065C2.65962 8.29989 3.43173 7.30141 4.42517 6.30798C6.43911 4.29403 9.18847 2.46875 12.5 2.46875C15.8115 2.46875 18.5609 4.29403 20.5748 6.30798C21.5683 7.30141 22.3404 8.29989 22.8636 9.05065C22.9773 9.21371 23.0787 9.36439 23.1677 9.5C23.0787 9.63561 22.9773 9.78629 22.8636 9.94935C22.3404 10.7001 21.5683 11.6986 20.5748 12.692C18.5609 14.706 15.8115 16.5312 12.5 16.5312C9.18847 16.5312 6.43911 14.706 4.42517 12.692C3.43173 11.6986 2.65962 10.7001 2.13636 9.94935C2.02272 9.78629 1.92129 9.63561 1.83234 9.5Z"
-                              fill="white"
-                            />
-                          </svg>
-                        </button>
-                      )}
+                      
                       <button
                         onClick={() => toggleComments(news.id)}
                         style={{

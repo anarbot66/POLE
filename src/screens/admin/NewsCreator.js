@@ -6,8 +6,8 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 const NewsCreator = ({ currentUser }) => {
   const navigate = useNavigate();
   const [newsTitle, setNewsTitle] = useState("");
+  const [newsText, setNewsText] = useState("");
   const [imageFile, setImageFile] = useState(null);
-  const [paragraphs, setParagraphs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -30,31 +30,6 @@ const NewsCreator = ({ currentUser }) => {
     }
   };
 
-  // Функция добавления нового абзаца
-  const addParagraph = () => {
-    setParagraphs([
-      ...paragraphs,
-      { paraImageFile: null, paraTitle: "", paraText: "" },
-    ]);
-  };
-
-  // Функция удаления абзаца по индексу
-  const removeParagraph = (index) => {
-    setParagraphs(paragraphs.filter((_, i) => i !== index));
-  };
-
-  // Обновление данных абзаца
-  const handleParagraphChange = (index, field, value) => {
-    const updatedParagraphs = paragraphs.map((para, i) =>
-      i === index ? { ...para, [field]: value } : para
-    );
-    setParagraphs(updatedParagraphs);
-  };
-
-  const handleParagraphImageChange = (index, file) => {
-    handleParagraphChange(index, "paraImageFile", file);
-  };
-
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -63,28 +38,12 @@ const NewsCreator = ({ currentUser }) => {
       if (imageFile) {
         uploadedImageUrl = await uploadImage(imageFile);
       }
-
-      // Загрузка изображений для абзацев
-      const updatedParagraphs = await Promise.all(
-        paragraphs.map(async (p) => {
-          let paraImageUrl = "";
-          if (p.paraImageFile) {
-            paraImageUrl = await uploadImage(p.paraImageFile);
-          }
-          return {
-            paraImageUrl, // URL картинки абзаца
-            paraTitle: p.paraTitle,
-            paraText: p.paraText,
-          };
-        })
-      );
-
-      // Собираем данные новости
+      // Собираем данные новости без абзацев
       const newsData = {
         createdAt: serverTimestamp(),
         imageUrl: uploadedImageUrl,
         title: newsTitle,
-        paragraphs: updatedParagraphs, // Массив абзацев
+        text: newsText,
       };
 
       await addDoc(collection(db, "news"), newsData);
@@ -123,7 +82,7 @@ const NewsCreator = ({ currentUser }) => {
       </div>
       <h2>Создание новости</h2>
       {error && <div style={{ color: "red" }}>{error}</div>}
-      {/* Основной заголовок новости */}
+      {/* Заголовок новости */}
       <div style={{ marginBottom: "10px" }}>
         <input
           type="text"
@@ -135,6 +94,7 @@ const NewsCreator = ({ currentUser }) => {
             padding: "10px",
             borderRadius: "8px",
             backgroundColor: "#212124",
+            color: "white",
           }}
         />
       </div>
@@ -146,109 +106,37 @@ const NewsCreator = ({ currentUser }) => {
           onChange={(e) => setImageFile(e.target.files[0])}
         />
       </div>
-
-      {/* Раздел для абзацев новости */}
-      <h3>Абзацы новости</h3>
-      {paragraphs.map((paragraph, index) => (
-        <div
-          key={index}
+      {/* Текст новости */}
+      <div style={{ marginBottom: "10px" }}>
+        <textarea
+          placeholder="Введите текст новости"
+          value={newsText}
+          onChange={(e) => setNewsText(e.target.value)}
           style={{
-            border: "1px solid #333",
+            width: "100%",
+            height: "150px",
             padding: "10px",
-            marginBottom: "10px",
-          }}
-        >
-          <p>
-            <strong>Абзац {index + 1}</strong>
-          </p>
-          <div style={{ marginBottom: "10px" }}>
-            <input
-              type="text"
-              placeholder="Заголовок абзаца"
-              value={paragraph.paraTitle}
-              onChange={(e) =>
-                handleParagraphChange(index, "paraTitle", e.target.value)
-              }
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "8px",
-                backgroundColor: "#212124",
-              }}
-            />
-          </div>
-          <div style={{ marginBottom: "10px" }}>
-            <textarea
-              placeholder="Текст абзаца"
-              value={paragraph.paraText}
-              onChange={(e) =>
-                handleParagraphChange(index, "paraText", e.target.value)
-              }
-              style={{
-                width: "100%",
-                height: "80px",
-                padding: "8px",
-                borderRadius: "8px",
-                backgroundColor: "#212124",
-              }}
-            />
-          </div>
-          <div style={{ marginBottom: "10px" }}>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                handleParagraphImageChange(index, e.target.files[0])
-              }
-            />
-          </div>
-          {/* Кнопка удаления абзаца */}
-          <button
-            onClick={() => removeParagraph(index)}
-            style={{
-              padding: "6px 12px",
-              backgroundColor: "#D9534F",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Удалить абзац
-          </button>
-        </div>
-      ))}
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <button
-          onClick={addParagraph}
-          style={{
-            padding: "8px 16px",
-            marginBottom: "20px",
-            backgroundColor: "#0078C1",
-            color: "white",
-            border: "none",
             borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          Добавить абзац
-        </button>
-
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#0078C1",
+            backgroundColor: "#212124",
             color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
+            resize: "vertical",
           }}
-        >
-          {loading ? "Публикация..." : "Опубликовать"}
-        </button>
+        />
       </div>
+      <button
+        onClick={handleSubmit}
+        disabled={loading}
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#0078C1",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+        }}
+      >
+        {loading ? "Публикация..." : "Опубликовать"}
+      </button>
     </div>
   );
 };
