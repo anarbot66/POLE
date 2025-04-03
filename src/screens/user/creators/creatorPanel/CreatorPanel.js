@@ -235,6 +235,7 @@ const CreatorPanel = ({ currentUser }) => {
         }}
       >
         <MenuCard
+        onClick={() => navigate("/club-settings")}
           icon={
             <svg
               width="30"
@@ -262,6 +263,7 @@ const CreatorPanel = ({ currentUser }) => {
         />
 
         <MenuCard
+        onClick={() => navigate("/club-create")}
           icon={
             <svg
               width="30"

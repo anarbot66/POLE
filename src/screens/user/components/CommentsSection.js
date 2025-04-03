@@ -157,7 +157,7 @@ const styles = {
     bottom: 0,
     left: 0,
     width: "100%",
-    background: "#1D1D1F",
+    background: "#212124",
     borderTopLeftRadius: "20px",
     borderTopRightRadius: "20px",
     padding: "15px",

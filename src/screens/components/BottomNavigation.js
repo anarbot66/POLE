@@ -1,8 +1,9 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-const BottomNavigation = ({ setActivePage }) => {
+const BottomNavigation = ({ setActivePage, currentUser }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -14,12 +15,16 @@ const BottomNavigation = ({ setActivePage }) => {
       setActiveIndex(2);
     } else if (location.pathname === "/services") {
       setActiveIndex(3);
+    } else if ((currentUser?.role === "creator" ||
+    currentUser?.role === "admin" ||
+    currentUser?.role === "owner") && location.pathname === "/creator-panel") {
+      setActiveIndex(4);
     } else {
       setActiveIndex(-1); // Для всех остальных путей
     }
-  }, [location.pathname]);
+  }, [location.pathname, currentUser]);
 
-  // Добавляем label для каждой кнопки
+  // Базовые кнопки нижней навигации
   const buttons = [
     { 
       id: 0, 
@@ -66,6 +71,23 @@ const BottomNavigation = ({ setActivePage }) => {
     },
   ];
 
+  // Если пользователь является криэйтором, добавляем дополнительный пункт меню "Панель"
+  if (
+    currentUser?.role === "creator" ||
+    currentUser?.role === "admin" ||
+    currentUser?.role === "owner"
+  ) {
+    buttons.push({
+      id: 4,
+      label: "Панель",
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 4H20V8H4V4ZM4 10H20V14H4V10ZM4 16H20V20H4V16Z" />
+        </svg>
+      ),
+    });
+  }
+
   return (
     <div
       style={{
@@ -78,7 +100,7 @@ const BottomNavigation = ({ setActivePage }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        gap: 45,
+        gap: currentUser?.role === "creator" || currentUser?.role === "admin" || currentUser?.role === "owner" ? 25 : 45,
         zIndex: 998,
         width: "100%"
       }}
@@ -89,6 +111,9 @@ const BottomNavigation = ({ setActivePage }) => {
           onClick={() => {
             setActivePage(button.id);
             setActiveIndex(button.id);
+            if (button.label === "Панель") {
+              navigate("/creator-panel");
+            }
           }}
           style={{
             width: 50,

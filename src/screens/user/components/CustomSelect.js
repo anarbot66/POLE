@@ -32,8 +32,8 @@ const CustomSelect = ({ options, value, onChange, style }) => {
           color: "white",
           cursor: "pointer",
           userSelect: "none",
-          display: "flex", // Размещение текста и иконки рядом
-          alignItems: "center", // Выравнивание по вертикали
+          display: "flex",
+          alignItems: "center",
         }}
       >
         <span>{selectedOption ? selectedOption.label : "Выберите опцию"}</span>
@@ -47,7 +47,7 @@ const CustomSelect = ({ options, value, onChange, style }) => {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          style={{ marginLeft: "8px" }} // Отступ между текстом и иконкой
+          style={{ marginLeft: "8px" }}
         >
           {open ? (
             <path d="M18 15l-6-6-6 6" />
@@ -65,7 +65,8 @@ const CustomSelect = ({ options, value, onChange, style }) => {
             right: 0,
             backgroundColor: "#212124",
             borderRadius: "8px",
-            overflow: "hidden",
+            overflowY: "auto", // Добавляем вертикальную прокрутку
+            maxHeight: "200px", // Ограничиваем максимальную высоту списка
             zIndex: 10,
           }}
         >
@@ -86,29 +87,24 @@ const CustomSelect = ({ options, value, onChange, style }) => {
       </CSSTransition>
       <style>
         {`
-          /* Начальное состояние для анимации menuFade */
           .menuFade-enter {
             opacity: 0;
             transform: scale(0.95);
           }
-          
           .menuFade-enter-active {
             opacity: 1;
             transform: scale(1);
             transition: opacity 300ms ease, transform 300ms ease;
           }
-          
           .menuFade-exit {
             opacity: 1;
             transform: scale(1);
           }
-          
           .menuFade-exit-active {
             opacity: 0;
             transform: scale(0.95);
             transition: opacity 300ms ease, transform 300ms ease;
           }
-          
         `}
       </style>
     </div>

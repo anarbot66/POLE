@@ -64,6 +64,19 @@ export const TEAM_SOCIAL = {
     "Sauber": "sauber",
     "Mercedes": "mercedes"
   };
+
+  export const CONSTRUCTOR_TRANSLATIONS = {
+    "Red Bull": "Ред Булл",
+    "McLaren": "Макларен",
+    "Ferrari": "Феррари",
+    "Aston Martin": "Астон Мартин",
+    "Alpine F1 Team": "Альпин",
+    "Haas F1 Team": "Хаас",
+    "RB F1 Team": "РБ Виза",
+    "Williams": "Вилльямс",
+    "Sauber": "Заубер",
+    "Mercedes": "Мерседес"
+  };
   
 // constants.js
 export const TEAM_COLORS = {

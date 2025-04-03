@@ -1,3 +1,4 @@
+// Profile.js
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
@@ -24,7 +25,7 @@ const teamColors = {
   "Red Bull": "#2546FF",
   "Mercedes": "#00A19C",
   "Aston Martin": "#00594F",
-  "Alpine F1 Team": "#0078C1",
+  "Alpine F1 Team": "#F60195",
   "Haas F1 Team": "#8B8B8B",
   "RB F1 Team": "#1434CB",
   "Williams": "#00A3E0",
@@ -83,6 +84,16 @@ const nationalityToFlag = {
   "South African": "za",
 };
 
+const countryToFlag = {
+  "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
+  "China": "cn", "USA": "us", "United States": "us", "Miami": "us",
+  "Italy": "it", "Monaco": "mc", "Canada": "ca", "Spain": "es",
+  "Austria": "at", "Great Britain": "gb", "United Kingdom": "gb", "UK": "gb",
+  "Hungary": "hu", "Belgium": "be", "Netherlands": "nl", "Singapore": "sg",
+  "Mexico": "mx", "Brazil": "br", "Las Vegas": "us", "UAE": "ae",
+  "Qatar": "qa", "Azerbaijan": "az"
+};
+
 const normalizeName = (name) => {
   if (name === "Magnussen") {
     return "kevin_magnussen";
@@ -96,7 +107,10 @@ const Profile = ({ currentUser }) => {
   const navigate = useNavigate();
   const [profileUser, setProfileUser] = useState(null);
   const [followersCount, setFollowersCount] = useState(0);
-  const [favoritePilot, setFavoritePilot] = useState(null);
+  // Теперь для пилотов – массив избранных
+  const [favoritePilots, setFavoritePilots] = useState([]);
+  const [favoriteConstructors, setFavoriteConstructors] = useState([]);
+  const [favoriteTracks, setFavoriteTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -125,6 +139,8 @@ const Profile = ({ currentUser }) => {
       if (!username) return;
       await fetchUserAndFavorites(username);
       await fetchFollowersCount(currentUser.uid);
+      await loadFavoriteConstructors(currentUser.uid);
+      await loadFavoriteTracks(currentUser.uid);
       setLoading(false);
     };
 
@@ -160,7 +176,7 @@ const Profile = ({ currentUser }) => {
       if (!userSnapshot.empty) {
         const userData = userSnapshot.docs[0].data();
         setProfileUser(userData);
-        await loadFavorites(userData.uid);
+        await loadFavoritePilots(userData.uid);
       } else {
         setError("Пользователь не найден");
       }
@@ -170,7 +186,8 @@ const Profile = ({ currentUser }) => {
     }
   };
 
-  const loadFavorites = async (uid) => {
+  // Изменённая функция загрузки избранных пилотов: теперь получаем массив из коллекции "favoritesPilots"
+  const loadFavoritePilots = async (uid) => {
     try {
       const favQuery = query(
         collection(db, "favorites"),
@@ -178,37 +195,63 @@ const Profile = ({ currentUser }) => {
       );
       const favSnapshot = await getDocs(favQuery);
       if (!favSnapshot.empty) {
-        const favData = favSnapshot.docs[0].data();
-        const favoritePilotId = favData.pilotId;
-        await fetchPilotData(favoritePilotId);
+        const favDocs = favSnapshot.docs.map(doc => doc.data());
+        // Для каждого найденного избранного пилота получаем данные из API
+        const pilotPromises = favDocs.map(async (fav) => {
+          const response = await fetch(
+            "https://api.jolpi.ca/ergast/f1/2025/driverStandings.json"
+          );
+          if (!response.ok) throw new Error("Ошибка получения данных пилотов");
+          const data = await response.json();
+          const drivers =
+            data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings;
+          if (drivers && Array.isArray(drivers)) {
+            return drivers.find(
+              (pilot) => pilot.Driver.driverId === fav.pilotId
+            );
+          } else {
+            throw new Error("Неверный формат данных о пилотах");
+          }
+        });
+        const pilotsData = await Promise.all(pilotPromises);
+        // Фильтруем возможные пустые значения
+        setFavoritePilots(pilotsData.filter(Boolean));
+      } else {
+        setFavoritePilots([]);
       }
     } catch (err) {
-      console.error("Ошибка загрузки избранного пилота:", err);
-      setError("Ошибка загрузки избранного пилота");
+      setError("Ошибка при получении данных избранных пилотов");
+      console.error(err);
     }
   };
 
-  const fetchPilotData = async (favoritePilotId) => {
+  const loadFavoriteConstructors = async (uid) => {
     try {
-      const response = await fetch(
-        "https://api.jolpi.ca/ergast/f1/2025/driverStandings.json"
+      const q = query(
+        collection(db, "favoritesConstructors"),
+        where("userId", "==", uid)
       );
-      if (!response.ok)
-        throw new Error("Ошибка получения данных пилотов");
-      const data = await response.json();
-      const drivers =
-        data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings;
-      if (drivers && Array.isArray(drivers)) {
-        const foundPilot = drivers.find(
-          (pilot) => pilot.Driver.driverId === favoritePilotId
-        );
-        setFavoritePilot(foundPilot);
-      } else {
-        throw new Error("Неверный формат данных о пилотах");
-      }
+      const snapshot = await getDocs(q);
+      const favorites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setFavoriteConstructors(favorites);
     } catch (err) {
-      setError("Ошибка при получении данных пилотов");
-      console.error(err);
+      console.error("Ошибка загрузки избранных конструкторов:", err);
+      setError("Ошибка загрузки избранных конструкторов");
+    }
+  };
+
+  const loadFavoriteTracks = async (uid) => {
+    try {
+      const q = query(
+        collection(db, "favoritesTracks"),
+        where("userId", "==", uid)
+      );
+      const snapshot = await getDocs(q);
+      const favorites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setFavoriteTracks(favorites);
+    } catch (err) {
+      console.error("Ошибка загрузки избранных трасс:", err);
+      setError("Ошибка загрузки избранных трасс");
     }
   };
 
@@ -288,6 +331,12 @@ const Profile = ({ currentUser }) => {
     navigate(`/pilot-details/${pilotLastName}`);
   };
 
+
+  // Для избранной трассы переходим на страницу деталей
+  const handleTrackSelect = (raceData) => {
+    navigate(`/races/${raceData.round}`, { state: { race: raceData } });
+  };
+
   const formatDate = (dateInput) => {
     if (!dateInput) return "—";
     const date = typeof dateInput === "object" ? dateInput : new Date(dateInput);
@@ -297,20 +346,12 @@ const Profile = ({ currentUser }) => {
     return `${dayMonth} в ${time}`;
   };
 
-  // Состояние вкладок и направления анимации
+  // Состояние вкладок
   const [activeTab, setActiveTab] = useState('posts');
-  const [direction, setDirection] = useState("right");
-
   const handleTabChange = (tab) => {
     if (tab === activeTab) return;
-  
-    // Обновляем активную вкладку
     setActiveTab(tab);
   };
-  
-  
-  
-  
 
   if (loading) {
     return (
@@ -370,26 +411,27 @@ const Profile = ({ currentUser }) => {
     );
   }
 
-  let pilotFullName = "";
-  let translatedName = "";
-  if (favoritePilot) {
-    pilotFullName = `${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`;
-    translatedName = driverTranslations[pilotFullName] || pilotFullName;
-  }
-
-  //{profileUser.firstName} {profileUser.lastName}
-
   return (
-    <div
-      style={{ backgroundColor: "#1D1D1F", color: "white", padding: "0 15px", marginBottom: "80px" }}
-    >
+    <div style={{ backgroundColor: "#1D1D1F", color: "white", padding: "0 15px", marginBottom: "80px" }}>
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "white",
+          fontSize: "18px",
+          cursor: "pointer",
+          marginTop: "15px",
+        }}
+      >
+        ← Назад
+      </button>
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: "15px",
           borderRadius: "15px",
-          marginTop: "15px",
           justifyContent: "space-between"
         }}
       >
@@ -445,7 +487,6 @@ const Profile = ({ currentUser }) => {
             {followersCount} подписчиков
           </div>
         </div>
-
         <img
           src={profileUser.photoUrl || "https://placehold.co/80x80"}
           alt="Avatar"
@@ -473,13 +514,7 @@ const Profile = ({ currentUser }) => {
       </button>
 
       {/* Вкладки */}
-      <div
-        style={{
-          display: "flex",
-          borderRadius: "20px",
-          marginTop: "10px"
-        }}
-      >
+      <div style={{ display: "flex", borderRadius: "20px", marginTop: "10px" }}>
         <button
           onClick={() => handleTabChange('posts')}
           style={{
@@ -512,9 +547,8 @@ const Profile = ({ currentUser }) => {
         </button>
       </div>
 
-      
       <div style={{ position: "relative", overflow: "hidden" }}>
-      <TransitionGroup>
+        <TransitionGroup>
           {activeTab === "posts" ? (
             <CSSTransition key="posts" timeout={400} classNames="tab" unmountOnExit>
               <div style={{ top: 0, left: 0, width: "100%" }}>
@@ -731,107 +765,229 @@ const Profile = ({ currentUser }) => {
                   <p style={{ textAlign: "center", marginTop: "50px" }}>Нет постов</p>
                 )}
               </div>
-              </CSSTransition>
+            </CSSTransition>
           ) : (
             <CSSTransition key="favorites" timeout={400} classNames="tab" unmountOnExit>
               <div style={{ top: 0, left: 0, width: "100%", marginTop: "10px" }}>
-                
-                {favoritePilot ? (
+                {/* Секция избранных пилотов */}
+                {favoritePilots.length > 0 ? (
                   <>
                     <h3 style={{ marginTop: "10px", marginBottom: "10px", width: "calc(100% - 40px)" }}>
-                      Любимый пилот:
+                      {favoritePilots.length === 1 ? "Любимый пилот:" : "Любимые пилоты:"}
                     </h3>
-                    <div
-                      onClick={() => handlePilotSelect(favoritePilot)}
-                      style={{
-                        width: "100%",
-                        background: "#212124",
-                        borderRadius: "15px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: "12px",
-                        padding: "10px",
-                        cursor: "pointer",
-                      }}
-                    >
+                    {favoritePilots.map((pilot, idx) => (
                       <div
+                        key={idx}
+                        onClick={() => handlePilotSelect(pilot)}
                         style={{
-                          width: "65px",
-                          height: "65px",
-                          borderRadius: "20px",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
+                          width: "100%",
                           background: "#212124",
-                        }}
-                      >
-                        <div
-                          style={{
-                            color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
-                            fontSize: "24px",
-                            fontWeight: "600",
-                          }}
-                        >
-                          {favoritePilot.position}
-                        </div>
-                      </div>
-                      <div
-                        style={{
+                          borderRadius: "15px",
                           display: "flex",
-                          flexDirection: "column",
-                          alignItems: "flex-start",
-                          gap: "4px",
-                          flex: 1,
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: "12px",
+                          padding: "10px",
+                          cursor: "pointer",
+                          marginBottom: "10px"
                         }}
                       >
-                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          <div style={{ color: "white", fontSize: "12px" }}>
-                            {driverTranslations[`${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`] ||
-                              `${favoritePilot.Driver.givenName} ${favoritePilot.Driver.familyName}`}
-                          </div>
-                          <img
-                            src={`https://flagcdn.com/w40/${
-                              nationalityToFlag[favoritePilot.Driver.nationality] || "un"
-                            }.png`}
-                            alt={favoritePilot.Driver.nationality}
+                        <div
+                          style={{
+                            width: "65px",
+                            height: "65px",
+                            borderRadius: "20px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            background: "#212124",
+                          }}
+                        >
+                          <div
                             style={{
-                              width: "15px",
-                              height: "15px",
-                              borderRadius: "50%",
-                              objectFit: "cover",
+                              color: teamColors[pilot.Constructors[0].name] || "#000000",
+                              fontSize: "24px",
+                              fontWeight: "600",
                             }}
-                          />
+                          >
+                            {pilot.position}
+                          </div>
                         </div>
                         <div
                           style={{
-                            color: teamColors[favoritePilot.Constructors[0].name] || "#000000",
-                            fontSize: "12px",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-start",
+                            gap: "4px",
+                            flex: 1,
                           }}
                         >
-                          {favoritePilot.Constructors[0].name}
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <div style={{ color: "white", fontSize: "12px" }}>
+                              {driverTranslations[`${pilot.Driver.givenName} ${pilot.Driver.familyName}`] ||
+                                `${pilot.Driver.givenName} ${pilot.Driver.familyName}`}
+                            </div>
+                            <img
+                              src={`https://flagcdn.com/w40/${nationalityToFlag[pilot.Driver.nationality] || "un"}.png`}
+                              alt={pilot.Driver.nationality}
+                              style={{
+                                width: "15px",
+                                height: "15px",
+                                borderRadius: "50%",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </div>
+                          <div
+                            style={{
+                              color: teamColors[pilot.Constructors[0].name] || "#000000",
+                              fontSize: "12px",
+                            }}
+                          >
+                            {pilot.Constructors[0].name}
+                          </div>
                         </div>
                       </div>
-                      <div style={{ textAlign: "center", minWidth: "60px" }}>
-                        <span style={{ color: "white", fontSize: "16px" }}>
-                          {favoritePilot.points}
-                        </span>
-                        <br />
-                        <span style={{ color: teamColors[favoritePilot.Constructors[0].name] }}>
-                          PTS
-                        </span>
-                      </div>
-                    </div>
+                    ))}
                   </>
                 ) : (
-                  <p style={{ textAlign: "center", marginTop: "50px" }}>Нет избранного пилота</p>
+                  <p style={{ textAlign: "center", marginTop: "50px" }}>Нет избранных пилотов</p>
+                )}
+
+                {/* Секция избранных конструкторов */}
+                {favoriteConstructors.length > 0 ? (
+                  <>
+                    <h3 style={{ marginTop: "20px", marginBottom: "10px", width: "calc(100% - 40px)" }}>
+                      {favoriteConstructors.length === 1 ? "Любимый конструктор:" : "Любимые конструкторы:"}
+                    </h3>
+                    {favoriteConstructors.map((fav) => (
+                      <div
+                        key={fav.id}
+                        style={{
+                          width: "100%",
+                          background: "#212124",
+                          borderRadius: "15px",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: "12px",
+                          padding: "10px",
+                          cursor: "pointer",
+                          marginBottom: "10px"
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "65px",
+                            height: "65px",
+                            borderRadius: "20px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            background: "#212124",
+                          }}
+                        >
+                          <div
+                            style={{
+                              color: teamColors[fav.constructorData.Constructor.name] || "#000000",
+                              fontSize: "24px",
+                              fontWeight: "600",
+                            }}
+                          >
+                            {fav.constructorData.position || "-"}
+                          </div>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-start",
+                            gap: "4px",
+                            flex: 1,
+                          }}
+                        >
+                          <div style={{ color: "white", fontSize: "14px" }}>
+                            {fav.constructorData.Constructor.name}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <p style={{ textAlign: "center", marginTop: "20px" }}>Нет избранных конструкторов</p>
+                )}
+
+                {/* Секция избранных трасс */}
+                {favoriteTracks.length > 0 ? (
+                  <>
+                    <h3 style={{ marginTop: "20px", marginBottom: "10px", width: "calc(100% - 40px)" }}>
+                      {favoriteTracks.length === 1 ? "Любимая трасса:" : "Любимые трассы:"}
+                    </h3>
+                    {favoriteTracks.map((fav) => (
+                      <div
+                        key={fav.id}
+                        onClick={() => handleTrackSelect(fav.raceData)}
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          background: "#212124",
+                          borderRadius: "15px",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: "12px",
+                          padding: "10px",
+                          cursor: "pointer",
+                          marginBottom: "10px"
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "65px",
+                            height: "65px",
+                            borderRadius: "20px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            background: "#212124",
+                          }}
+                        >
+                          <img
+                            src={`https://flagcdn.com/w320/${countryToFlag[fav.raceData.Circuit.Location.country] || fav.raceData.Circuit.Location.country.toLowerCase()}.png`}
+                            alt={fav.raceData.Circuit.Location.country}
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              borderRadius: "50%",
+                              objectFit: "cover",
+                              objectPosition: "center"
+                            }}
+                          />
+
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-start",
+                            gap: "4px",
+                            flex: 1,
+                          }}
+                        >
+                          <div style={{ color: "white", fontSize: "13px" }}>
+                          {fav.raceData.Circuit.circuitName}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <p style={{ textAlign: "center", marginTop: "20px" }}>Нет избранных трасс</p>
                 )}
               </div>
-              </CSSTransition>
+            </CSSTransition>
           )}
-          </TransitionGroup>
+        </TransitionGroup>
       </div>
-      
 
       <CSSTransition
         in={!!activeRole}
@@ -898,7 +1054,6 @@ const Profile = ({ currentUser }) => {
         </div>
       </CSSTransition>
     </div>
-    
   );
 };
 

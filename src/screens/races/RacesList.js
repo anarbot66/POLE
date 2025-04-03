@@ -156,11 +156,7 @@ const RacesList = ({ currentUser }) => {
           borderRadius: 15,
         }}
       >
-        <img
-          src={currentUser.photoUrl || "https://placehold.co/80x80"}
-          alt="Avatar"
-          style={{ width: "30px", height: "30px", borderRadius: "50%" }}
-        />
+        <img onClick={() => navigate("/profile")} src={currentUser.photoUrl || "https://placehold.co/80x80"} alt="Avatar" style={{ width: "30px", height: "30px", borderRadius: "50%", alignContent: "right" }} />
 
         <span style={{color: "white", padding: "10px"}}>Расписание</span>
       </div>

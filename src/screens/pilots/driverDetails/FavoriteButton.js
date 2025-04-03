@@ -30,7 +30,8 @@ const FavoriteButton = ({ currentUser, pilot, teamColor }) => {
         const userFavoritesRef = collection(db, "favorites");
         const q = query(userFavoritesRef, where("userId", "==", currentUser.uid));
         const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
+        // Если у пользователя уже 3 избранных пилота, показать уведомление
+        if (querySnapshot.docs.length >= 3) {
           setShowFavoriteAlert(true);
           return;
         }
@@ -49,6 +50,7 @@ const FavoriteButton = ({ currentUser, pilot, teamColor }) => {
       }
       setFavLoading(false);
     };
+    
   
     const handleUnfavorite = async () => {
       if (!currentUser || !pilot) return;
@@ -114,7 +116,7 @@ const FavoriteButton = ({ currentUser, pilot, teamColor }) => {
                 maxWidth: "300px"
               }}
             >
-              <p style={{ marginBottom: "20px" }}>Вы уже выбрали любимого пилота</p>
+              <p style={{ marginBottom: "20px" }}>У вас уже выбрано 3 любимых пилота</p>
               <button
                 onClick={() => setShowFavoriteAlert(false)}
                 style={{

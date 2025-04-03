@@ -178,27 +178,6 @@ body {
   100%   { background-position: calc(0*100%/5) 0%,   calc(1*100%/5) 100%, calc(2*100%/5) 0%,   calc(3*100%/5) 100%, calc(4*100%/5) 0%,   calc(5*100%/5) 100% }
 }
 
-.menuFade-enter {
-  opacity: 0;
-  transform: scale(0.95);
-}
-
-.menuFade-enter-active {
-  opacity: 1;
-  transform: scale(1);
-  transition: opacity 300ms ease, transform 300ms ease;
-}
-
-.menuFade-exit {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.menuFade-exit-active {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 300ms ease, transform 300ms ease;
-}
 
 .loading-screen {
   display: flex;
@@ -279,7 +258,7 @@ body {
 .menuFade-enter-active {
   opacity: 1;
   transform: scale(1);
-  transition: opacity 300ms ease, transform 300ms ease;
+  transition: opacity 150ms ease, transform 150ms ease;
 }
 
 .menuFade-exit {
@@ -290,7 +269,7 @@ body {
 .menuFade-exit-active {
   opacity: 0;
   transform: scale(0.95);
-  transition: opacity 300ms ease, transform 300ms ease;
+  transition: opacity 150ms ease, transform 150ms ease;
 }
 
 .creatorFormInput {
@@ -308,14 +287,14 @@ body {
 }
 .window-fade-enter-active {
   opacity: 1;
-  transition: opacity 300ms;
+  transition: opacity 200ms;
 }
 .window-fade-exit {
   opacity: 1;
 }
 .window-fade-exit-active {
   opacity: 0;
-  transition: opacity 300ms;
+  transition: opacity 200ms;
 }
 
 .tab-enter {
@@ -342,12 +321,24 @@ body {
   text-overflow: ellipsis;
 }
 
+/* Начальное состояние для входа */
+.slide-enter {
+  transform: translateX(300px);
+}
 
+/* Состояние, когда элемент входит и анимируется */
+.slide-enter-active {
+  transform: translateX(0);
+  transition: transform 300ms ease-in-out;
+}
 
+/* Начальное состояние для выхода */
+.slide-exit {
+  transform: translateX(0);
+}
 
-
-
-
-
-
-
+/* Состояние, когда элемент выходит и анимируется */
+.slide-exit-active {
+  transform: translateX(300px);
+  transition: transform 300ms ease-in-out;
+}

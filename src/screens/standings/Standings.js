@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import PilotsList from '../pilots/driverList/PilotsList';
 import ConstructorsList from '../constructor/teamList/ConstructorsList';
 
 const Standings = ({ onConstructorSelect, currentUser }) => {
   const [activeTab, setActiveTab] = useState('pilots');
+  const navigate = useNavigate();
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -24,11 +26,7 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
           borderRadius: 15,
         }}
       >
-        <img
-          src={currentUser.photoUrl || "https://placehold.co/80x80"}
-          alt="Avatar"
-          style={{ width: "30px", height: "30px", borderRadius: "50%" }}
-        />
+        <img onClick={() => navigate("/profile")} src={currentUser.photoUrl || "https://placehold.co/80x80"} alt="Avatar" style={{ width: "30px", height: "30px", borderRadius: "50%", alignContent: "right" }} />
 
         <span style={{color: "white", padding: "10px"}}>Таблицы</span>
       </div>

@@ -10,7 +10,7 @@ import RaceDetails from "./screens/races/RaceDetails";
 import BottomNavigation from "./screens/components/BottomNavigation";
 import PilotDetails from "./screens/pilots/driverDetails/PilotDetails.js";
 import Auth from "./screens/user/Auth";
-import Feed from "./screens/user/Feed";
+import Feed from "./screens/user/feed/Feed.js";
 import Profile from "./screens/user/Profile";
 import UserProfile from "./screens/user/UserProfile";
 import FollowersList from "./screens/user/FollowersList";
@@ -31,6 +31,12 @@ import ArticleCreator from "./screens/user/creators/creatorPanel/ArticleCreator.
 import EditArticle from "./screens/user/creators/creatorPanel/EditArticle.js";
 import ArticlesList from "./screens/user/creators/creatorPanel/ArticlesList.js";
 import ArticleView from "./screens/user/creators/creatorPanel/ArticleView.js";
+import ClubCreate from "./screens/user/creators/ClubCreate.js";
+import ClubPage from "./screens/user/creators/ClubPage.js";
+import ClubArticles from "./screens/user/creators/creatorPanel/ClubArticles.js";
+import LikeButton from "./screens/user/creators/components/LikeButton.js";
+import ClubSearch from "./screens/user/creators/ClubSearch.js";
+import ClubSettings from "./screens/user/creators/ClubSettings.js";
 
 
 
@@ -245,8 +251,8 @@ function App() {
                       <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} currentUser={user} />} />
                       <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
                       <Route path="/races" element={<RacesList currentUser={user} />} />
-                      <Route path="/constructor-details" element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} />} />
-                      <Route path="/races/:raceId" element={<RaceDetails />} />
+                      <Route path="/constructor-details" element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} currentUser={user} />} />
+                      <Route path="/races/:raceId" element={<RaceDetails currentUser={user}/>} />
                       <Route path="/profile" element={<Profile currentUser={user} />} />
                       <Route path="/userprofile/:uid" element={<UserProfile currentUser={user} />} />
                       <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
@@ -264,12 +270,18 @@ function App() {
                       <Route path="/articles/edit/:id" element={<EditArticle currentUser={user}/>} />
                       <Route path="/articles" element={<ArticlesList currentUser={user}/>} />
                       <Route path="/articles/view/:articleId" element={<ArticleView />} />
+                      <Route path="/club-create" element={<ClubCreate currentUser={user}/>} />
+                      <Route path="/club/:clubId" element={<ClubPage currentUser={user} />} />
+                      <Route path="/club-articles" element={<ClubArticles currentUser={user} />} />
+                      <Route path="/like" element={<LikeButton currentUser={user} />} />
+                      <Route path="/club-search" element={<ClubSearch currentUser={user} />} />
+                      <Route path="/club-settings" element={<ClubSettings currentUser={user} />} />
                     </Routes>
                 </div>
               </CSSTransition>
             </TransitionGroup>
           </div>
-          <BottomNavigation setActivePage={handlePageChange} />
+          <BottomNavigation setActivePage={handlePageChange} currentUser={user}/>
         </>
       )}
     </div>

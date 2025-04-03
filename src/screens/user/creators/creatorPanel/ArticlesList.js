@@ -1,15 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  deleteDoc,
+  doc,
+  where
+} from "firebase/firestore";
 import { db } from "../../../../firebase";
 import { useNavigate } from "react-router-dom";
+import { CSSTransition } from "react-transition-group";
 
 const ArticlesList = ({ currentUser }) => {
   const [articles, setArticles] = useState([]);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+  // Состояние для модального окна подтверждения удаления
+  const [deleteModal, setDeleteModal] = useState({
+    show: false,
+    articleId: null,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Запрос для получения статей, отсортированных по дате создания
-    const q = query(collection(db, "articles"), orderBy("createdAt", "desc"));
+    if (!currentUser) return;
+    const q = query(
+      collection(db, "articles"),
+      where("creatorUsername", "==", currentUser.name),
+      orderBy("createdAt", "desc")
+    );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const articlesData = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -17,13 +36,44 @@ const ArticlesList = ({ currentUser }) => {
       }));
       setArticles(articlesData);
     });
-
+  
     return () => unsubscribe();
-  }, []);
+  }, [currentUser]);
+  
+
+  // Функция для удаления статьи из Firestore
+  const handleDeleteArticle = async (articleId) => {
+    try {
+      await deleteDoc(doc(db, "articles", articleId));
+    } catch (error) {
+      console.error("Ошибка при удалении статьи:", error);
+    }
+  };
+
+  // Показываем модальное окно подтверждения удаления
+  const showDeleteModal = (articleId) => {
+    setDeleteModal({ show: true, articleId });
+  };
+
+  // Скрываем модальное окно
+  const hideDeleteModal = () => {
+    setDeleteModal({ show: false, articleId: null });
+  };
+
+  // Функция обработки подтверждения удаления
+  const confirmDelete = async () => {
+    await handleDeleteArticle(deleteModal.articleId);
+    hideDeleteModal();
+  };
+
+  // Тогглер выпадающего меню для каждой статьи
+  const toggleMenu = (articleId) => {
+    setOpenDropdownId((prevId) => (prevId === articleId ? null : articleId));
+  };
 
   return (
-    <div style={{ padding: "20px", color: "white" }}>
-      <div style={{width: "100%"}}>
+    <div style={{ padding: "20px", color: "white", marginBottom: 70 }}>
+      <div style={{ width: "100%" }}>
         <button
           onClick={() => navigate(-1)}
           style={{
@@ -32,14 +82,14 @@ const ArticlesList = ({ currentUser }) => {
             color: "white",
             fontSize: "18px",
             cursor: "pointer",
-            marginBottom: "20px"
+            marginBottom: "20px",
           }}
         >
           ← Назад
         </button>
-        </div>
+      </div>
       {articles.length === 0 ? (
-        <p>Нет опубликованных статей.</p>
+        <p>Нет статей</p>
       ) : (
         articles.map((article) => (
           <div
@@ -48,8 +98,117 @@ const ArticlesList = ({ currentUser }) => {
               borderRadius: "8px",
               marginBottom: "15px",
               position: "relative",
+              padding: "10px",
+              background: "#212124",
             }}
           >
+            <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+              <button
+                onClick={() =>
+                  navigate(`/articles/view/${article.id}`, {
+                    state: { article },
+                  })
+                }
+                style={{
+                  padding: "8px 12px",
+                  backgroundColor: "#1D1D1F",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  width: "100%"
+                }}
+              >
+                Просмотр
+              </button>
+                <div style={{ position: "relative" }}>
+                  <div
+                    onClick={() => toggleMenu(article.id)}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      padding: 12,
+                      borderRadius: 30,
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      gap: 10,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <svg
+                      width="25"
+                      height="26"
+                      viewBox="0 0 25 26"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M3.125 16.9062C3.125 16.4748 3.47478 16.125 3.90625 16.125H8.59375C9.02522 16.125 9.375 16.4748 9.375 16.9062C9.375 17.3377 9.02522 17.6875 8.59375 17.6875H3.90625C3.47478 17.6875 3.125 17.3377 3.125 16.9062Z"
+                        fill="white"
+                      />
+                      <path
+                        d="M3.125 12.2188C3.125 11.7873 3.47478 11.4375 3.90625 11.4375H14.8438C15.2752 11.4375 15.625 11.7873 15.625 12.2188C15.625 12.6502 15.2752 13 14.8438 13H3.90625C3.47478 13 3.125 12.6502 3.125 12.2188Z"
+                        fill="white"
+                      />
+                      <path
+                        d="M3.125 7.53125C3.125 7.09978 3.47478 6.75 3.90625 6.75H21.0938C21.5252 6.75 21.875 7.09978 21.875 7.53125C21.875 7.96272 21.5252 8.3125 21.0938 8.3125H3.90625C3.47478 8.3125 3.125 7.96272 3.125 7.53125Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </div>
+
+                  <CSSTransition
+                    in={openDropdownId === article.id}
+                    timeout={200}
+                    classNames="menuFade"
+                    unmountOnExit
+                  >
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "40px",
+                        right: "10px",
+                        background: "#1D1D1F",
+                        borderRadius: "12px 0px 12px 12px",
+                        padding: "5px",
+                        zIndex: 10,
+                      }}
+                    >
+                      <button
+                        onClick={() => navigate(`/articles/edit/${article.id}`)}
+                        style={{
+                          display: "block",
+                          background: "transparent",
+                          border: "none",
+                          color: "white",
+                          cursor: "pointer",
+                          padding: "5px 10px",
+                          textAlign: "left",
+                          width: "150px",
+                        }}
+                      >
+                        Редактировать
+                      </button>
+                      <button
+                        onClick={() => showDeleteModal(article.id)}
+                        style={{
+                          display: "block",
+                          background: "transparent",
+                          border: "none",
+                          color: "white",
+                          cursor: "pointer",
+                          padding: "5px 10px",
+                          textAlign: "left",
+                          width: "150px",
+                        }}
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </CSSTransition>
+                </div>
+            </div>
             {article.previewUrl && (
               <img
                 src={article.previewUrl}
@@ -59,75 +218,82 @@ const ArticlesList = ({ currentUser }) => {
             )}
             <h3>{article.title}</h3>
             <p>
-              Автор: {article.creatorUsername || article.uid}{" "}
+              Создано: {" "}
               {article.createdAt?.toDate
                 ? article.createdAt.toDate().toLocaleString()
                 : ""}
             </p>
-            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-              {/* Кнопка для просмотра статьи */}
-              <button
-                onClick={() =>
-                  navigate(`/articles/view/${article.id}`, {
-                    state: { article },
-                  })
-                }
-                style={{
-                  padding: "8px 12px",
-                  backgroundColor: "#212124",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                Просмотр
-              </button>
-              {/* Кнопка для редактирования статьи (видна, например, только админам или владельцам) */}
-              {(currentUser.role === "admin" ||
-                currentUser.role === "owner") && (
-                <button
-                  onClick={() => navigate(`/articles/edit/${article.id}`)}
-                  style={{
-                    padding: "8px 12px",
-                    backgroundColor: "#212124",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "15px"
-                  }}
-                >
-                  Редактировать
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ verticalAlign: "middle", marginRight: "5px" }}
-                  >
-                    <path
-                      d="M12.8536 0.146447C12.6583 -0.0488155 12.3417 -0.0488155 12.1465 0.146447L10.5 1.7929L14.2071 5.50001L15.8536 3.85355C16.0488 3.65829 16.0488 3.34171 15.8536 3.14645L12.8536 0.146447Z"
-                      fill="white"
-                    />
-                    <path
-                      d="M13.5 6.20711L9.7929 2.50001L3.29291 9H3.5L4 9.5L4.5 10L5 10.5L5.5 11L6 11.5L6.5 12L7 12.5V12.7071L13.5 6.20711Z"
-                      fill="white"
-                    />
-                    <path
-                      d="M6.03166 13.6755C6.01119 13.6209 6 13.5617 6 13.5L5.5 13L5 12.5L4.5 12L4 11.5L3.5 11L3 10.5L2.5 10C2.43827 10 2.37915 9.98881 2.32455 9.96835L2.14646 10.1464C2.09858 10.1943 2.06092 10.2514 2.03578 10.3143L0.0357762 15.3143C-0.0385071 15.5 0.00502989 15.7121 0.146461 15.8536C0.287892 15.995 0.500001 16.0385 0.68571 15.9642L5.68571 13.9642C5.74858 13.9391 5.80569 13.9014 5.85357 13.8536L6.03166 13.6755Z"
-                      fill="white"
-                    />
-                  </svg>
-                </button>
-              )}
-            </div>
           </div>
         ))
       )}
+
+      {/* Кастомное модальное окно подтверждения удаления */}
+      <CSSTransition
+        in={deleteModal.show}
+        timeout={300}
+        classNames="window-fade"
+        unmountOnExit
+      >
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 2000,
+          }}
+        >
+          <div
+            style={{
+              background: "#1D1D1F",
+              padding: "20px",
+              borderRadius: "20px",
+              textAlign: "center",
+              color: "white",
+              maxWidth: "300px",
+            }}
+          >
+            <p style={{ marginBottom: "20px" }}>
+              Вы уверены, что хотите удалить статью?
+            </p>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button
+                onClick={confirmDelete}
+                style={{
+                  background: "#212124",
+                  color: "white",
+                  border: "none",
+                  padding: "10px 20px",
+                  borderRadius: "15px",
+                  cursor: "pointer",
+                  flex: 1,
+                }}
+              >
+                Да
+              </button>
+              <button
+                onClick={hideDeleteModal}
+                style={{
+                  background: "#212124",
+                  color: "white",
+                  border: "none",
+                  padding: "10px 20px",
+                  borderRadius: "15px",
+                  cursor: "pointer",
+                  flex: 1,
+                }}
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      </CSSTransition>
     </div>
   );
 };
