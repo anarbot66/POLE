@@ -44,6 +44,7 @@ const ArticleView = () => {
         margin: "0 auto",
         padding: "20px",
         lineHeight: 1.6,
+        marginBottom: "70px"
       }}
     >
       <div style={{width: "100%"}}>
