@@ -12,6 +12,7 @@ const EditArticle = ({ currentUser }) => {
   const [previewImage, setPreviewImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [paragraphs, setParagraphs] = useState([]);
+  const [customAlert, setCustomAlert] = useState(null);
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -23,33 +24,33 @@ const EditArticle = ({ currentUser }) => {
           setArticleData(data);
           setTitle(data.title);
           setPreviewUrl(data.previewUrl || "");
-          // Приводим абзацы к удобному виду, добавляя поле newImage для замены картинки
           setParagraphs(
             data.paragraphs.map((p, index) => ({
               ...p,
-              id: index, // можно заменить на другой уникальный идентификатор
+              id: index,
               newImage: null,
             }))
           );
         } else {
-          alert("Статья не найдена");
-          navigate("/");
+          setCustomAlert({ message: "Статья не найдена" });
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
         }
       } catch (err) {
         console.error("Ошибка получения статьи:", err);
+        setCustomAlert({ message: "Ошибка получения статьи" });
       }
     };
 
     fetchArticle();
   }, [articleId, navigate]);
 
-  // Функция загрузки изображения через API imgbb
   const uploadImage = async (file) => {
     if (!file) return "";
     try {
       const formData = new FormData();
       formData.append("image", file);
-      // Используйте свой API-ключ imgbb
       formData.append("key", "2efcc5045381407287404d66cbe72876");
       const response = await fetch("https://api.imgbb.com/1/upload", {
         method: "POST",
@@ -69,12 +70,10 @@ const EditArticle = ({ currentUser }) => {
     );
   };
 
-  // Функция удаления абзаца
   const handleRemoveParagraph = (id) => {
     setParagraphs((prev) => prev.filter((p) => p.id !== id));
   };
 
-  // Добавление нового абзаца
   const handleAddParagraph = () => {
     setParagraphs((prev) => [
       ...prev,
@@ -85,13 +84,11 @@ const EditArticle = ({ currentUser }) => {
   const handleSaveChanges = async () => {
     setLoading(true);
     try {
-      // Если выбрано новое превью, загружаем его через imgbb
       let updatedPreviewUrl = previewUrl;
       if (previewImage) {
         updatedPreviewUrl = await uploadImage(previewImage);
       }
 
-      // Для каждого абзаца, если есть новый файл, загружаем его через imgbb
       const updatedParagraphs = await Promise.all(
         paragraphs.map(async (p) => {
           let updatedImageUrl = p.imageUrl;
@@ -106,7 +103,6 @@ const EditArticle = ({ currentUser }) => {
         })
       );
 
-      // Обновляем статью в Firestore
       const articleRef = doc(db, "articles", articleId);
       await updateDoc(articleRef, {
         title,
@@ -114,11 +110,13 @@ const EditArticle = ({ currentUser }) => {
         paragraphs: updatedParagraphs,
         updatedAt: serverTimestamp(),
       });
-      alert("Изменения сохранены!");
-      navigate("/articles");
+      setCustomAlert({ message: "Изменения сохранены!" });
+      setTimeout(() => {
+        navigate("/articles");
+      }, 2000);
     } catch (err) {
       console.error("Ошибка сохранения статьи:", err);
-      alert("Не удалось сохранить изменения");
+      setCustomAlert({ message: "Не удалось сохранить изменения" });
     } finally {
       setLoading(false);
     }
@@ -128,7 +126,7 @@ const EditArticle = ({ currentUser }) => {
 
   return (
     <div style={{ padding: 20, marginBottom: "100px" }}>
-      <div style={{width: "100%"}}>
+      <div style={{ width: "100%" }}>
         <button
           onClick={() => navigate(-1)}
           style={{
@@ -137,30 +135,57 @@ const EditArticle = ({ currentUser }) => {
             color: "white",
             fontSize: "18px",
             cursor: "pointer",
-            marginBottom: "15px"
+            marginBottom: "15px",
           }}
         >
           ← Назад
         </button>
+      </div>
+      <h2 style={{ fontSize: "24px", marginBottom: 10, color: "white" }}>
+        Редактирование поста
+      </h2>
+      <div
+        style={{
+          color: "white",
+          alignItems: "center",
+          justifyContent: "center",
+          display: "flex",
+          flexDirection: "column",
+          gap: 15,
+          marginBottom: 10,
+        }}
+      >
+        <div
+          style={{
+            color: "gray",
+            fontSize: "18px",
+            width: "100%",
+            textAlign: "left",
+          }}
+        >
+          Превью:
         </div>
-      <h2 style={{color: "white", fontSize: "24px", marginBottom: 10, color: "white"}}>Редактирование поста</h2>
-      <div style={{color: "white", alignItems: "center", justifyContent: "center", display: "flex", flexDirection: "column", gap: 15, marginBottom: 10}}>
-        <div style={{color: "gray", fontSize: "18px", width: "100%", textAlign: "left"}}>Превью:</div>
         {previewUrl ? (
-          <img src={previewUrl} alt="preview" style={{ width: "100%", borderRadius: 15 }} />
+          <img
+            src={previewUrl}
+            alt="preview"
+            style={{ width: "100%", borderRadius: 15 }}
+          />
         ) : (
           <div>Нет превью</div>
         )}
-        <label style={{ 
-          alignSelf: "stretch",
-          background: "#212124",
-          borderRadius: 15,
-          padding: "15px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          textAlign: "center"
-        }}>
+        <label
+          style={{
+            alignSelf: "stretch",
+            background: "#212124",
+            borderRadius: 15,
+            padding: "15px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
           Выбрать новое превью
           <input
             type="file"
@@ -169,46 +194,73 @@ const EditArticle = ({ currentUser }) => {
             style={{ display: "none" }}
           />
         </label>
-
       </div>
 
-      <div style={{display: "flex", gap: 10, flexDirection: "column", marginBottom: 15}}>
-        <div style={{color: "gray", fontSize: "18px"}}>Заголовок:</div>
+      <div style={{ display: "flex", gap: 10, flexDirection: "column", marginBottom: 15 }}>
+        <div style={{ color: "gray", fontSize: "18px" }}>Заголовок:</div>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          style={{ width: "100%", padding: "15px", marginBottom: "10px", background: "#212124", color: "white", borderRadius: 12 }}
+          style={{
+            width: "100%",
+            padding: "15px",
+            marginBottom: "10px",
+            background: "#212124",
+            color: "white",
+            borderRadius: 12,
+          }}
         />
       </div>
 
       {/* Абзацы */}
-      <div style={{display: "flex", flexDirection: "column", gap: 15}}>
-        <h3 style={{color: "gray", fontSize: "18px"}}>Абзацы</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
+        <h3 style={{ color: "gray", fontSize: "18px" }}>Абзацы</h3>
         {paragraphs.map((para) => (
           <div
             key={para.id}
-            style={{display: "flex", flexDirection: "column", gap: 10, padding: 15, background: "#212124", borderRadius: 15}}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+              padding: 15,
+              background: "#212124",
+              borderRadius: 15,
+            }}
           >
-            <div style={{display: "flex", flexDirection: "column", gap: 10}}>
-              <div style={{color: "white", fontSize: "16px"}}>Заголовок абзаца:</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ color: "white", fontSize: "16px" }}>Заголовок абзаца:</div>
               <input
                 type="text"
                 value={para.heading}
                 onChange={(e) => handleParagraphChange(para.id, "heading", e.target.value)}
-                style={{ width: "100%", padding: "15px", marginBottom: "10px", background: "#1D1D1F", color: "white", borderRadius: 12 }}
+                style={{
+                  width: "100%",
+                  padding: "15px",
+                  marginBottom: "10px",
+                  background: "#1D1D1F",
+                  color: "white",
+                  borderRadius: 12,
+                }}
               />
             </div>
-            <div style={{display: "flex", flexDirection: "column", gap: 10}}>
-              <div style={{color: "white", fontSize: "16px"}}>Текст абзаца:</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ color: "white", fontSize: "16px" }}>Текст абзаца:</div>
               <textarea
                 value={para.text}
                 onChange={(e) => handleParagraphChange(para.id, "text", e.target.value)}
-                style={{ width: "100%", padding: "15px", marginBottom: "10px", background: "#1D1D1F", color: "white", borderRadius: 12 }}
+                style={{
+                  width: "100%",
+                  padding: "15px",
+                  marginBottom: "10px",
+                  background: "#1D1D1F",
+                  color: "white",
+                  borderRadius: 12,
+                }}
               />
             </div>
             <div>
-              <div style={{color: "white", fontSize: "16px", marginBottom: 10, }}>Картинка абзаца:</div>
+              <div style={{ color: "white", fontSize: "16px", marginBottom: 10 }}>Картинка абзаца:</div>
               {para.imageUrl && (
                 <img
                   src={para.imageUrl}
@@ -216,27 +268,30 @@ const EditArticle = ({ currentUser }) => {
                   style={{ width: "100%", borderRadius: 15, marginBottom: "10px" }}
                 />
               )}
-              <label style={{ 
-                alignSelf: "stretch",
-                background: "#1D1D1F",
-                borderRadius: 15,
-                padding: "15px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                textAlign: "center",
-                color: "white"
-              }}>
-                Выбрать новое превью
+              <label
+                style={{
+                  alignSelf: "stretch",
+                  background: "#1D1D1F",
+                  borderRadius: 15,
+                  padding: "15px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  color: "white",
+                }}
+              >
+                Выбрать новое изображение
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setPreviewImage(e.target.files[0])}
+                  onChange={(e) =>
+                    handleParagraphChange(para.id, "newImage", e.target.files[0])
+                  }
                   style={{ display: "none" }}
                 />
               </label>
             </div>
-            {/* Кнопка для удаления абзаца */}
             <button
               onClick={() => handleRemoveParagraph(para.id)}
               style={{
@@ -253,7 +308,16 @@ const EditArticle = ({ currentUser }) => {
             </button>
           </div>
         ))}
-        <button onClick={handleAddParagraph} style={{ padding: "15px", color: "white", background: "#212124", width: "100%", borderRadius: 15 }}>
+        <button
+          onClick={handleAddParagraph}
+          style={{
+            padding: "15px",
+            color: "white",
+            background: "#212124",
+            width: "100%",
+            borderRadius: 15,
+          }}
+        >
           Добавить новый абзац
         </button>
       </div>
@@ -263,11 +327,61 @@ const EditArticle = ({ currentUser }) => {
         disabled={loading}
         style={{
           marginTop: "20px",
-          padding: "15px", color: "white", background: "#007C00", width: "100%", borderRadius: 15
+          padding: "15px",
+          color: "white",
+          background: "#007C00",
+          width: "100%",
+          borderRadius: 15,
         }}
       >
         {loading ? "Сохраняется..." : "Сохранить изменения"}
       </button>
+
+      {/* Кастомное уведомление */}
+      {customAlert && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 2000,
+          }}
+          onClick={() => setCustomAlert(null)}
+        >
+          <div
+            style={{
+              background: "#1D1D1F",
+              padding: "20px",
+              borderRadius: "20px",
+              textAlign: "center",
+              color: "white",
+              maxWidth: "300px",
+            }}
+          >
+            <p style={{ marginBottom: "20px" }}>{customAlert.message}</p>
+            <button
+              onClick={() => setCustomAlert(null)}
+              style={{
+                background: "#212124",
+                color: "white",
+                border: "none",
+                padding: "10px 20px",
+                borderRadius: "15px",
+                cursor: "pointer",
+                width: "100%",
+              }}
+            >
+              Хорошо
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
