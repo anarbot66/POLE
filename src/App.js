@@ -80,7 +80,7 @@ function App() {
         });
       } else {
         setUser({
-          name: "",
+          name: "anarbot66",
           uid: "",
           photoUrl: ""
         });
@@ -239,7 +239,6 @@ function App() {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: theme.primary,
       }}
     >
       {loading && <LoadingScreen progress={progress} fadeOut={fadeOut} />}
