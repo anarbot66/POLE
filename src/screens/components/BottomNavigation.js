@@ -1,10 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { ThemeContext } from "../user/ThemeContext";
 
 const BottomNavigation = ({ setActivePage, currentUser }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
+  const { theme } = useContext(ThemeContext); // Получаем объект темы
 
   useEffect(() => {
     if (location.pathname === "/feed") {
@@ -96,7 +98,7 @@ const BottomNavigation = ({ setActivePage, currentUser }) => {
         left: "50%",
         transform: "translateX(-50%)",
         padding: "5px 20px",
-        background: "#1D1D1F",
+        background: theme.primary,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -135,7 +137,7 @@ const BottomNavigation = ({ setActivePage, currentUser }) => {
               alignItems: "center",
               width: 30,
               height: 30,
-              color: activeIndex === button.id ? "#00b9ff" : "gray",
+              color: activeIndex === button.id ? "white" : "gray",
               transition: "color 0.3s ease",
             }}
           >
@@ -145,7 +147,7 @@ const BottomNavigation = ({ setActivePage, currentUser }) => {
             style={{
               marginTop: 4,
               fontSize: 12,
-              color: activeIndex === button.id ? "#00b9ff" : "gray",
+              color: activeIndex === button.id ? "white" : "gray",
               transition: "color 0.3s ease",
             }}
           >

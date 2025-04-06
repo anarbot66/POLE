@@ -36,10 +36,13 @@ const ClubSettings = ({ currentUser }) => {
   // Состояние кастомного оповещения об успешном сохранении
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
+  // Флаг, позволяющий заполнить форму только один раз при загрузке данных
+  const [initialized, setInitialized] = useState(false);
+
   // Загружаем данные клуба текущего пользователя
   useEffect(() => {
     const fetchClub = async () => {
-      if (!currentUser) return;
+      if (!currentUser || initialized) return;
       try {
         const q = query(
           collection(db, "clubs"),
@@ -49,7 +52,7 @@ const ClubSettings = ({ currentUser }) => {
         if (!snapshot.empty) {
           const clubData = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
           setClub(clubData);
-          // Предзаполнение состояния формы
+          // Предзаполнение состояния формы происходит только один раз
           setClubName(clubData.clubName || "");
           setDescription(clubData.description || "");
           setThematic(clubData.thematic || "");
@@ -61,6 +64,7 @@ const ClubSettings = ({ currentUser }) => {
           setInstagram(clubData.socialLinks?.instagram || "");
           setTiktok(clubData.socialLinks?.tiktok || "");
           setTelegram(clubData.socialLinks?.telegram || "");
+          setInitialized(true);
         } else {
           setError("Клуб не найден.");
         }
@@ -73,7 +77,7 @@ const ClubSettings = ({ currentUser }) => {
     };
 
     fetchClub();
-  }, [currentUser]);
+  }, [currentUser, initialized]);
 
   // Опции для селекта тематик
   const thematicOptions = [
@@ -214,8 +218,8 @@ const ClubSettings = ({ currentUser }) => {
 
   return (
     <>
-    <div style={{padding: 15}}>
-    <div style={{ width: "100%" }}>
+      <div style={{ padding: 15 }}>
+        <div style={{ width: "100%" }}>
           <button
             onClick={() => navigate(-1)}
             style={{
@@ -229,370 +233,370 @@ const ClubSettings = ({ currentUser }) => {
           >
             ← Назад
           </button>
-      </div>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          maxWidth: "600px",
-          margin: "0 auto",
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          color: "white",
-          marginBottom: 80,
-        }}
-      >
-        <h2>Настройки клуба</h2>
-        {/* Переключатель вкладок */}
-        <div
+        </div>
+        <form
+          onSubmit={handleSubmit}
           style={{
+            maxWidth: "600px",
+            margin: "0 auto",
             display: "flex",
-            borderRadius: "20px",
-            marginTop: "10px",
+            flexDirection: "column",
+            gap: "20px",
+            color: "white",
+            marginBottom: 80,
           }}
         >
-          <button
-            type="button"
-            onClick={() => setActiveTab("данные")}
+          <h2>Настройки клуба</h2>
+          {/* Переключатель вкладок */}
+          <div
             style={{
-              padding: "10px 20px",
-              background: activeTab === "данные" ? "#212124" : "transparent",
-              color: "white",
-              border: "none",
-              borderRadius: "10px",
-              cursor: "pointer",
-              transition: "background 0.4s ease",
-              fontSize: 14,
+              display: "flex",
+              borderRadius: "20px",
+              marginTop: "10px",
             }}
           >
-            Данные
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("ссылки")}
-            style={{
-              padding: "10px 20px",
-              background: activeTab === "ссылки" ? "#212124" : "transparent",
-              color: "white",
-              border: "none",
-              borderRadius: "10px",
-              cursor: "pointer",
-              transition: "background 0.4s ease",
-              fontSize: 14,
-            }}
-          >
-            Ссылки
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={() => setActiveTab("данные")}
+              style={{
+                padding: "10px 20px",
+                background: activeTab === "данные" ? "#212124" : "transparent",
+                color: "white",
+                border: "none",
+                borderRadius: "10px",
+                cursor: "pointer",
+                transition: "background 0.4s ease",
+                fontSize: 14,
+              }}
+            >
+              Данные
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("ссылки")}
+              style={{
+                padding: "10px 20px",
+                background: activeTab === "ссылки" ? "#212124" : "transparent",
+                color: "white",
+                border: "none",
+                borderRadius: "10px",
+                cursor: "pointer",
+                transition: "background 0.4s ease",
+                fontSize: 14,
+              }}
+            >
+              Ссылки
+            </button>
+          </div>
 
-        {activeTab === "данные" && (
-          <>
-            <div>
-              <label>Мой клуб</label>
-              <input
-                type="text"
-                value={clubName}
-                onChange={(e) => setClubName(e.target.value)}
-                placeholder="Название клуба"
-                style={{
-                  padding: "10px",
-                  borderRadius: "8px",
-                  border: "none",
-                  width: "100%",
-                  background: "#212124",
-                }}
-                required
-              />
-            </div>
-            <div>
-              <label>Тематика</label>
-              <CustomSelect
-                options={thematicOptions}
-                value={thematic}
-                onChange={setThematic}
-                style={{ width: "100%" }}
-              />
-            </div>
-            {thematic === "f1" && (
-              <>
-                <div>
-                  <label>Посвящен</label>
-                  <CustomSelect
-                    options={dedicatedOptions}
-                    value={dedicated}
-                    onChange={setDedicated}
-                    style={{ width: "100%" }}
-                  />
-                </div>
-                {dedicated && dedicated !== "none" && (
+          {activeTab === "данные" && (
+            <>
+              <div>
+                <label>Мой клуб</label>
+                <input
+                  type="text"
+                  value={clubName}
+                  onChange={(e) => setClubName(e.target.value)}
+                  placeholder="Название клуба"
+                  style={{
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
+                    width: "100%",
+                    background: "#212124",
+                  }}
+                  required
+                />
+              </div>
+              <div>
+                <label>Тематика</label>
+                <CustomSelect
+                  options={thematicOptions}
+                  value={thematic}
+                  onChange={setThematic}
+                  style={{ width: "100%" }}
+                />
+              </div>
+              {thematic === "f1" && (
+                <>
                   <div>
-                    <label>
-                      {dedicated === "team" ? "Выберите команду" : "Выберите пилота"}
-                    </label>
+                    <label>Посвящен</label>
                     <CustomSelect
-                      options={getDedicatedItemOptions()}
-                      value={dedicatedItem}
-                      onChange={setDedicatedItem}
+                      options={dedicatedOptions}
+                      value={dedicated}
+                      onChange={setDedicated}
                       style={{ width: "100%" }}
                     />
                   </div>
-                )}
-              </>
-            )}
-            <div>
-              <label>Описание</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Описание клуба"
-                style={{
-                  padding: "10px",
-                  borderRadius: "8px",
-                  border: "none",
-                  width: "100%",
-                  minHeight: "100px",
-                  background: "#212124",
-                }}
-              />
-            </div>
-            <div>
-              <label>Аватарка (1:1)</label>
-              <div
-                style={{
-                  position: "relative",
-                  borderRadius: "15px",
-                  overflow: "hidden",
-                  width: "100%",
-                  height: "80px",
-                  background: "#212124",
-                }}
-              >
-                {avatarPreview ? (
-                  <img
-                    src={avatarPreview}
-                    alt="avatar preview"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                ) : (
-                  <span
-                    style={{
-                      color: "#ABABAB",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "100%",
-                    }}
-                  >
-                    Выберите аватарку
-                  </span>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
+                  {dedicated && dedicated !== "none" && (
+                    <div>
+                      <label>
+                        {dedicated === "team" ? "Выберите команду" : "Выберите пилота"}
+                      </label>
+                      <CustomSelect
+                        options={getDedicatedItemOptions()}
+                        value={dedicatedItem}
+                        onChange={setDedicatedItem}
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+              <div>
+                <label>Описание</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Описание клуба"
                   style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
                     width: "100%",
-                    height: "100%",
-                    opacity: 0,
-                    cursor: "pointer",
+                    minHeight: "100px",
+                    background: "#212124",
                   }}
                 />
               </div>
-            </div>
-            <div>
-              <label>Обложка (16:9)</label>
-              <div
-                style={{
-                  position: "relative",
-                  border: "1px solid #212124",
-                  borderRadius: "15px",
-                  overflow: "hidden",
-                  width: "100%",
-                  height: "80px",
-                  background: "#212124",
-                }}
-              >
-                {coverPreview ? (
-                  <img
-                    src={coverPreview}
-                    alt="cover preview"
+              <div>
+                <label>Аватарка (1:1)</label>
+                <div
+                  style={{
+                    position: "relative",
+                    borderRadius: "15px",
+                    overflow: "hidden",
+                    width: "100%",
+                    height: "80px",
+                    background: "#212124",
+                  }}
+                >
+                  {avatarPreview ? (
+                    <img
+                      src={avatarPreview}
+                      alt="avatar preview"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <span
+                      style={{
+                        color: "#ABABAB",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100%",
+                      }}
+                    >
+                      Выберите аватарку
+                    </span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
                     style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
                       width: "100%",
                       height: "100%",
-                      objectFit: "cover",
+                      opacity: 0,
+                      cursor: "pointer",
                     }}
                   />
-                ) : (
-                  <span
-                    style={{
-                      color: "#ABABAB",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "100%",
-                    }}
-                  >
-                    Выберите обложку
-                  </span>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverChange}
+                </div>
+              </div>
+              <div>
+                <label>Обложка (16:9)</label>
+                <div
                   style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
+                    position: "relative",
+                    border: "1px solid #212124",
+                    borderRadius: "15px",
+                    overflow: "hidden",
                     width: "100%",
-                    height: "100%",
-                    opacity: 0,
-                    cursor: "pointer",
+                    height: "80px",
+                    background: "#212124",
+                  }}
+                >
+                  {coverPreview ? (
+                    <img
+                      src={coverPreview}
+                      alt="cover preview"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <span
+                      style={{
+                        color: "#ABABAB",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100%",
+                      }}
+                    >
+                      Выберите обложку
+                    </span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverChange}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      opacity: 0,
+                      cursor: "pointer",
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeTab === "ссылки" && (
+            <>
+              <div>
+                <label>YouTube</label>
+                <input
+                  type="text"
+                  value={youtube}
+                  onChange={(e) => setYoutube(e.target.value)}
+                  placeholder="Ссылка на YouTube"
+                  style={{
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
+                    width: "100%",
+                    background: "#212124",
                   }}
                 />
               </div>
-            </div>
-          </>
-        )}
+              <div>
+                <label>Instagram</label>
+                <input
+                  type="text"
+                  value={instagram}
+                  onChange={(e) => setInstagram(e.target.value)}
+                  placeholder="Ссылка на Instagram"
+                  style={{
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
+                    width: "100%",
+                    background: "#212124",
+                  }}
+                />
+              </div>
+              <div>
+                <label>TikTok</label>
+                <input
+                  type="text"
+                  value={tiktok}
+                  onChange={(e) => setTiktok(e.target.value)}
+                  placeholder="Ссылка на TikTok"
+                  style={{
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
+                    width: "100%",
+                    background: "#212124",
+                  }}
+                />
+              </div>
+              <div>
+                <label>Telegram</label>
+                <input
+                  type="text"
+                  value={telegram}
+                  onChange={(e) => setTelegram(e.target.value)}
+                  placeholder="Ссылка на Telegram"
+                  style={{
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
+                    width: "100%",
+                    background: "#212124",
+                  }}
+                />
+              </div>
+            </>
+          )}
 
-        {activeTab === "ссылки" && (
-          <>
-            <div>
-              <label>YouTube</label>
-              <input
-                type="text"
-                value={youtube}
-                onChange={(e) => setYoutube(e.target.value)}
-                placeholder="Ссылка на YouTube"
-                style={{
-                  padding: "10px",
-                  borderRadius: "8px",
-                  border: "none",
-                  width: "100%",
-                  background: "#212124",
-                }}
-              />
-            </div>
-            <div>
-              <label>Instagram</label>
-              <input
-                type="text"
-                value={instagram}
-                onChange={(e) => setInstagram(e.target.value)}
-                placeholder="Ссылка на Instagram"
-                style={{
-                  padding: "10px",
-                  borderRadius: "8px",
-                  border: "none",
-                  width: "100%",
-                  background: "#212124",
-                }}
-              />
-            </div>
-            <div>
-              <label>TikTok</label>
-              <input
-                type="text"
-                value={tiktok}
-                onChange={(e) => setTiktok(e.target.value)}
-                placeholder="Ссылка на TikTok"
-                style={{
-                  padding: "10px",
-                  borderRadius: "8px",
-                  border: "none",
-                  width: "100%",
-                  background: "#212124",
-                }}
-              />
-            </div>
-            <div>
-              <label>Telegram</label>
-              <input
-                type="text"
-                value={telegram}
-                onChange={(e) => setTelegram(e.target.value)}
-                placeholder="Ссылка на Telegram"
-                style={{
-                  padding: "10px",
-                  borderRadius: "8px",
-                  border: "none",
-                  width: "100%",
-                  background: "#212124",
-                }}
-              />
-            </div>
-          </>
-        )}
-
-        {error && <div style={{ color: "red" }}>{error}</div>}
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: "15px",
-            borderRadius: "15px",
-            background: "#212124",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          {loading ? "Сохранение..." : "Сохранить"}
-        </button>
-      </form>
-
-      {/* Кастомное окно оповещения об успешном сохранении */}
-      {showSuccessAlert && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-          onClick={() => setShowSuccessAlert(false)}
-        >
-          <div
+          {error && <div style={{ color: "red" }}>{error}</div>}
+          <button
+            type="submit"
+            disabled={loading}
             style={{
-              background: "#1D1D1F",
-              padding: "20px",
-              borderRadius: "20px",
-              textAlign: "center",
+              padding: "15px",
+              borderRadius: "15px",
+              background: "#212124",
               color: "white",
-              maxWidth: "300px",
+              border: "none",
+              cursor: "pointer",
             }}
           >
-            <p style={{ marginBottom: "20px" }}>Данные клуба успешно обновлены</p>
-            <button
-              onClick={() => setShowSuccessAlert(false)}
+            {loading ? "Сохранение..." : "Сохранить"}
+          </button>
+        </form>
+
+        {/* Кастомное окно оповещения об успешном сохранении */}
+        {showSuccessAlert && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 2000,
+            }}
+            onClick={() => setShowSuccessAlert(false)}
+          >
+            <div
               style={{
-                background: "#212124",
+                background: "#1D1D1F",
+                padding: "20px",
+                borderRadius: "20px",
+                textAlign: "center",
                 color: "white",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "15px",
-                cursor: "pointer",
-                width: "100%",
+                maxWidth: "300px",
               }}
             >
-              Хорошо
-            </button>
+              <p style={{ marginBottom: "20px" }}>Данные клуба успешно обновлены</p>
+              <button
+                onClick={() => setShowSuccessAlert(false)}
+                style={{
+                  background: "#212124",
+                  color: "white",
+                  border: "none",
+                  padding: "10px 20px",
+                  borderRadius: "15px",
+                  cursor: "pointer",
+                  width: "100%",
+                }}
+              >
+                Хорошо
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </>
   );
 };

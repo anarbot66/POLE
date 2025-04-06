@@ -18,7 +18,7 @@ import { db } from "../../../firebase";
 const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("biography");
-  const [selectedSeason, setSelectedSeason] = useState("2024");
+  const [selectedSeason, setSelectedSeason] = useState("2025");
   const [seasons, setSeasons] = useState([]);
 
   // Состояния для избранного конструктора

@@ -508,23 +508,6 @@ const UserProfile = ({ currentUser }) => {
         />
       </div>
 
-      <button
-        onClick={() => navigate("/create-post")}
-        style={{
-          marginTop: "10px",
-          width: "100%",
-          padding: "10px",
-          backgroundColor: "#0077FF",
-          color: "white",
-          borderRadius: "12px",
-          border: "none",
-          cursor: "pointer",
-          fontSize: "16px",
-        }}
-      >
-        Создать пост
-      </button>
-
       {/* Вкладки */}
       <div style={{ display: "flex", borderRadius: "20px", marginTop: "10px" }}>
         <button

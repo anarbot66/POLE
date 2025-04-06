@@ -151,11 +151,17 @@ const ClubPage = ({ currentUser }) => {
   }
 
   return (
+    <div style={{ position: "relative" }}>
+      <div style={{position: "absolute", width: "100%", height: 250, zIndex: -1}}>
+      <img
+      style={{width: "100%", height: 250, objectFit: "cover"}}
+        src={club.coverUrl}
+          />
+      </div>
     <div
       style={{
         width: "100%",
-        position: "relative",
-        background: "#1D1D1F",
+        height: "100%",
         overflow: "hidden",
         padding: 15,
         marginBottom: 60,
@@ -170,19 +176,20 @@ const ClubPage = ({ currentUser }) => {
             color: "white",
             fontSize: "18px",
             cursor: "pointer",
-            marginBottom: "20px",
+            marginBottom: "20px"
           }}
         >
           ← Назад
         </button>
       </div>
+      <div style={{marginTop: 130}}>
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           gap: 15,
           alignItems: "flex-start",
-          width: "100%",
+          width: "100%"
         }}
       >
         <div
@@ -444,6 +451,8 @@ const ClubPage = ({ currentUser }) => {
           </CSSTransition>
         )}
       </TransitionGroup>
+      </div>
+    </div>
     </div>
   );
 };

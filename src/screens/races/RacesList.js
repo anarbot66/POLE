@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import RaceDetails from "./RaceDetails";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ThemeContext } from "../user/ThemeContext"; // Проверь путь к ThemeContext
 
 const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
@@ -47,7 +48,6 @@ const formatRaceWeekend = (firstPracticeDate, raceDate) => {
     "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"
   ];
   const startDate = new Date(firstPracticeDate);
-  // Используем месяц из startDate вместо endDate
   return `${startDate.getDate()} ${months[startDate.getMonth()]}`;
 };
 
@@ -56,6 +56,7 @@ const RacesList = ({ currentUser }) => {
   const [selectedRace, setSelectedRace] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { theme } = useContext(ThemeContext); // Получаем объект темы
 
   // Функция загрузки данных о гонках
   const fetchRaces = async () => {
@@ -87,9 +88,7 @@ const RacesList = ({ currentUser }) => {
           height: "100vh",
           textAlign: "center"
         }}
-      >
-        
-      </div>
+      ></div>
     );
 
   // Функция выбора гонки
@@ -108,7 +107,6 @@ const RacesList = ({ currentUser }) => {
   }
 
   const today = new Date();
-  // Находим следующую гонку (первая, у которой дата первого заезда больше текущей даты)
   const nextRace = races.find((race) => new Date(race.FirstPractice.date) > today);
   const daysUntilNextRace = nextRace
     ? Math.ceil((new Date(nextRace.FirstPractice.date) - today) / (1000 * 60 * 60 * 24))
@@ -135,7 +133,7 @@ const RacesList = ({ currentUser }) => {
         flexDirection: "column",
         justifyContent: "flex-start",
         gap: "15px",
-        backgroundColor: "#1D1D1F"
+        backgroundColor: theme.primary // Используем основной цвет темы
       }}
     >
       <div
@@ -147,19 +145,27 @@ const RacesList = ({ currentUser }) => {
           flexDirection: "column"
         }}
       >
-
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          borderRadius: 15,
-        }}
-      >
-        <img onClick={() => navigate("/profile")} src={currentUser.photoUrl || "https://placehold.co/80x80"} alt="Avatar" style={{ width: "30px", height: "30px", borderRadius: "50%", alignContent: "right" }} />
-
-        <span style={{color: "white", padding: "10px"}}>Расписание</span>
-      </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            borderRadius: 15,
+          }}
+        >
+          <img 
+            onClick={() => navigate("/profile")} 
+            src={currentUser.photoUrl || "https://placehold.co/80x80"} 
+            alt="Avatar" 
+            style={{
+              width: "30px",
+              height: "30px",
+              borderRadius: "50%",
+              alignContent: "right"
+            }} 
+          />
+          <span style={{ color: "white", padding: "10px" }}>Расписание</span>
+        </div>
         {/* Блок с информацией о следующей гонке */}
         {nextRace && (
           <div
@@ -178,7 +184,7 @@ const RacesList = ({ currentUser }) => {
                 width: "100%",
                 height: "100%",
                 padding: 20,
-                background: "#212124",
+                background: theme.secondary, // Используем вторичный цвет темы
                 borderRadius: 15,
                 display: "flex",
                 flexDirection: "column",
@@ -196,7 +202,7 @@ const RacesList = ({ currentUser }) => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    background: "#1D1D1F"
+                    background: theme.primary
                   }}
                 >
                   <img
@@ -215,7 +221,7 @@ const RacesList = ({ currentUser }) => {
                     }}
                   />
                 </div>
-                <span style={{ color: "white", fontSize: 20  }}>
+                <span style={{ color: "white", fontSize: 20 }}>
                   {raceNameTranslations[nextRace.raceName] || nextRace.raceName}
                 </span>
               </div>
@@ -232,7 +238,7 @@ const RacesList = ({ currentUser }) => {
                 style={{
                   width: 121,
                   height: 80,
-                  background: "#0077FF",
+                  background: theme.accent, // Используем акцентный цвет темы
                   borderRadius: 8,
                   display: "flex",
                   justifyContent: "center",
@@ -247,7 +253,6 @@ const RacesList = ({ currentUser }) => {
           </div>
         )}
       </div>
-
       {filteredRaces.map((race, index) => {
         let countryName = race.Circuit.Location.country;
         if (countryName === "Great Britain") countryName = "United Kingdom";
@@ -263,7 +268,7 @@ const RacesList = ({ currentUser }) => {
               width: "calc(100% - 30px)",
               margin: "0px 15px",
               display: "flex",
-              background: "#212124",
+              background: theme.secondary, // Используем вторичный цвет для карточек
               borderRadius: "15px",
               justifyContent: "space-between",
               alignItems: "center",
@@ -281,7 +286,7 @@ const RacesList = ({ currentUser }) => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                background: "#212124"
+                background: theme.secondary
               }}
             >
               <img

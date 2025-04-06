@@ -699,7 +699,7 @@ const Feed = ({ currentUser, onFeedLoad }) => {
                     <div key={news.id} style={{ padding: "0px 15px", marginBottom: "10px", position: "relative", display: "flex", flexDirection: "column", borderRadius: "8px" }}>
                       <div onClick={() => navigate(`/news/${news.id}`, { state: { news } })}>
                         {news.imageUrl && (
-                          <img src={news.imageUrl} alt="news" style={{ width: "100%", borderRadius: "12px" }} />
+                          <img src={news.imageUrl} alt="news" style={{ width: "100%", borderRadius: "12px", height: 200, objectFit: "cover" }} />
                         )}
                         <div style={{ margin: "10px 0px 0px 0px", display: "flex", flexDirection: "column" }}>
                           {(currentUser.role === "admin" || currentUser.role === "owner") && (

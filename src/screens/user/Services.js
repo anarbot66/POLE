@@ -142,7 +142,6 @@ const Services = ({currentUser}) => {
         {/* Кнопка "Настройки" – пока не реализовано, поэтому обработчик открытия уведомления */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
           <div
-            onClick={handleUnavailableFeature}
             style={{
               width: 60,
               aspectRatio: 1,

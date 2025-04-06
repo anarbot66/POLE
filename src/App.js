@@ -1,6 +1,6 @@
 // App.js
 import "./App.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Standings from "./screens/standings/Standings";
@@ -17,8 +17,6 @@ import FollowersList from "./screens/user/FollowersList";
 import UserSearch from "./screens/user/UserSearch";
 import NewsCreator from "./screens/admin/NewsCreator";
 import NewsDetail from "./screens/user/NewsDetails";
-import { db } from "./firebase";
-import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
 import Services from "./screens/user/Services";
 import InfoPage from "./screens/user/InfoPage";
 import LoadingScreen from "./screens/components/LoadingScreen";
@@ -37,8 +35,11 @@ import ClubArticles from "./screens/user/creators/creatorPanel/ClubArticles.js";
 import LikeButton from "./screens/user/creators/components/LikeButton.js";
 import ClubSearch from "./screens/user/creators/ClubSearch.js";
 import ClubSettings from "./screens/user/creators/ClubSettings.js";
+import SettingsPage from "./screens/user/SettingsPage.js";
 
-
+import { db } from "./firebase";
+import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
+import { ThemeContext } from "./screens/user/ThemeContext.js"; // Импортируем контекст темы
 
 function App() {
   const navigate = useNavigate();
@@ -50,11 +51,16 @@ function App() {
   const [selectedConstructor, setSelectedConstructor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
+  // Состояние пользователя с функцией setUser (она будет передаваться как setCurrentUser)
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
   const [dbCheckCompleted, setDbCheckCompleted] = useState(false);
   const [progress, setProgress] = useState(0);
+  const { theme } = useContext(ThemeContext);
+
+  // Получаем функцию для обновления выбранной темы из ThemeContext
+  const { setSelectedTheme } = useContext(ThemeContext);
 
   // Инициализация данных пользователя из Telegram или по умолчанию
   useEffect(() => {
@@ -94,7 +100,6 @@ function App() {
     const uploadUserPhoto = async () => {
       if (user && !user.photoUrl) {
         try {
-          // Здесь укажите ваш дефолтный URL или base64 строку
           const defaultImage = "DEFAULT_IMAGE_BASE64_OR_URL";
           const formData = new FormData();
           formData.append("image", defaultImage);
@@ -115,10 +120,9 @@ function App() {
             ...prevUser,
             photoUrl: newPhotoUrl,
           }));
-          // Обновляем progress после загрузки фото
           setProgress((prev) => Math.min(prev + 20, 90));
         } catch (error) {
-          console.error(" ", error);
+          console.error("Ошибка загрузки фото:", error);
         }
       }
     };
@@ -127,7 +131,7 @@ function App() {
     }
   }, [user]);
 
-  // Проверка пользователя в БД
+  // Проверка пользователя в БД и загрузка данных (включая selectedTheme)
   useEffect(() => {
     if (!user) return;
     const checkUserInDB = async () => {
@@ -142,6 +146,7 @@ function App() {
           lastName: userDoc.lastName,
           photoUrl: userDoc.photoUrl,
           role: userDoc.role ?? null,
+          selectedTheme: userDoc.selectedTheme || "default", // Добавляем выбранную тему
         }));
         setIsAuthenticated(true);
         if (initialLoad) {
@@ -156,13 +161,12 @@ function App() {
         }
       }
       setDbCheckCompleted(true);
-      // Обновляем progress после проверки в БД
       setProgress((prev) => Math.min(prev + 30, 90));
     };
     checkUserInDB();
   }, [user, navigate, initialLoad]);
 
-  // Симуляция дополнительных обновлений progress (до 90%), если какие-то операции выполняются дольше
+  // Симуляция дополнительных обновлений progress
   useEffect(() => {
     if (loading) {
       const interval = setInterval(() => {
@@ -178,15 +182,20 @@ function App() {
       setTimeout(() => {
         setContentLoaded(true);
         setProgress(100);
-      }, 500); // Было 300
-  
+      }, 500);
       setTimeout(() => { 
         setFadeOut(true);
-        setTimeout(() => setLoading(false), 600); // Было 600
-      }, 1500); // Было 900
+        setTimeout(() => setLoading(false), 600);
+      }, 1500);
     }
   }, [dbCheckCompleted]);
-  
+
+  // Синхронизация выбранной темы в ThemeProvider с полем selectedTheme в user
+  useEffect(() => {
+    if (user && user.selectedTheme) {
+      setSelectedTheme(user.selectedTheme);
+    }
+  }, [user, setSelectedTheme]);
 
   const handlePageChange = (page) => {
     setSelectedConstructor(null);
@@ -199,7 +208,7 @@ function App() {
     } else if (page === 2) {
       navigate("/races");
     } else if (page === 3) {
-      navigate(isAuthenticated ?  "/services" : "/");
+      navigate(isAuthenticated ? "/services" : "/");
     } else if (page === 4) {
       navigate(isAuthenticated ? "/profile" : "/");
     }
@@ -213,7 +222,6 @@ function App() {
     });
     navigate("/constructor-details");
   };
-
 
   const handleBackToConstructors = () => {
     setSelectedConstructor(null);
@@ -231,7 +239,7 @@ function App() {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "#1D1D1F",
+        background: theme.primary,
       }}
     >
       {loading && <LoadingScreen progress={progress} fadeOut={fadeOut} />}
@@ -241,47 +249,44 @@ function App() {
             <TransitionGroup>
               <CSSTransition key={location.pathname} classNames="page" timeout={500}>
                 <div key={location.pathname}>
-                    <Routes location={location}>
-                      <Route path="/" element={<Auth user={user} />} />
-                      <Route
-                        path="/feed"
-                        element={<Feed currentUser={user} onFeedLoad={() => setLoading(false)} />}
-                      />
-
-                      <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} currentUser={user} />} />
-                      <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
-                      <Route path="/races" element={<RacesList currentUser={user} />} />
-                      <Route path="/constructor-details" element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} currentUser={user} />} />
-                      <Route path="/races/:raceId" element={<RaceDetails currentUser={user}/>} />
-                      <Route path="/profile" element={<Profile currentUser={user} />} />
-                      <Route path="/userprofile/:uid" element={<UserProfile currentUser={user} />} />
-                      <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
-                      <Route path="/userprofile/:username/followers" element={<FollowersList currentUser={user} />} />
-                      <Route path="/news/new" element={<NewsCreator />} />
-                      <Route path="/news/:id" element={<NewsDetail />} />
-                      <Route path="/services" element={<Services currentUser={user} />} />
-                      <Route path="/info" element={<InfoPage />} />
-                      <Route path="/champions" element={<ChampionsList />} />
-                      <Route path="/creatorForm" element={<CreatorForm currentUser={user}/>} />
-                      <Route path="/creatorView" element={<CreatorView currentUser={user}/>} />
-                      <Route path="/create-post" element={<CreatePost currentUser={user}/>} />
-                      <Route path="/creator-panel" element={<CreatorPanel currentUser={user}/>} />
-                      <Route path="/creator-new-post" element={<ArticleCreator currentUser={user}/>} />
-                      <Route path="/articles/edit/:id" element={<EditArticle currentUser={user}/>} />
-                      <Route path="/articles" element={<ArticlesList currentUser={user}/>} />
-                      <Route path="/articles/view/:articleId" element={<ArticleView />} />
-                      <Route path="/club-create" element={<ClubCreate currentUser={user}/>} />
-                      <Route path="/club/:clubId" element={<ClubPage currentUser={user} />} />
-                      <Route path="/club-articles" element={<ClubArticles currentUser={user} />} />
-                      <Route path="/like" element={<LikeButton currentUser={user} />} />
-                      <Route path="/club-search" element={<ClubSearch currentUser={user} />} />
-                      <Route path="/club-settings" element={<ClubSettings currentUser={user} />} />
-                    </Routes>
+                  <Routes location={location}>
+                    <Route path="/" element={<Auth user={user} />} />
+                    <Route path="/feed" element={<Feed currentUser={user} onFeedLoad={() => setLoading(false)} />} />
+                    <Route path="/standings" element={<Standings onConstructorSelect={handleSelectConstructor} currentUser={user} />} />
+                    <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
+                    <Route path="/races" element={<RacesList currentUser={user} />} />
+                    <Route path="/constructor-details" element={<ConstructorDetails constructor={selectedConstructor} goBack={handleBackToConstructors} currentUser={user} />} />
+                    <Route path="/races/:raceId" element={<RaceDetails currentUser={user} />} />
+                    <Route path="/profile" element={<Profile currentUser={user} />} />
+                    <Route path="/userprofile/:uid" element={<UserProfile currentUser={user} />} />
+                    <Route path="/usersearch" element={<UserSearch currentUser={user} />} />
+                    <Route path="/userprofile/:username/followers" element={<FollowersList currentUser={user} />} />
+                    <Route path="/news/new" element={<NewsCreator />} />
+                    <Route path="/news/:id" element={<NewsDetail />} />
+                    <Route path="/services" element={<Services currentUser={user} />} />
+                    <Route path="/info" element={<InfoPage />} />
+                    <Route path="/champions" element={<ChampionsList />} />
+                    <Route path="/creatorForm" element={<CreatorForm currentUser={user} />} />
+                    <Route path="/creatorView" element={<CreatorView currentUser={user} />} />
+                    <Route path="/create-post" element={<CreatePost currentUser={user} />} />
+                    <Route path="/creator-panel" element={<CreatorPanel currentUser={user} />} />
+                    <Route path="/creator-new-post" element={<ArticleCreator currentUser={user} />} />
+                    <Route path="/articles/edit/:id" element={<EditArticle currentUser={user} />} />
+                    <Route path="/articles" element={<ArticlesList currentUser={user} />} />
+                    <Route path="/articles/view/:articleId" element={<ArticleView />} />
+                    <Route path="/club-create" element={<ClubCreate currentUser={user} />} />
+                    <Route path="/club/:clubId" element={<ClubPage currentUser={user} />} />
+                    <Route path="/club-articles" element={<ClubArticles currentUser={user} />} />
+                    <Route path="/like" element={<LikeButton currentUser={user} />} />
+                    <Route path="/club-search" element={<ClubSearch currentUser={user} />} />
+                    <Route path="/club-settings" element={<ClubSettings currentUser={user} />} />
+                    <Route path="/settings" element={<SettingsPage currentUser={user} setCurrentUser={setUser} />} />
+                  </Routes>
                 </div>
               </CSSTransition>
             </TransitionGroup>
           </div>
-          <BottomNavigation setActivePage={handlePageChange} currentUser={user}/>
+          <BottomNavigation setActivePage={handlePageChange} currentUser={user} />
         </>
       )}
     </div>
