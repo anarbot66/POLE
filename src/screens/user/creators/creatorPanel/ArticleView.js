@@ -43,8 +43,8 @@ const ArticleView = () => {
       style={{
         margin: "0 auto",
         padding: "20px",
-        lineHeight: 1.6,
-        marginBottom: 70
+        lineHeight: 1.7,
+        marginBottom: "70px"
       }}
     >
       <div style={{width: "100%"}}>
