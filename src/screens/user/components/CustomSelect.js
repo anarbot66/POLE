@@ -27,7 +27,7 @@ const CustomSelect = ({ options, value, onChange, style }) => {
       <div
         onClick={() => setOpen((prev) => !prev)}
         style={{
-          padding: "10px",
+          padding: "10px 10px 0px 10px",
           borderRadius: "8px",
           color: "white",
           cursor: "pointer",

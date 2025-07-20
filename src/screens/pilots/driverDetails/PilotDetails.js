@@ -1,71 +1,148 @@
 // PilotDetails.js
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { CSSTransition } from "react-transition-group";
-import CustomSelect from "../../user/components/CustomSelect";
-import { db } from "../../../firebase";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import BiographyTab from "./BiographyTab";
 import FavoriteButton from "./FavoriteButton";
 import { usePilotData } from "./usePilotData";
 import { usePilotStats } from "./usePilotStats";
-import allTimeStats from "../../recources/json/allTimeStats.json";
 import { teamColors } from "./constants";
+import SeasonPickerModal from "../../components/SeasonPickerModal";
+import { useSwipeable } from 'react-swipeable';
+import Hint from "../../user/services/Hint";
 
-const tabOptions = [
-  { value: "biography", label: "Биография" },
-  { value: "seasons", label: "Сезоны" },
-  { value: "allTime", label: "За всё время" }
-];
+const driverRating = {
+  "verstappen": "92",
+  "norris": "95",
+  "leclerc": "90",
+  "piastri": "98",
+  "sainz": "80",
+  "russell": "91",
+  "hamilton": "85",
+  "pérez": "N/A",
+  "alonso": "80",
+  "gasly": "79",
+  "hulkenberg": "83",
+  "tsunoda": "79",
+  "stroll": "73",
+  "ocon": "81",
+  "magnussen": "N/A",
+  "albon": "88",
+  "ricciardo": "N/A",
+  "bearman": "79",
+  "colapinto": "70",
+  "zhou": "N/A",
+  "lawson": "78",
+  "bottas": "N/A",
+  "sargeant": "N/A",
+  "doohan": "N/A",
+  "antonelli": "85",
+  "bortoleto": "75",
+  "hadjar": "82"
+};
+
+
 
 const PilotDetails = ({ currentUser }) => {
   const { lastName } = useParams();
   const navigate = useNavigate();
-  const { pilot, biography, seasons, loading, error } = usePilotData(lastName);
+  const { pilot, biography, seasons, loading } = usePilotData(lastName);
   const [activeTab, setActiveTab] = useState("biography");
   const [selectedYear, setSelectedYear] = useState("");
+  const [imageSrc, setImageSrc] = useState(null);
+  const [imgLoading, setImgLoading] = useState(true);
+  const rating = driverRating[lastName] || "N/A";
+  const tabs = ['biography','seasons'];
+  const labels = {
+    biography: 'Биография',
+    seasons:  'Сезоны'
+  };
+
+  const [tipOpen, setTipOpen] = useState(false);
+
+  const showTip = () => setTipOpen(true);
   
   // Для сезонной статистики
   const { seasonStats, loadingStats } = usePilotStats(pilot, selectedYear);
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const goPrev = () => {
+    const i = tabs.indexOf(activeTab);
+    const prev = tabs[(i - 1 + tabs.length) % tabs.length];
+    setActiveTab(prev);
+  };
+  const goNext = () => {
+    const i = tabs.indexOf(activeTab);
+    const next = tabs[(i + 1) % tabs.length];
+    setActiveTab(next);
+  };
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft:  () => goNext(),
+    onSwipedRight: () => goPrev(),
+    trackMouse: true,    // чтобы работало и мышью
+    preventDefaultTouchmoveEvent: true
+  });
+
   
   useEffect(() => {
     if (seasons.length > 0) {
       setSelectedYear(seasons[0]);
     }
   }, [seasons]);
+
+  useEffect(() => {
+    const loadPilotImage = async () => {
+      if (!pilot) return;
+
+      const fileName = pilot.Driver.familyName
+        .toLowerCase()
+        .replace(/\s+/g, '-');
+
+      try {
+        const imageModule = await import(
+          /* webpackMode: "lazy-once" */
+          `../../recources/images/pilots/${fileName}.jpg`
+        );
+        const img = new Image();
+        img.src = imageModule.default;
+        img.onload = () => {
+          setImageSrc(imageModule.default);
+          setImgLoading(false);   // всё, картинка загрузилась
+        };
+        img.onerror = () => {
+          console.error("Ошибка загрузки изображения");
+          setImgLoading(false);   // сбросим загрузку, чтобы не вешать экран
+        };
+      } catch (error) {
+        console.error("Ошибка загрузки изображения", error);
+        setImgLoading(false);
+      }
+    };
+
+    loadPilotImage();
+  }, [pilot]);
   
-  if (loading || !pilot) return <div> </div>;
-  if (error) return <div>{error}</div>;
-  
+  if (loading || !pilot || imgLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span> </span>
+      </div>
+    );
+  }
   
   const goBack = () => {
     navigate(-1);
   };
 
-  // Пример отображения даты (можно вынести в отдельную утилиту)
-  const getFormattedDate = () => {
-    const now = new Date();
-    const day = now.getDate();
-    const monthNames = [
-      "января", "февраля", "марта", "апреля", "мая", "июня",
-      "июля", "августа", "сентября", "октября", "ноября", "декабря"
-    ];
-    const month = monthNames[now.getMonth()];
-    const year = now.getFullYear();
-    return `${day} ${month} ${year}`;
-  };
-  const formattedDate = getFormattedDate();
   
-  // Данные для вкладки "За всё время"
-  const normalizedPilotName = lastName; // Если ключи в allTimeStats совпадают с lastName
-  const allTimeData = allTimeStats[normalizedPilotName];
 
   return (
     <div
       style={{
         width: "calc(100% - 20px)",
         margin: "10px",
-        padding: "15px",
-        background: "#212124",
+        padding: "10px",
         height: "100%",
         marginBottom: "100px",
         overflowY: "auto",
@@ -76,12 +153,46 @@ const PilotDetails = ({ currentUser }) => {
         marginTop: "10px"
       }}
     >
-      {/* Заголовок и кнопка "Назад" */}
+      <div style={{ 
+  textAlign: "center", 
+  position: "absolute", 
+  zIndex: -1, 
+  margin: 0, 
+  top: 0, 
+  width: "100%", 
+  height: "400px", 
+  overflow: "hidden", 
+  left: 0,
+}}>
+  <img
+    src={imageSrc}
+    alt=" "
+    style={{ 
+      width: "100%", 
+      height: '400px', 
+      objectFit: 'cover',
+      display: "block",
+      position: "relative",
+      zIndex: 1,
+    }}
+  />
+  <div
+    style={{
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '400px', 
+      background: "linear-gradient(to top, rgba(0, 0, 0, 1), transparent)",
+      zIndex: 2,
+      pointerEvents: "none",
+    }}
+  />
+</div>
       <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
         <button
           onClick={goBack}
           style={{
-            backgroundColor: "#212124",
             color: "white",
             border: "none",
             padding: "5px",
@@ -92,25 +203,44 @@ const PilotDetails = ({ currentUser }) => {
         >
           ✕
         </button>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          <div style={{ color: "white", fontSize: "16px", fontFamily: "Inter" }}>
-            {pilot.Driver.translatedName}
-          </div>
-          <div style={{ color: teamColors[pilot.Constructors[0].name] || "#000000", fontSize: "12px", fontFamily: "Inter" }}>
-            {pilot.Constructors[0].name}
-          </div>
-        </div>
-        {/* Кнопка для избранного */}
         
       </div>
 
-      {/* Линия в цвет команды */}
-      <div style={{ width: "100%", height: "5px", background: teamColors[pilot.Constructors[0].name] || "#000000" }} />
-      <FavoriteButton 
+      <div style={{ display: "flex", marginTop: '230px'}}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: '10px' }}>
+          <div>
+          <div style={{ color: "white", fontSize: "26px", fontFamily: "Inter" }}>
+            {pilot.Driver.translatedName}
+          </div>
+          <div style={{ color: teamColors[pilot.Constructors[0].name] || "#000000", fontSize: "20px", fontFamily: "Inter" }}>
+            {pilot.Constructors[0].name}
+          </div>
+          </div>
+          <FavoriteButton 
       currentUser={currentUser} 
       pilot={pilot} 
       teamColor={teamColors[pilot.Constructors[0].name] || "#000000"} 
     />
+        </div>
+        <div onClick={showTip} style={{display: 'flex', flexDirection: 'column'}}>
+          <span style={{ color: "white", fontSize: "50px", height: '63px', marginTop: -10 }}>
+          {rating}
+          </span>
+          <span style={{ color: "white", fontSize: "10px", textAlign: 'center' }}>
+          Рейтинг
+          </span>
+          </div>
+          
+      </div>
+
+      <Hint
+        isOpen={tipOpen}
+        message="Рейтинг пилота от Apex"
+        onClose={() => setTipOpen(false)}
+        duration={3000} // 10 секунд
+      />
+        
+
 
 
       {/* Статистика пилота за текущий сезон (локальные данные) */}
@@ -154,115 +284,168 @@ const PilotDetails = ({ currentUser }) => {
         </div>
       </div>
 
-      {/* Переключение вкладок */}
-      <div style={{ width: "100%", marginTop: "20px" }}>
-        <CustomSelect
-          options={tabOptions}
-          value={activeTab}
-          onChange={(val) => setActiveTab(val)}
-          style={{ width: "100%" }}
-        />
-      </div>
+      <div
+  style={{
+    position: 'relative',
+    display: 'flex',
+    marginTop: '10px',
+    overflow: 'hidden',
+    padding: '2px'
+  }}
+>
+  {tabs.map(tab => (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      style={{
+        flex: 1,
+        padding: '10px 0',
+        background: 'transparent',
+        color: 'white',
+        boxShadow: activeTab === tab
+          ? '0 0 0 1px rgba(255,255,255,0.2)'
+          : '0 0 0 0 rgba(255,255,255,0)',
+        borderRadius: '10px',
+        cursor: 'pointer',
+        fontSize: 14,
+        textAlign: 'center',
+        transition: 'box-shadow 0.3s ease'
+      }}
+    >
+      {labels[tab]}
+    </button>
+  ))}
+</div>
 
-      {/* Контент вкладок */}
+<TransitionGroup>
+          <CSSTransition
+            key={activeTab}
+            classNames="tab"
+            timeout={400}
+          >
+            <div {...swipeHandlers} className="">
       {activeTab === "biography" && <BiographyTab biography={biography} />}
       
       {activeTab === "seasons" && (
-        <>
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "8px",
-              border: "2px solid #1D1D1F",
-              backgroundColor: "#1D1D1F",
-              fontSize: "14px",
-              color: "white",
-              cursor: "pointer"
-            }}
-          >
-            {seasons.map((year, index) => (
-              <option key={index} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-          {loadingStats ? (
-            <div> </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: "12px", marginTop: "10px" }}>
-              {/* Здесь также можно вынести компонент для отображения отдельного показателя */}
-              <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                  {selectedYear === "2024" ? pilot.position : seasonStats.position}
-                </span>
-                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОЗИЦИЯ</div>
-              </div>
-              <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                  {selectedYear === "2024" ? pilot.points : seasonStats.points}
-                </span>
-                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
-              </div>
-              <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                  {seasonStats.wins}
-                </span>
-                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
-              </div>
-              <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                  {seasonStats.podiums || 0}
-                </span>
-                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
-              </div>
-              <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                  {seasonStats.poles || 0}
-                </span>
-                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>
-              </div>
-              <div style={{ width: "65px", textAlign: "center" }}>
-                <span style={{ color: "white", fontSize: "16px", fontFamily: "Inter", fontWeight: "600" }}>
-                  {seasonStats.dnf || 0}
-                </span>
-                <div style={{ color: "#B9B9B9", fontSize: "10px" }}>DNF</div>
-              </div>
-            </div>
-          )}
-        </>
-      )}
+  <div
+  style={{
+    height: "300px",     
+    overflowY: "auto",    
+  }}
+>
+    <button
+      onClick={() => setPickerOpen(true)}
+      style={{
+        width: "100%",
+        padding: "10px 15px",
+        borderRadius: "10px",
+        border: "1px solid #505050",
+        background: "transparent",
+        color: "#fff",
+        fontSize: "13px",
+        fontFamily: "Inter",
+        fontWeight: 500,
+        letterSpacing: "0.65px",
+        textAlign: "left",
+        cursor: "pointer",
+      }}
+    >
+      {selectedYear || "Выберите сезон"}
+    </button>
 
-      {activeTab === "allTime" && (
-        <div
-          style={{
-            width: "100%",
-            backgroundColor: "#212124",
-            borderRadius: "8px",
-            fontSize: "14px",
-            color: "white",
-            padding: "10px"
-          }}
-        >
-          {allTimeData ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div>WDC (Чемпионства): {allTimeData.personalChampionships}</div>
-              <div>WCC (Кубки конструкторов): {allTimeData.constructorsChampionships}</div>
-              <div>Гонок: {allTimeData.races}</div>
-              <div>Подиумов: {allTimeData.podiums}</div>
-              <div>Побед: {allTimeData.wins}</div>
-              <div>Поулов: {allTimeData.poles}</div>
-              <div>Очков: {allTimeData.points}</div>
-              <div>Гранд-слемов: {allTimeData.grandSlams}</div>
-            </div>
-          ) : (
-            <div>Статистика не найдена</div>
-          )}
+    <CSSTransition
+  in={pickerOpen}
+  timeout={300}
+  classNames="window-fade"
+  unmountOnExit
+  mountOnEnter
+  appear
+>
+  <SeasonPickerModal
+    seasons={seasons}
+    isOpen={pickerOpen}
+    onClose={() => setPickerOpen(false)}
+    onSelect={(year) => setSelectedYear(year)}
+  />
+</CSSTransition>
+
+
+
+<CSSTransition
+      in={!loadingStats}         // показываться, когда данные загрузились
+      timeout={300}
+      classNames="window-fade"
+      mountOnEnter                // не рендерить до начала анимации
+      unmountOnExit               // удалять после скрытия
+      appear                      // анимировать при первом появлении
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          gap: "12px",
+          marginTop: "10px"
+        }}
+      >
+        {/* ПОЗИЦИЯ */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+            {seasonStats.position}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОЗИЦИЯ</div>
         </div>
-      )}
 
+        {/* ОЧКОВ */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+            {seasonStats.points}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ОЧКОВ</div>
+        </div>
+
+        {/* ПОБЕД */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+            {seasonStats.wins}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОБЕД</div>
+        </div>
+
+        {/* ПОДИУМОВ */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+            {seasonStats.podiums}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОДИУМОВ</div>
+        </div>
+
+        {/* ПОУЛОВ */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+            {seasonStats.poles}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>ПОУЛОВ</div>
+        </div>
+
+        {/* DNF */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+            {seasonStats.dnf}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>DNF</div>
+        </div>
+      </div>
+    
+    </CSSTransition>
+  </div>
+)}
+</div>
+      </CSSTransition>
+        </TransitionGroup>
+
+
+  
       {/* Плавное появление уведомления реализовано через CSSTransition */}
       <CSSTransition
         in={false}  // Здесь логика показа уже вынесена в FavoriteButton
@@ -286,7 +469,6 @@ const PilotDetails = ({ currentUser }) => {
         >
           <div
             style={{
-              background: "#1D1D1F",
               padding: "20px",
               borderRadius: "20px",
               textAlign: "center",
@@ -298,9 +480,8 @@ const PilotDetails = ({ currentUser }) => {
             <button
               onClick={() => {}}
               style={{
-                background: "#212124",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
                 color: "white",
-                border: "none",
                 padding: "10px 20px",
                 borderRadius: "15px",
                 cursor: "pointer",

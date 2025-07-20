@@ -1,7 +1,10 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect} from "react";
 import RaceDetails from "./RaceDetails";
-import { useLocation, useNavigate } from "react-router-dom";
-import { ThemeContext } from "../user/ThemeContext"; // Проверь путь к ThemeContext
+import { useNavigate } from "react-router-dom";
+import { useSwipeable } from 'react-swipeable';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import NotificationsPanel from '../user/notify/NotificationsPanel'
+import UserStats from "../user/components/UserStats";
 
 const countryToFlag = {
   "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
@@ -51,12 +54,80 @@ const formatRaceWeekend = (firstPracticeDate, raceDate) => {
   return `${startDate.getDate()} ${months[startDate.getMonth()]}`;
 };
 
+
+
 const RacesList = ({ currentUser }) => {
   const [races, setRaces] = useState([]);
   const [selectedRace, setSelectedRace] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { theme } = useContext(ThemeContext); // Получаем объект темы
+  const [activeTab, setActiveTab] = useState("upcoming");
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(null);
+
+  
+
+  const tabs = ['upcoming','past'];
+  const goPrev = () => {
+    const i = tabs.indexOf(activeTab);
+    const prev = tabs[(i - 1 + tabs.length) % tabs.length];
+    setActiveTab(prev);
+  };
+  const goNext = () => {
+    const i = tabs.indexOf(activeTab);
+    const next = tabs[(i + 1) % tabs.length];
+    setActiveTab(next);
+  };
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft:  () => goNext(),
+    onSwipedRight: () => goPrev(),
+    trackMouse: true,    // чтобы работало и мышью
+    preventDefaultTouchmoveEvent: true
+  });
+
+  const today = new Date();
+  const upcomingRaces = races.filter(r => new Date(r.FirstPractice.date) >= today);
+  const pastRaces     = races.filter(r => new Date(r.FirstPractice.date) <  today);
+
+  const nextRace = upcomingRaces.find(r => new Date(r.FirstPractice.date) > today);
+
+  const nextStartTs = nextRace
+  ? new Date(`${nextRace.FirstPractice.date}T${nextRace.FirstPractice.time}`).getTime()
+  : null;
+
+    useEffect(() => {
+      if (!nextStartTs) return;
+    
+      const update = () => {
+        const now = new Date();
+        let diff = nextStartTs - now;
+    
+        if (diff <= 0) {
+          setTimeLeft({ hours: 0, mins: 0, secs: 0 });
+        } else {
+          // общее количество часов
+          const totalHours = Math.floor(diff / (1000 * 60 * 60));
+          diff -= totalHours * (1000 * 60 * 60);
+    
+          const mins = Math.floor(diff / (1000 * 60));
+          diff -= mins * (1000 * 60);
+    
+          const secs = Math.floor(diff / 1000);
+    
+          setTimeLeft({ hours: totalHours, mins, secs });
+        }
+      };
+    
+      update();
+  const timerId = setInterval(update, 1000);
+  return () => clearInterval(timerId);
+}, [nextStartTs]);
+    
+
+  const displayedRaces = activeTab === "upcoming"
+   ? upcomingRaces.filter(r => r !== nextRace)
+   : pastRaces;
 
   // Функция загрузки данных о гонках
   const fetchRaces = async () => {
@@ -72,6 +143,8 @@ const RacesList = ({ currentUser }) => {
       setError("Ошибка загрузки данных");
     }
   };
+
+  
 
   useEffect(() => {
     fetchRaces();
@@ -99,18 +172,16 @@ const RacesList = ({ currentUser }) => {
   // Функция возврата к списку гонок
   const handleBackToList = () => {
     setSelectedRace(null);
+    
   };
+
+  
 
   // Если выбрана гонка, показываем детали гонки
   if (selectedRace) {
     return <RaceDetails race={selectedRace} goBack={handleBackToList} />;
   }
 
-  const today = new Date();
-  const nextRace = races.find((race) => new Date(race.FirstPractice.date) > today);
-  const daysUntilNextRace = nextRace
-    ? Math.ceil((new Date(nextRace.FirstPractice.date) - today) / (1000 * 60 * 60 * 24))
-    : null;
 
   let nextRaceCountry = "";
   let nextRaceCountryCode = "";
@@ -120,31 +191,32 @@ const RacesList = ({ currentUser }) => {
     nextRaceCountryCode = countryToFlag[nextRaceCountry] || "un";
   }
 
-  const filteredRaces = races.filter((race) => race !== nextRace);
+  
+
 
   return (
     <div
       style={{
         width: "100%",
         height: "100%",
-        marginBottom: "100px",
+        marginBottom: "110px",
         overflowY: "auto",
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
-        gap: "15px",
-        backgroundColor: theme.primary // Используем основной цвет темы
+        gap: "20px",
       }}
     >
-      <div
+      <div 
         style={{
           width: "calc(100% - 30px)",
           margin: "0px 15px",
           paddingTop: "15px",
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
         }}
       >
+        <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15}}>
         <div
           style={{
             display: "flex",
@@ -164,19 +236,75 @@ const RacesList = ({ currentUser }) => {
               alignContent: "right"
             }} 
           />
-          <span style={{ color: "white", padding: "10px" }}>Расписание</span>
+          <span style={{ color: "white", padding: "10px", width: '100%'}}>Расписание</span>
+          {currentUser && <UserStats uid={currentUser.uid} />}
+
+          <NotificationsPanel
+        userId={currentUser.uid}
+        isOpen={showNotifs}
+        onClose={() => setShowNotifs(false)}
+      />
         </div>
-        {/* Блок с информацией о следующей гонке */}
-        {nextRace && (
-          <div
+        <div style={{
+            display: 'flex',
+            borderRadius: '20px',
+            marginTop: "10px"
+          }}>
+  <button
+            onClick={() => setActiveTab('upcoming')}
             style={{
-              width: "100%",
-              height: 250,
+              padding: '10px 20px',
+              width: '100%',
+              boxShadow: activeTab === 'upcoming' ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
+              color: 'white',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              transition: 'box-shadow 0.3s ease',
+              fontSize: 14
+            }}
+          >
+            Будущие 
+          </button>
+          <button
+            onClick={() => setActiveTab('past')}
+            style={{
+              padding: '10px 20px',
+              width: '100%',
+              boxShadow: activeTab === 'past' ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
+              color: 'white',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              transition: 'box-shadow 0.3s ease',
+              fontSize: 14
+            }}
+          >
+            Завершённые
+          </button>
+      </div>
+        </div>
+
+      </div>
+      <TransitionGroup>
+          <CSSTransition
+            key={activeTab}
+            classNames="tab"
+            timeout={400}
+          >
+            <div {...swipeHandlers} style={{
+              display: "flex",
+              gap: "15px",
+              flexDirection: 'column',
+              marginTop: '120px'
+            }}>
+              
+      {activeTab === 'upcoming' && nextRace && (
+          <div onClick={() => handleRaceSelect(nextRace)}
+            style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
               gap: 10,
-              marginTop: "15px"
+              margin: '0px 15px 0px 15px'
             }}
           >
             <div
@@ -184,7 +312,7 @@ const RacesList = ({ currentUser }) => {
                 width: "100%",
                 height: "100%",
                 padding: 20,
-                background: theme.secondary, // Используем вторичный цвет темы
+                border: "1px solid rgba(255, 255, 255, 0.2)",
                 borderRadius: 15,
                 display: "flex",
                 flexDirection: "column",
@@ -202,7 +330,6 @@ const RacesList = ({ currentUser }) => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    background: theme.primary
                   }}
                 >
                   <img
@@ -232,34 +359,27 @@ const RacesList = ({ currentUser }) => {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                 <div style={{ fontSize: 14, color: "white" }}>Начало через:</div>
-                <div style={{ fontSize: 28, color: "white" }}>{daysUntilNextRace} дней</div>
-              </div>
-              <div
-                style={{
-                  width: 121,
-                  height: 80,
-                  background: theme.accent, // Используем акцентный цвет темы
-                  borderRadius: 8,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  cursor: "pointer"
-                }}
-                onClick={() => handleRaceSelect(nextRace)}
-              >
-                <span style={{ color: "white", fontSize: 12 }}>Подробнее</span>
+                {timeLeft && (
+  <div style={{ fontSize: 28, color: "white" }}>
+    {String(timeLeft.hours).padStart(2, '0')}&nbsp;ч.&nbsp;
+    {String(timeLeft.mins).padStart(2, '0')}&nbsp;м.&nbsp;
+    {String(timeLeft.secs).padStart(2, '0')}&nbsp;с.&nbsp;
+  </div>
+)}
+
               </div>
             </div>
           </div>
         )}
-      </div>
-      {filteredRaces.map((race, index) => {
+
+      {displayedRaces.map((race, index) => {
         let countryName = race.Circuit.Location.country;
         if (countryName === "Great Britain") countryName = "United Kingdom";
         const countryCode = countryToFlag[countryName] || "un";
         const weekendDate = formatRaceWeekend(race.FirstPractice.date, race.date);
         const translatedRaceName = raceNameTranslations[race.raceName] || race.raceName;
-
+        
+        
         return (
           <div
             key={index}
@@ -268,11 +388,11 @@ const RacesList = ({ currentUser }) => {
               width: "calc(100% - 30px)",
               margin: "0px 15px",
               display: "flex",
-              background: theme.secondary, // Используем вторичный цвет для карточек
+              border: "1px solid rgba(255, 255, 255, 0.2)",
               borderRadius: "15px",
               justifyContent: "space-between",
               alignItems: "center",
-              gap: "12px",
+              gap: "15px",
               padding: "10px",
               cursor: "pointer"
             }}
@@ -286,7 +406,6 @@ const RacesList = ({ currentUser }) => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                background: theme.secondary
               }}
             >
               <img
@@ -327,6 +446,9 @@ const RacesList = ({ currentUser }) => {
           </div>
         );
       })}
+      </div>
+          </CSSTransition>
+        </TransitionGroup>
     </div>
   );
 };

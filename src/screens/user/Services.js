@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
+import NotificationsPanel from '../user/notify/NotificationsPanel'
+import { NavButton } from "./components/NavButton";
+import logo from "../recources/images/apex-logo.png";
+import UserStats from "./components/UserStats";
 
 const Services = ({currentUser}) => {
   const navigate = useNavigate();
   const [showNotification, setShowNotification] = useState(false);
-  const isAdminOrOwner = currentUser && (currentUser.role === "owner");
+  const [showNotifs, setShowNotifs] = useState(false);
 
   // Функция-обработчик для кнопок, где нет своей логики
   const handleUnavailableFeature = () => {
@@ -15,50 +19,44 @@ const Services = ({currentUser}) => {
   return (
     <div
       style={{
-        width: "calc(100% - 20px)",
+        width: "calc(100% - 30px)",
         height: "100%",
-        margin: "0 auto",
+        margin: "0px 15px",
         marginBottom: "100px",
         paddingTop: "15px"
       }}
-    >
+    ><div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15}}>
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: "10px",
-          padding: "10px",
-          borderRadius: 15
+          borderRadius: 15,
         }}
       >
-        <span style={{ color: "white", padding: "10px", fontSize: 22}}>
-          Сервисы
-        </span>
+        
+        <img onClick={() => navigate("/profile")} src={currentUser.photoUrl || "https://placehold.co/80x80"} alt="Avatar" style={{ width: "30px", height: "30px", borderRadius: "50%", alignContent: "right" }} />
+
+        <span style={{color: "white", padding: "10px", width: '100%'}}>Сервисы</span>
+        {currentUser && <UserStats uid={currentUser.uid} />}
+      </div>
       </div>
 
+      <NotificationsPanel
+        userId={currentUser.uid}
+        isOpen={showNotifs}
+        onClose={() => setShowNotifs(false)}
+      />
       <div
         style={{
           display: "flex",
-          gap: "20px",
-          alignItems: "flex-start"
+          gap: "30px",
+          alignItems: "flex-start",
+          marginTop: '90px'
         }}
       >
         {/* Кнопка "Информация" – навигация */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-          <div
-            onClick={() => navigate("/info")}
-            style={{
-              width: 60,
-              aspectRatio: 1,
-              borderRadius: 15,
-              backgroundColor: "#212124",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              transition: "background 0.3s ease, transform 0.2s ease"
-            }}
-          >
+        <NavButton label="Информация" onClick={() => navigate("/info")}>
             <span
               style={{
                 display: "flex",
@@ -70,8 +68,8 @@ const Services = ({currentUser}) => {
               }}
             >
               <svg
-                width="35"
-                height="35"
+                width="30"
+                height="30"
                 viewBox="0 0 35 35"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -86,26 +84,9 @@ const Services = ({currentUser}) => {
                 />
               </svg>
             </span>
-          </div>
-          <div style={{ marginTop: "8px", color: "white", fontSize: "10px" }}>Информация</div>
-        </div>
+            </NavButton>
 
-        {/* Кнопка "Друзья" – навигация */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-          <div
-            onClick={() => navigate("/usersearch")}
-            style={{
-              width: 60,
-              aspectRatio: 1,
-              borderRadius: 15,
-              backgroundColor: "#212124",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              transition: "background 0.3s ease, transform 0.2s ease"
-            }}
-          >
+        <NavButton label="Люди" onClick={() => navigate("/usersearch")}>
             <span
               style={{
                 display: "flex",
@@ -135,142 +116,9 @@ const Services = ({currentUser}) => {
                 />
               </svg>
             </span>
-          </div>
-          <div style={{ marginTop: "8px", color: "white", fontSize: "10px" }}>Друзья</div>
-        </div>
+            </NavButton>
 
-        {/* Кнопка "Настройки" – пока не реализовано, поэтому обработчик открытия уведомления */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-          <div
-            style={{
-              width: 60,
-              aspectRatio: 1,
-              borderRadius: 15,
-              backgroundColor: "#212124",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              transition: "background 0.3s ease, transform 0.2s ease"
-            }}
-          >
-            <span
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: 30,
-                height: 30,
-                color: "white"
-              }}
-            >
-              <svg width="25" height="26" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M14.6948 2.14123C14.0498 -0.0470764 10.9502 -0.0470756 10.3052 2.14123L10.1488 2.67192C9.73667 4.07016 8.13961 4.73168 6.8595 4.03439L6.37364 3.76975C4.37019 2.67846 2.17846 4.8702 3.26975 6.87364L3.53439 7.3595C4.23168 8.63962 3.57016 10.2367 2.17192 10.6488L1.64123 10.8052C-0.547076 11.4502 -0.547076 14.5498 1.64123 15.1948L2.17192 15.3512C3.57016 15.7633 4.23168 17.3604 3.53439 18.6405L3.26975 19.1264C2.17846 21.1298 4.37019 23.3215 6.37364 22.2303L6.8595 21.9656C8.13961 21.2683 9.73667 21.9298 10.1488 23.3281L10.3052 23.8588C10.9502 26.0471 14.0498 26.0471 14.6948 23.8588L14.8512 23.3281C15.2633 21.9298 16.8604 21.2683 18.1405 21.9656L18.6264 22.2303C20.6298 23.3215 22.8215 21.1298 21.7303 19.1264L21.4656 18.6405C20.7683 17.3604 21.4298 15.7633 22.8281 15.3512L23.3588 15.1948C25.5471 14.5498 25.5471 11.4502 23.3588 10.8052L22.8281 10.6488C21.4298 10.2367 20.7683 8.63962 21.4656 7.3595L21.7303 6.87364C22.8215 4.87019 20.6298 2.67847 18.6264 3.76975L18.1405 4.0344C16.8604 4.73168 15.2633 4.07016 14.8512 2.67192L14.6948 2.14123ZM12.5 17.5763C9.97259 17.5763 7.92373 15.5274 7.92373 13C7.92373 10.4726 9.97259 8.42373 12.5 8.42373C15.0274 8.42373 17.0763 10.4726 17.0763 13C17.0763 15.5274 15.0274 17.5763 12.5 17.5763Z"
-                  fill="white"
-                />
-              </svg>
-            </span>
-          </div>
-          <div style={{ marginTop: "8px", color: "white", fontSize: "10px" }}>Настройки</div>
-        </div>
-
-        {/* Кнопка "Магазин" – пока не реализовано */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-          <div
-            onClick={() => navigate("/club-search")}
-            style={{
-              width: 60,
-              aspectRatio: 1,
-              borderRadius: 15,
-              backgroundColor: "#212124",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              transition: "background 0.3s ease, transform 0.2s ease"
-            }}
-          >
-            <span
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: 30,
-                height: 30,
-                color: "white"
-              }}
-            >
-              <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.64428 24.1292C5.04046 24.4396 4.35677 23.8972 4.47833 23.2043L5.77478 15.8145L0.271134 10.5697C-0.243211 10.0796 0.0230394 9.18338 0.712085 9.0855L8.36595 7.9982L11.7786 1.23798C12.0861 0.629008 12.9188 0.629008 13.2262 1.23798L16.6389 7.9982L24.2928 9.0855C24.9818 9.18338 25.2481 10.0796 24.7337 10.5697L19.2301 15.8145L20.5266 23.2043C20.6481 23.8972 19.9644 24.4396 19.3606 24.1292L12.5024 20.6043L5.64428 24.1292Z" fill="white"/>
-              </svg>
-            </span>
-          </div>
-          <div style={{ marginTop: "8px", color: "white", fontSize: "10px" }}>Клубы</div>
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          marginTop: "20px",
-          gap: "20px",
-          alignItems: "flex-start"
-        }}
-      >
-        {/* Кнопка "Креаторство" – пока не реализовано */}
-        <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
-          <div
-            onClick={() => navigate("/creatorForm")}
-            style={{
-              width: 60,
-              aspectRatio: 1,
-              borderRadius: 15,
-              backgroundColor: "#212124",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              transition: "background 0.3s ease, transform 0.2s ease"
-            }}
-          >
-            <span
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: 30,
-                height: 30,
-                color: "white"
-              }}
-            >
-              <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M24.727 0.187953C24.9896 0.412916 25.0731 0.783739 24.9322 1.09953C22.5408 6.46043 17.5214 13.8661 13.8471 17.7262C12.8548 18.7687 11.7907 19.407 10.974 19.7852C10.6527 19.934 10.3681 20.0434 10.1386 20.1218C10.1109 20.4767 10.0448 20.9623 9.888 21.4775C9.57459 22.5072 8.84739 23.7888 7.22069 24.1954C5.54544 24.6142 3.67891 24.6148 2.41063 24.4034C2.08962 24.3499 1.79021 24.2802 1.53192 24.1928C1.29009 24.111 1.0166 23.9918 0.803921 23.8057C0.693299 23.7089 0.562606 23.5624 0.486434 23.3564C0.403344 23.1317 0.405319 22.8885 0.492134 22.6642C0.640586 22.2806 0.986515 22.0708 1.21309 21.9575C1.82723 21.6504 2.18902 21.2504 2.56759 20.668C2.71475 20.4416 2.85509 20.2028 3.01561 19.9296C3.07333 19.8314 3.13366 19.7288 3.19785 19.6207C3.43451 19.2221 3.70774 18.7775 4.05176 18.2959C4.87646 17.1413 5.92788 16.8508 6.77933 16.8956C6.97652 16.906 7.15957 16.9338 7.32346 16.9698C7.42067 16.7012 7.54487 16.3769 7.69536 16.0203C8.10334 15.0535 8.72335 13.8036 9.55044 12.7879C12.9491 8.61433 19.2052 3.09057 23.7947 0.125066C24.0852 -0.0625926 24.4644 -0.0370105 24.727 0.187953Z"
-                  fill="white"
-                />
-              </svg>
-            </span>
-          </div>
-          <div style={{ marginTop: "8px", color: "white", fontSize: "10px" }}>Креаторство</div>
-        </div>
-
-        {/* Кнопка "Зал славы" – пока не реализовано */}
-        <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
-          <div
-            onClick={handleUnavailableFeature}
-            style={{
-              width: 60,
-              aspectRatio: 1,
-              borderRadius: 15,
-              backgroundColor: "#212124",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              transition: "background 0.3s ease, transform 0.2s ease"
-            }}
-          >
+            <NavButton label="Зал славы" onClick={handleUnavailableFeature}>
             <span
               style={{
                 display: "flex",
@@ -292,26 +140,9 @@ const Services = ({currentUser}) => {
                 />
               </svg>
             </span>
-          </div>
-          <div style={{ marginTop: "8px", color: "white", fontSize: "10px" }}>Зал славы</div>
-        </div>
+            </NavButton>
 
-        {/* Кнопка "Чемпионы" – пока не реализовано */}
-        <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
-          <div
-            onClick={() => navigate("/champions")}
-            style={{
-              width: 60,
-              aspectRatio: 1,
-              borderRadius: 15,
-              backgroundColor: "#212124",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              transition: "background 0.3s ease, transform 0.2s ease"
-            }}
-          >
+        <NavButton label="Чемпионы" onClick={() => navigate("/champions")}>
             <span
               style={{
                 display: "flex",
@@ -329,27 +160,20 @@ const Services = ({currentUser}) => {
                 />
               </svg>
             </span>
-          </div>
-          <div style={{ marginTop: "8px", color: "white", fontSize: "10px" }}>Чемпионы</div>
-        </div>
+            </NavButton>
 
-        {/* Кнопка "Мой пилот" – навигация */}
-        <div style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
-          <div
-            onClick={() => navigate("/creatorView")}
-            style={{
-              width: 60,
-              aspectRatio: 1,
-              borderRadius: 15,
-              backgroundColor: "#212124",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              opacity: isAdminOrOwner ? 1 : 0,  // Если роль не admin/owner, кнопка станет прозрачной
-              pointerEvents: isAdminOrOwner ? "auto" : "none" // Отключаем клики, если кнопка скрыта
-            }}
-          >
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "30px",
+          alignItems: "flex-start",
+          marginTop: '20px'
+        }}
+      >
+        {/* Кнопка "Информация" – навигация */}
+        <NavButton label="Настройки" onClick={handleUnavailableFeature}>
             <span
               style={{
                 display: "flex",
@@ -360,22 +184,176 @@ const Services = ({currentUser}) => {
                 color: "white"
               }}
             >
-              <svg width="29" height="26" viewBox="0 0 29 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M4.1092 19.3357C12.4414 19.2265 16.9011 19.9816 24.4648 22.8439L26 19.3357L26.5 18C26.7472 17.1328 28.1324 15.9232 27.5 15.5C23.6164 12.9011 17.7004 15.7072 16.785 13.5456C16.2335 12.2435 15.4291 11.131 16.2321 9.96707C17.2904 8.43309 21.3312 10.4817 24.1431 9.81629C19.5325 0.922891 15.3149 -1.26017 4.10395 3.34909C3.60614 3.85809 5.23291 3.64099 3.74206 4.50508C2.25121 5.36918 -1.68967 13.9511 3.90816 18.8532L4.1092 19.3357Z"
-                  fill="white"
-                  stroke="white"
-                />
-                <path
-                  d="M9.31759 20.8006C9.31759 21.187 8.88146 21.1663 8.58449 21.187C6.85154 21.3292 5.95348 20.8474 4.38198 20.5493C4.03756 20.4464 4.01144 19.7394 4 19.5C5.33792 19.4001 6.44985 19.9688 9.31759 20.0768M9.31759 20.8006V20.0768M9.31759 20.8006C10 21.5 9.97101 21.4756 11 21.5C14.4662 22.0271 16.5614 22.1174 19.4602 23.2935M9.31759 20.0768C13.6608 20.3806 17.8968 19.9046 21.8759 21.187M19.4602 23.2935C19.8953 22.8886 21.8868 21.7026 21.8759 21.187M19.4602 23.2935C19.9013 23.8011 20.2175 24.0543 21.0384 24.3892C22.4365 24.8206 23.0805 24.5637 24.1847 23.9469C24.3779 23.8283 24.3154 23.5673 24.3154 23.5673C24.5059 23.6703 23.8938 21.7528 21.8759 21.187"
-                  stroke="white"
-                />
-              </svg>
+              <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.5727 2.29772C19.6697 -0.765907 15.3303 -0.765906 14.4273 2.29772L14.2083 3.04069C13.6313 4.99822 11.3955 5.92435 9.6033 4.94815L8.9231 4.57765C6.11827 3.04985 3.04985 6.11827 4.57765 8.9231L4.94815 9.6033C5.92435 11.3955 4.99822 13.6313 3.04069 14.2083L2.29772 14.4273C-0.765907 15.3303 -0.765906 19.6697 2.29772 20.5727L3.04069 20.7917C4.99822 21.3687 5.92435 23.6045 4.94815 25.3967L4.57765 26.0769C3.04985 28.8817 6.11827 31.9502 8.92309 30.4224L9.6033 30.0518C11.3955 29.0757 13.6313 30.0018 14.2083 31.9593L14.4273 32.7023C15.3303 35.7659 19.6697 35.7659 20.5727 32.7023L20.7917 31.9593C21.3687 30.0018 23.6045 29.0757 25.3967 30.0518L26.0769 30.4224C28.8817 31.9502 31.9502 28.8817 30.4224 26.0769L30.0518 25.3967C29.0756 23.6045 30.0018 21.3687 31.9593 20.7917L32.7023 20.5727C35.7659 19.6697 35.7659 15.3303 32.7023 14.4273L31.9593 14.2083C30.0018 13.6313 29.0756 11.3955 30.0518 9.6033L30.4224 8.92309C31.9502 6.11827 28.8817 3.04985 26.0769 4.57765L25.3967 4.94815C23.6045 5.92435 21.3687 4.99822 20.7917 3.04069L20.5727 2.29772ZM17.5 23.9068C13.9616 23.9068 11.0932 21.0384 11.0932 17.5C11.0932 13.9616 13.9616 11.0932 17.5 11.0932C21.0384 11.0932 23.9068 13.9616 23.9068 17.5C23.9068 21.0384 21.0384 23.9068 17.5 23.9068Z" fill="white"/>
+</svg>
+
             </span>
-          </div>
-          <div style={{ marginTop: "8px", color: "white", fontSize: "10px", opacity: isAdminOrOwner ? 1 : 0}}>Заявки</div>
-        </div>
+            </NavButton>
+
+        <NavButton label="Магазин" onClick={handleUnavailableFeature}>
+            <span
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: 30,
+                height: 30,
+                color: "white"
+              }}
+            >
+              <img src={logo} alt="Логотип" />
+            </span>
+            </NavButton>
+
+            <NavButton label="Награды" onClick={() => navigate("/daily-rewards")}>
+            <span
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: 30,
+                height: 30,
+                color: "white"
+              }}
+            >
+              <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.84375 1.09375C4.99129 0.897027 5.22285 0.78125 5.46875 0.78125H19.5312C19.7773 0.78125 20.009 0.897188 20.1565 1.09414L24.8067 7.30249C25.039 7.59161 25.05 8.0062 24.823 8.30887L13.125 23.9063C12.9775 24.103 12.7459 24.2188 12.5 24.2188C12.2541 24.2188 12.0225 24.103 11.875 23.9063L0.15625 8.28125C-0.0520833 8.00347 -0.0520833 7.62153 0.15625 7.34375L4.84375 1.09375ZM22.6343 7.00846L19.8124 3.24097L18.6 7.01267L22.6343 7.00846ZM16.9582 7.01438L18.4595 2.34375H6.54048L8.04474 7.02368L16.9582 7.01438ZM8.54681 8.58565L12.5 20.8845L16.4558 8.57741L8.54681 8.58565ZM6.40406 7.02539L5.18729 3.23987L2.34497 7.02962L6.40406 7.02539ZM2.34253 8.59212L10.3315 19.2441L6.90613 8.58736L2.34253 8.59212ZM14.6685 19.2441L22.6734 8.57092L18.0976 8.57569L14.6685 19.2441Z" fill="white"/>
+</svg>
+
+            </span>
+            </NavButton>
+
+        <NavButton label="Угадайки"  onClick={handleUnavailableFeature}>
+            <span
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: 30,
+                height: 30,
+                color: "white"
+              }}
+            >
+              <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.26972 1.36062C11.0412 -0.453541 13.9588 -0.45354 15.7303 1.36062L16.7019 2.35568L18.0926 2.33911C20.628 2.30891 22.6911 4.37201 22.6609 6.90743L22.6443 8.29808L23.6394 9.26972C25.4535 11.0412 25.4535 13.9588 23.6394 15.7303L22.6443 16.7019L22.6609 18.0926C22.6911 20.628 20.628 22.6911 18.0926 22.6609L16.7019 22.6443L15.7303 23.6394C13.9588 25.4535 11.0412 25.4535 9.26972 23.6394L8.29808 22.6443L6.90743 22.6609C4.37201 22.6911 2.30891 20.628 2.33911 18.0926L2.35568 16.7019L1.36062 15.7303C-0.453541 13.9588 -0.45354 11.0412 1.36062 9.26972L2.35568 8.29808L2.33911 6.90743C2.30891 4.37201 4.37201 2.30891 6.90743 2.33911L8.29808 2.35568L9.26972 1.36062ZM10.94 17.1875C10.94 18.0504 11.6395 18.75 12.5025 18.75C13.3654 18.75 14.065 18.0504 14.065 17.1875C14.065 16.3246 13.3654 15.625 12.5025 15.625C11.6395 15.625 10.94 16.3246 10.94 17.1875ZM13.4437 14.0198C13.5056 13.1866 13.7531 12.7472 14.7664 12.0514C15.8184 11.3098 16.4062 10.3485 16.4062 8.94775C16.4062 6.87866 14.9675 5.46875 12.8713 5.46875C11.2778 5.46875 10.0712 6.23779 9.59158 7.48291C9.44462 7.83081 9.375 8.16956 9.375 8.56323C9.375 9.17664 9.69214 9.56116 10.2259 9.56116C10.6513 9.56116 10.9375 9.33228 11.1077 8.76465C11.3552 7.83997 11.9276 7.33643 12.7862 7.33643C13.7376 7.33643 14.3951 8.03223 14.3951 9.03015C14.3951 9.90906 14.0702 10.4126 13.1111 11.0992C12.1442 11.7767 11.6646 12.5275 11.6646 13.6627V13.8367C11.6646 14.505 11.9895 14.9994 12.5774 14.9994C13.1033 14.9994 13.3663 14.624 13.4437 14.0198Z" fill="white"/>
+</svg>
+
+            </span>
+            </NavButton>
+
       </div>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          alignItems: "flex-start",
+          marginTop: '475px'
+        }}
+      >
+        <div
+  onClick={() => window.open("https://t.me/tribute/app?startapp=dn94", "_blank")}
+  style={{
+    alignSelf: "stretch",
+    padding: "15px",
+    borderRadius: "25px",
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    gap: "10px",
+    display: "inline-flex",
+    cursor: "pointer",
+    transition: "background 0.2s ease",
+    width: '100%',
+  }}
+>
+  <div
+    style={{
+      alignSelf: "stretch",
+      justifyContent: "flex-start",
+      alignItems: "flex-start",
+      gap: "10px",
+      display: "inline-flex",
+    }}
+  >
+    <div
+      style={{
+        flex: "1 1 0",
+        justifyContent: "center",
+        display: "flex",
+        color: "white",
+        fontSize: "14px",
+        fontFamily: "SF Pro Text",
+        fontWeight: 500,
+        wordWrap: "break-word",
+        textAlign: 'center',
+        alignItems: 'center',
+        gap: '10px'
+      }}
+    >
+      Поддержать
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 2.74805L7.28325 2.01133C5.5989 0.280067 2.51415 0.877695 1.40036 3.05284C0.876534 4.07583 0.75875 5.55246 1.71429 7.43758C2.63457 9.25313 4.54767 11.4265 8 13.7946C11.4523 11.4265 13.3654 9.25313 14.2857 7.43758C15.2413 5.55246 15.1235 4.07583 14.5996 3.05284C13.4859 0.877695 10.4011 0.280067 8.71675 2.01133L8 2.74805ZM8 15C-7.33313 4.86841 3.27876 -3.04087 7.82432 1.14308C7.88395 1.19797 7.94253 1.25493 8 1.314C8.05747 1.25494 8.11605 1.19797 8.17567 1.14309C12.7212 -3.04088 23.3331 4.8684 8 15Z" fill="#9E9E9E"/>
+</svg>
+
+    </div>
+  </div>
+      </div>
+      <div
+  onClick={() => window.open("https://t.me/anarAboutF1", "_blank")}
+  style={{
+    alignSelf: "stretch",
+    padding: "15px",
+    borderRadius: "25px",
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    gap: "10px",
+    display: "inline-flex",
+    cursor: "pointer",
+    transition: "background 0.2s ease",
+    width: '100%',
+  }}
+>
+  <div
+    style={{
+      alignSelf: "stretch",
+      justifyContent: "flex-start",
+      alignItems: "flex-start",
+      gap: "10px",
+      display: "inline-flex",
+    }}
+  >
+    <div
+      style={{
+        flex: "1 1 0",
+        justifyContent: "center",
+        display: "flex",
+        color: "white",
+        fontSize: "14px",
+        fontFamily: "SF Pro Text",
+        fontWeight: 500,
+        wordWrap: "break-word",
+        textAlign: 'center',
+        alignItems: 'center',
+        gap: '10px'
+      }}
+    >
+      Наш телеграм
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 10C20 15.5228 15.5228 20 10 20C4.47715 20 0 15.5228 0 10C0 4.47715 4.47715 0 10 0C15.5228 0 20 4.47715 20 10ZM10.3584 7.38249C9.38576 7.78704 7.44183 8.62437 4.52663 9.89447C4.05324 10.0827 3.80527 10.2669 3.78269 10.447C3.74454 10.7513 4.12565 10.8711 4.64461 11.0343C4.7152 11.0565 4.78835 11.0795 4.86333 11.1039C5.37391 11.2698 6.06074 11.464 6.41779 11.4717C6.74167 11.4787 7.10316 11.3452 7.50225 11.0712C10.226 9.23254 11.632 8.30322 11.7203 8.28318C11.7826 8.26905 11.8689 8.25128 11.9274 8.30325C11.9858 8.35522 11.9801 8.45364 11.9739 8.48005C11.9361 8.64099 10.4402 10.0318 9.66599 10.7515C9.42464 10.9759 9.25344 11.1351 9.21845 11.1714C9.14005 11.2528 9.06015 11.3298 8.98337 11.4039C8.50902 11.8611 8.15331 12.2041 9.00306 12.764C9.41142 13.0331 9.73818 13.2556 10.0642 13.4777C10.4202 13.7201 10.7753 13.9619 11.2347 14.2631C11.3518 14.3398 11.4636 14.4195 11.5725 14.4971C11.9868 14.7925 12.359 15.0579 12.8189 15.0156C13.0861 14.991 13.3621 14.7397 13.5023 13.9903C13.8336 12.2193 14.4847 8.38209 14.6352 6.80086C14.6484 6.66232 14.6318 6.48502 14.6185 6.40719C14.6052 6.32936 14.5774 6.21847 14.4762 6.13638C14.3564 6.03916 14.1714 6.01866 14.0887 6.02012C13.7126 6.02675 13.1355 6.2274 10.3584 7.38249Z" fill="white"/>
+</svg>
+
+
+    </div>
+  </div>
+      </div>
+
+      </div>
+
 
       <CSSTransition
         in={showNotification}
@@ -399,7 +377,6 @@ const Services = ({currentUser}) => {
         >
           <div
             style={{
-              background: "#1D1D1F",
               padding: "20px",
               borderRadius: "20px",
               textAlign: "center",
@@ -410,9 +387,8 @@ const Services = ({currentUser}) => {
             <p style={{ marginBottom: "20px" }}>Этот раздел в разработке.</p>
             <button
               style={{
-                background: "#212124",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
                 color: "white",
-                border: "none",
                 padding: "10px 20px",
                 borderRadius: "15px",
                 cursor: "pointer",

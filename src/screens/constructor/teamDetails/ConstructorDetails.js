@@ -5,6 +5,7 @@ import CustomSelect from "../../user/components/CustomSelect";
 import SocialIcons from "../../../screens/recources/SocialIcons";
 import seasonsData from "../../recources/json/seasons";
 import StatsCard from "./StatsCard";
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import {
   TEAM_SOCIAL,
   CONSTRUCTOR_API_NAMES,
@@ -14,12 +15,24 @@ import {
 import { useConstructorStats } from "./useConstructorStats";
 import { doc, getDoc, setDoc, deleteDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../../firebase";
+import FavoriteConstructorButton from "./FavoriteConstructorButton";
+import { useSwipeable } from 'react-swipeable';
+import SeasonPickerModal from "../../components/SeasonPickerModal";
 
 const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("biography");
-  const [selectedSeason, setSelectedSeason] = useState("2025");
+  const [selectedYear, setSelectedYear] = useState("2024");
   const [seasons, setSeasons] = useState([]);
+  const tabs = ['biography','seasons', 'social'];
+  const labels = {
+    biography: 'Биография',
+    seasons:  'Сезоны',
+    social:  'Соц.Сети'
+  };
+  const [pickerOpen, setPickerOpen] = useState(false);
+  
+
 
   // Состояния для избранного конструктора
   const [isFavorite, setIsFavorite] = useState(false);
@@ -36,8 +49,22 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
     }
   }, [constructor]);
 
-  // Получаем статистику конструктора для выбранного сезона
-  const { stats, loading, error } = useConstructorStats(constructor, selectedSeason);
+  const currentYear = new Date().getFullYear().toString();
+
+
+  // Для текущего календарного года
+    const {
+      stats: statsCurrent,
+      loading: loadCurrent,
+      error: errCurrent
+    } = useConstructorStats(constructor, currentYear);
+
+    // Для выбранного пользователем года
+    const {
+      stats: statsSelected,
+      loading: loadSelected,
+      error: errSelected
+    } = useConstructorStats(constructor, selectedYear);
 
   // Проверка, добавлен ли данный конструктор в избранное
   useEffect(() => {
@@ -104,9 +131,25 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
     setFavLoading(false);
   };
 
+  const goPrev = () => {
+    const i = tabs.indexOf(activeTab);
+    const prev = tabs[(i - 1 + tabs.length) % tabs.length];
+    setActiveTab(prev);
+  };
+  const goNext = () => {
+    const i = tabs.indexOf(activeTab);
+    const next = tabs[(i + 1) % tabs.length];
+    setActiveTab(next);
+  };
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft:  () => goNext(),
+    onSwipedRight: () => goPrev(),
+    trackMouse: true,    // чтобы работало и мышью
+    preventDefaultTouchmoveEvent: true
+  });
+
   if (!constructor) return <div> </div>;
-  if (loading) return <div> </div>;
-  if (error) return <div> </div>;
 
   const socialLinks = TEAM_SOCIAL[constructor.Constructor.name];
   const teamColor = TEAM_COLORS[constructor.Constructor.name] || "#000000";
@@ -117,13 +160,14 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
     { value: "seasons", label: "Сезоны" }
   ];
 
+  
+
   return (
     <div
       style={{
         width: "calc(100% - 20px)",
         margin: "10px 10px 100px",
         padding: "15px",
-        background: "#212124",
         borderRadius: "20px",
         display: "flex",
         flexDirection: "column",
@@ -136,25 +180,30 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
         <button
           onClick={goBack}
           style={{
-            backgroundColor: "#212124",
             color: "white",
             border: "none",
-            padding: "5px 10px",
+            padding: "5px",
             borderRadius: "10px",
             cursor: "pointer"
           }}
         >
           ✕
         </button>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ color: teamColor, fontSize: "16px", fontFamily: "Inter" }}>
             {constructor.Constructor.name}
           </div>
+        
         </div>
-        {socialLinks && <SocialIcons social={socialLinks} />}
+        
+        <FavoriteConstructorButton
+          currentUser={currentUser}
+          constructor={constructor}
+        />
+        
       </div>
     
-
+          
       {/* Уведомление о лимите избранного */}
       {showFavoriteAlert && (
         <div
@@ -174,7 +223,6 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
         >
           <div
             style={{
-              background: "#1D1D1F",
               padding: "20px",
               borderRadius: "20px",
               textAlign: "center",
@@ -186,9 +234,8 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
             <button
               onClick={() => setShowFavoriteAlert(false)}
               style={{
-                background: "#212124",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
                 color: "white",
-                border: "none",
                 padding: "10px 20px",
                 borderRadius: "15px",
                 cursor: "pointer",
@@ -200,32 +247,7 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
           </div>
         </div>
       )}
-
-      {/* Линия в цвет команды */}
-      <div style={{ width: "100%", height: "5px", background: teamColor }} />
-
-      {currentUser && currentUser.uid && (
-            <button
-              onClick={isFavorite ? handleUnfavorite : handleFavorite}
-              disabled={favLoading}
-              style={{
-                padding: "10px 20px",
-                borderRadius: "10px",
-                border: "none",
-                background: isFavorite ? "#888" : teamColor, // Используем цвет команды
-                color: "white",
-                cursor: "pointer"
-              }}
-            >
-              {favLoading
-                ? "Обработка..."
-                : isFavorite
-                ? "Удалить из избранного"
-                : "Люблю эту команду"}
-            </button>
-          )}
-
-      {/* Статистика конструктора за выбранный сезон */}
+      {/* Статистика конструктора за текущий сезон */}
       <div
         style={{
           display: "flex",
@@ -235,53 +257,85 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
           width: "100%"
         }}
       >
-        <StatsCard label="ПОЗИЦИЯ" value={stats.position} />
-        <StatsCard label="ОЧКОВ" value={stats.points} />
-        <StatsCard label="ПОБЕД" value={stats.wins} />
-        <StatsCard label="ПОДИУМОВ" value={stats.podiums} />
-        <StatsCard label="ПОУЛОВ" value={stats.poles} />
+        <StatsCard label="ПОЗИЦИЯ" value={statsCurrent.position} />
+        <StatsCard label="ОЧКОВ" value={statsCurrent.points} />
+        <StatsCard label="ПОБЕД" value={statsCurrent.wins} />
+        <StatsCard label="ПОДИУМОВ" value={statsCurrent.podiums} />
+        <StatsCard label="ПОУЛОВ" value={statsCurrent.poles} />
       </div>
+      
 
       <div style={{ width: "100%" }}>
         {/* Переключение вкладок через CustomSelect */}
-        <div style={{ width: "100%", marginTop: "20px" }}>
-          <CustomSelect
-            options={tabOptions}
-            value={activeTab}
-            onChange={(val) => setActiveTab(val)}
-            style={{ width: "100%" }}
-          />
-        </div>
+        <div
+      style={{
+        position: 'relative',
+        display: 'flex',
+        marginTop: '10px',
+        overflow: 'hidden',
+        padding: '2px'
+      }}
+    >
+  {tabs.map(tab => (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      style={{
+        flex: 1,
+        padding: '10px 0',
+        background: 'transparent',
+        color: 'white',
+        boxShadow: activeTab === tab
+          ? '0 0 0 1px rgba(255,255,255,0.2)'
+          : '0 0 0 0 rgba(255,255,255,0)',
+        borderRadius: '10px',
+        cursor: 'pointer',
+        fontSize: 14,
+        textAlign: 'center',
+        transition: 'box-shadow 0.3s ease'
+      }}
+    >
+      {labels[tab]}
+    </button>
+  ))}
+</div>
 
-        {/* Контент для выбранной вкладки */}
-        {activeTab === "biography" ? (
+<TransitionGroup>
+          <CSSTransition
+            key={activeTab}
+            classNames="tab"
+            timeout={400}
+          >
+            <div {...swipeHandlers} className="">
+        {activeTab === "biography" && (
           <div style={{ borderRadius: "8px", padding: "10px" }}>
             <p style={{ fontSize: 13, marginTop: "10px", color: "white" }}>{biography}</p>
           </div>
-        ) : (
+        )}
+        {activeTab === "seasons" && (
           <div style={{ marginTop: "20px", width: "100%" }}>
-            <select
-              value={selectedSeason}
-              onChange={(e) => setSelectedSeason(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "8px",
-                border: "2px solid #1D1D1F",
-                backgroundColor: "#1D1D1F",
-                fontSize: "14px",
-                color: "white",
-                cursor: "pointer"
-              }}
-            >
-              {seasons.map((season) => (
-                <option key={season} value={season}>
-                  {season}
-                </option>
-              ))}
-            </select>
 
-            {/* Повторное отображение статистики для выбранного сезона */}
+<button
+      onClick={() => setPickerOpen(true)}
+      style={{
+        width: "100%",
+        padding: "10px 15px",
+        borderRadius: "10px",
+        border: "1px solid #505050",
+        background: "transparent",
+        color: "#fff",
+        fontSize: "13px",
+        fontFamily: "Inter",
+        fontWeight: 500,
+        letterSpacing: "0.65px",
+        textAlign: "left",
+        cursor: "pointer",
+      }}
+    >
+      {selectedYear || "Выберите сезон"}
+    </button>
+
+            {/* Статистика за выбранный через SeasonPickerModal (не связанно с текущим годом) */}
             <div
               style={{
                 display: "flex",
@@ -291,15 +345,39 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
                 marginTop: "20px"
               }}
             >
-              <StatsCard label="ПОЗИЦИЯ" value={stats.position} />
-              <StatsCard label="ОЧКОВ" value={stats.points} />
-              <StatsCard label="ПОБЕД" value={stats.wins} />
-              <StatsCard label="ПОДИУМОВ" value={stats.podiums} />
-              <StatsCard label="ПОУЛОВ" value={stats.poles} />
+              <StatsCard label="ПОЗИЦИЯ" value={statsSelected.position} />
+              <StatsCard label="ОЧКОВ" value={statsSelected.points} />
+              <StatsCard label="ПОБЕД" value={statsSelected.wins} />
+              <StatsCard label="ПОДИУМОВ" value={statsSelected.podiums} />
+              <StatsCard label="ПОУЛОВ" value={statsSelected.poles} />
             </div>
           </div>
         )}
+        {activeTab === "social" && (
+          <div style={{marginTop: '30px'}}>
+            {socialLinks && <SocialIcons social={socialLinks} />}
+          </div>
+        )}</div>
+        </CSSTransition>
+          </TransitionGroup>
       </div>
+
+      <CSSTransition
+  in={pickerOpen}
+  timeout={300}
+  classNames="window-fade"
+  unmountOnExit
+  mountOnEnter
+  appear
+>
+  <SeasonPickerModal
+    seasons={seasons}
+    isOpen={pickerOpen}
+    onClose={() => setPickerOpen(false)}
+    onSelect={(year) => setSelectedYear(year)}
+  />
+</CSSTransition>
+      
     </div>
   );
 };

@@ -1,5 +1,5 @@
 // UserProfile.js
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../firebase";
 import {
@@ -8,16 +8,12 @@ import {
   where,
   orderBy,
   getDocs,
-  addDoc,
-  deleteDoc,
-  updateDoc,
-  doc,
   onSnapshot,
-  serverTimestamp,
 } from "firebase/firestore";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import CommentsSection from "./components/CommentsSection";
 import RoleIcon, { roleIcons } from "./components/RoleIcon";
+import { useSwipeable } from 'react-swipeable';
 
 // Объект с цветами команд
 const teamColors = {
@@ -98,7 +94,7 @@ const countryToFlag = {
 
 const normalizeName = (name) => {
   if (name === "Magnussen") return "kevin_magnussen";
-  if (name === "Verstappen") return "max_verstappen";
+  if (name === "verstappen") return "max_verstappen";
   return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 };
 
@@ -131,6 +127,26 @@ const UserProfile = ({ currentUser }) => {
   const [visibleRole, setVisibleRole] = useState(null);
   const menuRef = useRef(null);
   const [openMenuPostId, setOpenMenuPostId] = useState(null);
+
+  const tabs = ['posts','favorites'];
+
+  const goPrev = () => {
+    const i = tabs.indexOf(activeTab);
+    const prev = tabs[(i - 1 + tabs.length) % tabs.length];
+    setActiveTab(prev);
+  };
+  const goNext = () => {
+    const i = tabs.indexOf(activeTab);
+    const next = tabs[(i + 1) % tabs.length];
+    setActiveTab(next);
+  };
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft:  () => goNext(),
+    onSwipedRight: () => goPrev(),
+    trackMouse: true,    // чтобы работало и мышью
+    preventDefaultTouchmoveEvent: true
+  });
 
 
   // Загрузка базовых данных профиля, постов и избранного
@@ -314,39 +330,7 @@ const UserProfile = ({ currentUser }) => {
     }
   };
 
-  // Функции подписки/отписки
-  const handleFollow = async () => {
-    try {
-      await addDoc(collection(db, "follows"), {
-        followerId: currentUserUid,
-        followingId: uid,
-      });
-      setIsFollowing(true);
-      setFollowersCount((prev) => prev + 1);
-    } catch (err) {
-      console.error("Ошибка при подписке:", err);
-      setError("Ошибка при подписке: " + err.message);
-    }
-  };
 
-  const handleUnfollow = async () => {
-    try {
-      const q = query(
-        collection(db, "follows"),
-        where("followerId", "==", currentUserUid),
-        where("followingId", "==", uid)
-      );
-      const snapshot = await getDocs(q);
-      snapshot.forEach(async (docSnapshot) => {
-        await deleteDoc(doc(db, "follows", docSnapshot.id));
-      });
-      setIsFollowing(false);
-      setFollowersCount((prev) => prev - 1);
-    } catch (err) {
-      console.error("Ошибка при отписке:", err);
-      setError("Ошибка при отписке: " + err.message);
-    }
-  };
 
   const handlePilotSelect = (pilot) => {
     const pilotLastName = normalizeName(pilot.Driver.familyName);
@@ -388,7 +372,6 @@ const UserProfile = ({ currentUser }) => {
         style={{
           width: "100vw",
           height: "100vh",
-          backgroundColor: "#1D1D1F",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -424,7 +407,6 @@ const UserProfile = ({ currentUser }) => {
         style={{
           width: "100vw",
           height: "100vh",
-          backgroundColor: "#1D1D1F",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -437,7 +419,7 @@ const UserProfile = ({ currentUser }) => {
   }
 
   return (
-    <div style={{ backgroundColor: "#1D1D1F", color: "white", padding: "0 15px", marginBottom: "80px" }}>
+    <div style={{ color: "white", padding: "0 15px", marginBottom: "80px" }}>
       <button
         onClick={() => navigate(-1)}
         style={{
@@ -449,7 +431,7 @@ const UserProfile = ({ currentUser }) => {
           marginTop: "15px",
         }}
       >
-        ← Назад
+        ←
       </button>
       {/* Верхний блок с информацией */}
       <div
@@ -477,7 +459,6 @@ const UserProfile = ({ currentUser }) => {
               marginTop: "10px",
               padding: "10px 20px",
               borderRadius: "10px",
-              background: "#212124",
               display: "flex",
               alignItems: "center",
               gap: "10px",
@@ -508,34 +489,33 @@ const UserProfile = ({ currentUser }) => {
         />
       </div>
 
-      {/* Вкладки */}
       <div style={{ display: "flex", borderRadius: "20px", marginTop: "10px" }}>
         <button
-          onClick={() => handleTabChange("posts")}
+          onClick={() => handleTabChange('posts')}
           style={{
             padding: "10px 20px",
-            background: activeTab === "posts" ? "#212124" : "transparent",
+            boxShadow: activeTab === 'posts' ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
             color: "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
-            transition: "background 0.4s ease",
-            fontSize: 14,
+            transition: 'box-shadow 0.3s ease',
+            fontSize: 14
           }}
         >
           Посты
         </button>
         <button
-          onClick={() => handleTabChange("favorites")}
+          onClick={() => handleTabChange('favorites')}
           style={{
             padding: "10px 20px",
-            background: activeTab === "favorites" ? "#212124" : "transparent",
+            boxShadow: activeTab === 'favorites' ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
             color: "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
-            transition: "background 0.4s ease",
-            fontSize: 14,
+            transition: 'box-shadow 0.3s ease',
+            fontSize: 14
           }}
         >
           Предпочтения
@@ -543,9 +523,14 @@ const UserProfile = ({ currentUser }) => {
       </div>
 
       <div style={{ position: "relative", overflow: "hidden" }}>
-        <TransitionGroup>
+      <TransitionGroup>
+        <CSSTransition
+            key={activeTab}
+            classNames="tab"
+            timeout={400}
+          >
+        <div {...swipeHandlers} className="">
           {activeTab === "posts" ? (
-            <CSSTransition key="posts" timeout={400} classNames="tab" unmountOnExit>
               <div style={{ width: "100%", top: 0, left: 0 }}>
                 {posts.length > 0 ? (
                   posts.map((post, index) => (
@@ -584,7 +569,6 @@ const UserProfile = ({ currentUser }) => {
                               position: "absolute",
                               top: "24px",
                               right: "0",
-                              background: "#212124",
                               borderRadius: "12px 0px 12px 12px",
                               padding: "5px",
                               zIndex: 10,
@@ -692,12 +676,10 @@ const UserProfile = ({ currentUser }) => {
                     </div>
                   ))
                 ) : (
-                  <p style={{ textAlign: "left", marginTop: "50px" }}>Постов пока нет.</p>
+                  <p style={{ textAlign: "center", marginTop: "50px" }}>Постов пока нет.</p>
                 )}
               </div>
-            </CSSTransition>
           ) : (
-            <CSSTransition key="favorites" timeout={400} classNames="tab" unmountOnExit>
               <div style={{ width: "100%", marginTop: "10px", top: 0, left: 0 }}>
                 {/* Секция избранных пилотов */}
                 {favoritePilots.length > 0 ? (
@@ -711,7 +693,6 @@ const UserProfile = ({ currentUser }) => {
                         onClick={() => handlePilotSelect(pilot)}
                         style={{
                           width: "100%",
-                          background: "#212124",
                           borderRadius: "15px",
                           display: "flex",
                           justifyContent: "space-between",
@@ -720,6 +701,7 @@ const UserProfile = ({ currentUser }) => {
                           padding: "10px",
                           cursor: "pointer",
                           marginBottom: "10px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
                         }}
                       >
                         <div
@@ -730,7 +712,6 @@ const UserProfile = ({ currentUser }) => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            background: "#212124",
                           }}
                         >
                           <div
@@ -796,7 +777,6 @@ const UserProfile = ({ currentUser }) => {
                         onClick={() => handleConstructorSelect(fav.constructorData)}
                         style={{
                           width: "100%",
-                          background: "#212124",
                           borderRadius: "15px",
                           display: "flex",
                           justifyContent: "space-between",
@@ -805,6 +785,7 @@ const UserProfile = ({ currentUser }) => {
                           padding: "10px",
                           cursor: "pointer",
                           marginBottom: "10px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
                         }}
                       >
                         <div
@@ -815,7 +796,6 @@ const UserProfile = ({ currentUser }) => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            background: "#212124",
                           }}
                         >
                           <div
@@ -861,7 +841,6 @@ const UserProfile = ({ currentUser }) => {
                         style={{
                           width: "100%",
                           display: "flex",
-                          background: "#212124",
                           borderRadius: "15px",
                           justifyContent: "space-between",
                           alignItems: "center",
@@ -869,6 +848,7 @@ const UserProfile = ({ currentUser }) => {
                           padding: "10px",
                           cursor: "pointer",
                           marginBottom: "10px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
                         }}
                       >
                         <div
@@ -879,7 +859,6 @@ const UserProfile = ({ currentUser }) => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            background: "#212124",
                           }}
                         >
                           <img
@@ -920,9 +899,9 @@ const UserProfile = ({ currentUser }) => {
                   <p style={{ textAlign: "left", marginTop: "20px" }}>Нет избранных трасс</p>
                 )}
               </div>
-            </CSSTransition>
-          )}
-        </TransitionGroup>
+          )} </div>
+          </CSSTransition>
+          </TransitionGroup>
       </div>
 
       <CSSTransition
@@ -940,7 +919,8 @@ const UserProfile = ({ currentUser }) => {
             left: 0,
             width: "100vw",
             height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(8px)",
+            backgroundColor: "rgba(0,0,0,0.4)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -950,7 +930,6 @@ const UserProfile = ({ currentUser }) => {
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              background: "#1D1D1F",
               padding: "20px",
               borderRadius: "20px",
               textAlign: "center",
@@ -975,7 +954,6 @@ const UserProfile = ({ currentUser }) => {
             <button
               onClick={closeRoleModal}
               style={{
-                background: "#212124",
                 color: "white",
                 border: "none",
                 padding: "10px 20px",

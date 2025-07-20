@@ -12,20 +12,6 @@ const ChampionsList = ({ onChampionSelect }) => {
     navigate(-1);
   };
 
-  // Утилита для форматирования текущей даты
-  const getFormattedDate = () => {
-    const now = new Date();
-    const day = now.getDate();
-    const monthNames = [
-      "января", "февраля", "марта", "апреля", "мая", "июня",
-      "июля", "августа", "сентября", "октября", "ноября", "декабря"
-    ];
-    const month = monthNames[now.getMonth()];
-    const year = now.getFullYear();
-    return `${day} ${month} ${year}`;
-  };
-
-  const formattedDate = getFormattedDate();
 
   if (loading) return <div> </div>;
   if (error) return <div>Ошибка: {error}</div>;
@@ -68,12 +54,10 @@ const ChampionsList = ({ onChampionSelect }) => {
           height: "100%",
           marginBottom: "100px",
           overflowY: "auto",
-          padding: "10px",
           display: "flex",
           flexDirection: "column",
           gap: "15px",
-          background: "#1D1D1F",
-          marginTop: "40px"
+          marginTop: "60px"
         }}
       >
         {champions.map((champion, index) => (

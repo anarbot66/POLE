@@ -1,11 +1,61 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState} from "react";
+import { useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 
+const licenses = [
+  "Jack Doohan JAPAN GP Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Franco Colapinto, Imola GP, Jmmuguerza, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Gabriel Bortoleto, Japan GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Oliver Bearman, Austria GP, Lukas Raich, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Yuki Tsunoda, Japan GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Liam Lawson, Austria GP, Lukas Raich, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Carlos Sainz, Austria GP, Lukas Raich, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Fernando Alonso, Chinese GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Pierre Gasly, Austria GP, Lukas Raich, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Lance Stroll, Japan GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Isack Hadjar, Japan GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Esteban Ocon, Chinese GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Nico Hulkenberg, Japan GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Alex Albon, Chinese GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Lewis Hamilton, Japan GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Kimi Antonelli, Austria GP, Lukas Raich, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Charles Leclerc, Dutch GP, Steffen Prößdorf, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "George Rusell, Japan GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Max Verstappen, Japan GP, Cineyas, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Lando Norris, Chinese GP, Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Oscar Piastri, Dutch GP, Derivative work:  Mb2437, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+
+  "Australia Photo, Matthew T Rader, https://matthewtrader.com, CC BY-SA 4.0 <https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Shanghai Photo, King of Hearts, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Japan Photo, ThorstenS, CC BY-SA 3.0 http://creativecommons.org/licenses/by-sa/3.0/, via Wikimedia Commons",
+  "Bahrain Photo, Wadiia, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Jeddah Photo, Joseph Azrak, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Miami Photo, DXR, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Imola Photo, Danysan1, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Monte-Carlo Photo, Alexkom000, CC BY 4.0 https://creativecommons.org/licenses/by/4.0, via Wikimedia Commons",
+  "Barcelona Photo, Jose María Ligero Loarte, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Canada Photo, Wilfredor, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Austria Photo, Diego Delso, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Silverstone Photo, Phone box in Silverstone by DS Pugh, CC BY-SA 2.0 https://creativecommons.org/licenses/by-sa/2.0, via Wikimedia Commons",
+  "Belgium Spa Photo, Lukas Raich, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Budapest Photo, Jakub Hałun, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Zandvoort Photo, AnthonyRuijtenbeek, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Monza Photo, Amstead23, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Baku Photo, Moonsun1981, CC BY-SA 3.0 https://creativecommons.org/licenses/by-sa/3.0, via Wikimedia Commons",
+  "Marina Bay Photo, Diego Delso, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Austin Photo, boklm, CC0, via Wikimedia Commons",
+  "Mexico City, Carlos Valenzuela, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Sao Paulo Photo, Webysther Nunes, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Las Vegas Photo, Dietmar Rabich / Wikimedia Commons / “Las Vegas (Nevada, USA), The Strip -- 2012 -- 6232” / CC BY-SA 4.0For print products: Dietmar Rabich / https://commons.wikimedia.org/wiki/File:Las_Vegas_(Nevada,_USA),_The_Strip_--_2012_--_6232.jpg / https://creativecommons.org/licenses/by-sa/4.0/",
+  "Lusail Photo, km2bp @ Mapillary.com, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
+  "Abu Dhabi Photo, Ralf Roletschek, CC BY 3.0 https://creativecommons.org/licenses/by/3.0>, via Wikimedia Commons"
+];
 
 const InfoPage = () => {
     const navigate = useNavigate();
+    const [isOpen, setIsOpen] = useState(false);
   return (
-    <div  style={{ color: "#fff", padding: "15px" }}>
+    <div  style={{ color: "#fff", padding: "15px", marginBottom: '90px' }}>
         <div style={{width: "100%"}}>
         <button
           onClick={() => navigate(-1)}
@@ -18,7 +68,7 @@ const InfoPage = () => {
             marginBottom: "20px"
           }}
         >
-          ← Назад
+          ←
         </button>
         </div>
       <div className="mb-4">
@@ -82,6 +132,29 @@ const InfoPage = () => {
           </a>.
         </p>
       </div>
+      <div className="w-full max-w-md mx-auto mt-4">
+      <button style={{border: "1px solid rgba(255, 255, 255, 0.2)", borderRadius: '15px', padding: '20px 0px'}} onClick={() => setIsOpen(prev => !prev)} className="w-full">
+        {isOpen ? "Скрыть лицензии CC ↑" : "Показать лицензии CC ↓"}
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.ul
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden mt-2 space-y-2 p-4 rounded-lg shadow-sm"
+          >
+            {licenses.map((text, idx) => (
+              <li key={idx} className="text-sm text-white">
+                {text}
+              </li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </div>
     </div>
   );
 };

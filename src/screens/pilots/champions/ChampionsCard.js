@@ -13,7 +13,7 @@ const ChampionsCard = ({ champion, onClick }) => {
       <div
         style={{
           width: "100%",
-          background: "#212124",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
           borderRadius: "20px",
           display: "flex",
           justifyContent: "space-between",
@@ -30,7 +30,6 @@ const ChampionsCard = ({ champion, onClick }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            background: "#212124"
           }}
         >
           <div

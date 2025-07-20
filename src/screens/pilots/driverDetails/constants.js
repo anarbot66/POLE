@@ -26,7 +26,39 @@ export const driverTranslations = {
     "Doohan": "Джек Дуэн",
     "Antonelli": "Кими Антонелли",
     "Bortoleto": "Габриэль Бортолето",
-    "Hadjar": "Исак Хаджар"
+    "Hadjar": "Исак Хаджар",
+    "Hülkenberg" : "Нико Хюлькенберг",
+  };
+
+  export const driverSurnames = {
+    "Verstappen": "М. Ферстаппен",
+    "Norris": "Л. Норрис",
+    "Leclerc": "Ш. Леклер",
+    "Piastri": "О. Пиастри",
+    "Sainz": "К. Сайнс",
+    "Russell": "Д. Расселл",
+    "Hamilton": "Л. Хэмилтон",
+    "Pérez": "С. Перес",
+    "Alonso": "Ф. Алонсо",
+    "Gasly": "П. Гасли",
+    "Hulkenberg": "Н. Хюлькенберг",
+    "Tsunoda": "Ю. Цунода",
+    "Stroll": "Л. Стролл",
+    "Ocon": "Э. Окон",
+    "Magnussen": "К. Магнуссен",
+    "Albon": "А. Албон",
+    "Ricciardo": "Д. Риккьярдо",
+    "Bearman": "О. Бирман",
+    "Colapinto": "Ф. Колапинто",
+    "Zhou": "Г. Джоу",
+    "Lawson": "Л. Лоусон",
+    "Bottas": "В. Боттас",
+    "Sargeant": "Л. Сарджент",
+    "Doohan": "Д. Дуэн",
+    "Antonelli": "К. Антонелли",
+    "Bortoleto": "Г. Бортолето",
+    "Hadjar": "И. Хаджар",
+    "Hülkenberg" : "Н. Хюлькенберг",
   };
   
   export const teamColors = {
@@ -93,7 +125,7 @@ export const driverTranslations = {
   // Утилиты для нормализации и форматирования имен
   export const normalizeName = (name) => {
     if (name === "Magnussen") return "kevin_magnussen";
-    if (name === "Verstappen") return "max_verstappen";
+    if (name === "verstappen") return "max_verstappen";
     return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   };
   

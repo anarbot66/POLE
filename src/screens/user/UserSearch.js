@@ -90,7 +90,8 @@ const UserSearch = ({ currentUser }) => {
     <div
     style={{ padding: "10px 15px", marginBottom: 50 }}>
       
-      <div style={{ width: "100%", position: "fixed", display: "flex"}}>
+      <div style={{ width: "100%", position: "fixed", display: "flex", background: "black", margin: 0, 
+  top: 0, left: 0, padding: 15}}>
         
         <button
           onClick={goBack}
@@ -118,18 +119,18 @@ const UserSearch = ({ currentUser }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
             marginLeft: "10px",
-            background: "#212124",
-            width: "calc(100% - 85px)",
-            padding: "15px",
+            background: "black",
+            width: "100%",
+            padding: "10px 15px",
             fontSize: "16px",
-            borderRadius: "10px",
+            borderRadius: "20px",
             color: "white",
-            border: "none",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
             outline: "none"
           }}
         />
       </div>
-      <div style={{ marginTop: "60px" }}>
+      <div style={{ marginTop: "75px" }}>
         {results.length > 0 ? (
           results.map((user, index) => (
             <div
@@ -165,7 +166,7 @@ const UserSearch = ({ currentUser }) => {
                 <span style={{ color: "white", fontSize: "14px" }}>
                   {user.firstName} {user.lastName}
                 </span>
-                <span style={{ color: "#0077FF", fontSize: "12px" }}>
+                <span style={{ color: "#2C8478", fontSize: "12px" }}>
                   {user.username ? "@" + user.username : ""}
                 </span>
               </div>

@@ -8,7 +8,7 @@ const FavoriteButton = ({ currentUser, pilot, teamColor }) => {
     const [isFavorite, setIsFavorite] = useState(false);
     const [favLoading, setFavLoading] = useState(false);
     const [showFavoriteAlert, setShowFavoriteAlert] = useState(false);
-  
+
     useEffect(() => {
       const checkFavoriteStatus = async () => {
         if (!currentUser || !pilot) return;
@@ -68,26 +68,35 @@ const FavoriteButton = ({ currentUser, pilot, teamColor }) => {
   
     return (
       <>
-        {currentUser && currentUser.uid && (
-          <button
-            onClick={isFavorite ? handleUnfavorite : handleFavorite}
-            disabled={favLoading}
-            style={{
-              padding: "10px 20px",
-              borderRadius: "10px",
-              border: "none",
-              background: isFavorite ? "#888" : teamColor, // Используем цвет команды
-              color: "white",
-              cursor: "pointer"
-            }}
-          >
-            {favLoading
-              ? "Обработка..."
-              : isFavorite
-              ? "Больше не любимый..."
-              : "Мой любимый пилот!"}
-          </button>
-        )}
+        {currentUser?.uid && (
+  <button
+    onClick={isFavorite ? handleUnfavorite : handleFavorite}
+    disabled={favLoading}
+    style={{
+      padding: "5px 15px",
+      borderRadius: "50px",
+      border: isFavorite
+        ? "none"
+        : "1px solid rgba(255, 255, 255, 0.2)",
+      background: isFavorite ? "white" : "transparent",
+      color: isFavorite ? "black" : "white",
+      cursor: "pointer",
+      fontSize: 12,
+      width: '110px',
+      height: '28px',
+
+      /* Переходы для плавности */
+      transition: "background 300ms ease, color 300ms ease, border 300ms ease",
+    }}
+  >
+    {favLoading
+      ? " "
+      : isFavorite
+      ? "Слежу"
+      : "Подписаться"}
+  </button>
+)}
+
   
         {/* Уведомление */}
         {showFavoriteAlert && (
@@ -108,7 +117,6 @@ const FavoriteButton = ({ currentUser, pilot, teamColor }) => {
           >
             <div
               style={{
-                background: "#1D1D1F",
                 padding: "20px",
                 borderRadius: "20px",
                 textAlign: "center",
@@ -120,9 +128,8 @@ const FavoriteButton = ({ currentUser, pilot, teamColor }) => {
               <button
                 onClick={() => setShowFavoriteAlert(false)}
                 style={{
-                  background: "#212124",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
                   color: "white",
-                  border: "none",
                   padding: "10px 20px",
                   borderRadius: "15px",
                   cursor: "pointer",

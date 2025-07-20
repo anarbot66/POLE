@@ -1,7 +1,6 @@
 // LoadingScreen.js
 import React from "react";
 import logo from "../recources/images/apex-logo.png";
-import "./LoadingScreen.css";
 
 const LoadingScreen = ({ progress, fadeOut }) => {
   return (

@@ -26,7 +26,6 @@ const CreatePost = ({ currentUser }) => {
   return (
     <div
       style={{
-        backgroundColor: "#1D1D1F",
         color: "white",
         padding: "15px",
         minHeight: "100vh",
@@ -43,7 +42,7 @@ const CreatePost = ({ currentUser }) => {
           marginBottom: "20px",
         }}
       >
-        ← Назад
+        ←
       </button>
       <h2>Создать пост</h2>
       {error && <div style={{ color: "red" }}>{error}</div>}
@@ -57,9 +56,9 @@ const CreatePost = ({ currentUser }) => {
           borderRadius: "12px",
           padding: "10px",
           fontSize: "16px",
-          background: "#212124",
+          background: "transparent",
           color: "white",
-          border: "none",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
           outline: "none",
           marginTop: 10,
         }}
@@ -70,7 +69,6 @@ const CreatePost = ({ currentUser }) => {
           marginTop: "10px",
           width: "100%",
           padding: "10px",
-          backgroundColor: "#0078FF",
           color: "white",
           borderRadius: "12px",
           border: "none",

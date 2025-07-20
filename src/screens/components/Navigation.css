@@ -1,0 +1,21 @@
+.navGlass {
+    background: rgba(0, 0, 0, 0.1); /* полупрозрачный белый фон */
+    backdrop-filter: blur(10px);          /* размытие заднего фона */
+    -webkit-backdrop-filter: blur(10px);  /* для Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* светлая граница */
+    padding: 10px 0px 10px 0px;
+  }
+  
+  .commentGlass {
+    background: rgba(0, 0, 0, 0.1); /* полупрозрачный белый фон */
+    backdrop-filter: blur(10px);          /* размытие заднего фона */
+    -webkit-backdrop-filter: blur(10px);  /* для Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* светлая граница */
+  }
+
+  .topNavigateGlass {
+    background: rgba(0, 0, 0, 0.1); /* полупрозрачный белый фон */
+    backdrop-filter: blur(10px);          /* размытие заднего фона */
+    -webkit-backdrop-filter: blur(10px);  /* для Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* светлая граница */
+  }

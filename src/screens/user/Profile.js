@@ -7,10 +7,8 @@ import {
   query,
   where,
   getDocs,
-  addDoc,
   orderBy,
   onSnapshot,
-  serverTimestamp,
   deleteDoc,
   updateDoc,
   doc
@@ -18,6 +16,7 @@ import {
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import CommentsSection from "./components/CommentsSection";
 import RoleIcon, { roleIcons } from "./components/RoleIcon";
+import { useSwipeable } from 'react-swipeable';
 
 const teamColors = {
   "McLaren": "#F48021",
@@ -98,196 +97,195 @@ const normalizeName = (name) => {
   if (name === "Magnussen") {
     return "kevin_magnussen";
   } else if (name === "Verstappen") {
-    return "max_verstappen";
+    return "verstappen";
   }
   return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 };
+
+const tabs = ['posts','favorites'];
 
 const Profile = ({ currentUser }) => {
   const navigate = useNavigate();
   const [profileUser, setProfileUser] = useState(null);
   const [followersCount, setFollowersCount] = useState(0);
-  // Теперь для пилотов – массив избранных
   const [favoritePilots, setFavoritePilots] = useState([]);
   const [favoriteConstructors, setFavoriteConstructors] = useState([]);
   const [favoriteTracks, setFavoriteTracks] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [newPost, setNewPost] = useState("");
+
   const [editingPostId, setEditingPostId] = useState(null);
   const [editedText, setEditedText] = useState("");
-  const [showFavoriteAlert, setShowFavoriteAlert] = useState(false);
   const [openMenuPostId, setOpenMenuPostId] = useState(null);
   const [activeCommentsPostId, setActiveCommentsPostId] = useState(null);
   const menuRef = useRef(null);
+
   const username = currentUser.name;
-  
-  const roles = useMemo(() => currentUser.role ? currentUser.role.split(",") : [], [currentUser.role]);
+  const roles = useMemo(() => currentUser.role?.split(",") || [], [currentUser.role]);
   const [activeRole, setActiveRole] = useState(null);
+  const handleIconClick = (role) => setActiveRole(role);
+  const closeRoleModal = () => setActiveRole(null);
 
-  const handleIconClick = (role) => {
-    setActiveRole(role);
+  // Loading flags
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [pilotsLoaded, setPilotsLoaded] = useState(false);
+  const [constructorsLoaded, setConstructorsLoaded] = useState(false);
+  const [tracksLoaded, setTracksLoaded] = useState(false);
+
+  const goPrev = () => {
+    const i = tabs.indexOf(activeTab);
+    const prev = tabs[(i - 1 + tabs.length) % tabs.length];
+    setActiveTab(prev);
+  };
+  const goNext = () => {
+    const i = tabs.indexOf(activeTab);
+    const next = tabs[(i + 1) % tabs.length];
+    setActiveTab(next);
   };
 
-  const closeRoleModal = () => {
-    setActiveRole(null);
-  };
-  
-  useEffect(() => {
-    const loadData = async () => {
-      if (!username) return;
-      await fetchUserAndFavorites(username);
-      await fetchFollowersCount(currentUser.uid);
-      await loadFavoriteConstructors(currentUser.uid);
-      await loadFavoriteTracks(currentUser.uid);
-      setLoading(false);
-    };
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft:  () => goNext(),
+    onSwipedRight: () => goPrev(),
+    trackMouse: true,    // чтобы работало и мышью
+    preventDefaultTouchmoveEvent: true
+  });
 
-    loadData().catch((err) => {
-      setError("Ошибка загрузки данных");
-      console.error("Error loading data:", err);
-      setLoading(false);
-    });
-  }, [currentUser, username]);
-
+  // 1) Load profile & followers count
   useEffect(() => {
-    if (!currentUser?.uid) return;
+    if (!username || profileLoaded) return;
+    (async () => {
+      try {
+        await fetchUserAndFavorites(username);
+        await fetchFollowersCount(currentUser.uid);
+      } catch (e) {
+        console.error(e);
+        setError("Ошибка при загрузке профиля");
+      } finally {
+        setProfileLoaded(true);
+      }
+    })();
+  }, [username, profileLoaded, currentUser.uid]);
+
+  // 2) Load favorite pilots once
+  useEffect(() => {
+    if (!currentUser.uid || pilotsLoaded) return;
+    (async () => {
+      try {
+        await loadFavoritePilots(currentUser.uid);
+      } catch (e) {
+        console.error(e);
+        setError("Ошибка при получении избранных пилотов");
+      } finally {
+        setPilotsLoaded(true);
+      }
+    })();
+  }, [currentUser.uid, pilotsLoaded]);
+
+  // 3) Load favorite constructors once
+  useEffect(() => {
+    if (!currentUser.uid || constructorsLoaded) return;
+    (async () => {
+      try {
+        await loadFavoriteConstructors(currentUser.uid);
+      } catch (e) {
+        console.error(e);
+        setError("Ошибка при получении конструкторов");
+      } finally {
+        setConstructorsLoaded(true);
+      }
+    })();
+  }, [currentUser.uid, constructorsLoaded]);
+
+  // 4) Load favorite tracks once
+  useEffect(() => {
+    if (!currentUser.uid || tracksLoaded) return;
+    (async () => {
+      try {
+        await loadFavoriteTracks(currentUser.uid);
+      } catch (e) {
+        console.error(e);
+        setError("Ошибка при получении трасс");
+      } finally {
+        setTracksLoaded(true);
+      }
+    })();
+  }, [currentUser.uid, tracksLoaded]);
+
+  // 5) Load posts
+  useEffect(() => {
+    if (!currentUser.uid) return;
     const postsQuery = query(
       collection(db, "posts"),
       where("uid", "==", currentUser.uid),
       orderBy("createdAt", "desc")
     );
     const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-      const postsData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setPosts(postsData);
+      setPosts(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
     });
     return () => unsubscribe();
-  }, [currentUser]);
+  }, [currentUser.uid]);
+
+  // 6) Turn off loading when all four sections loaded
+  useEffect(() => {
+    if (profileLoaded && pilotsLoaded && constructorsLoaded && tracksLoaded) {
+      setLoading(false);
+    }
+  }, [profileLoaded, pilotsLoaded, constructorsLoaded, tracksLoaded]);
+
+  // Data loaders
 
   const fetchUserAndFavorites = async (username) => {
-    try {
-      const userRef = collection(db, "users");
-      const userQuery = query(userRef, where("username", "==", username));
-      const userSnapshot = await getDocs(userQuery);
-      if (!userSnapshot.empty) {
-        const userData = userSnapshot.docs[0].data();
-        setProfileUser(userData);
-        await loadFavoritePilots(userData.uid);
-      } else {
-        setError("Пользователь не найден");
-      }
-    } catch (err) {
-      console.error("Ошибка загрузки данных пользователя:", err);
-      setError("Ошибка загрузки данных пользователя");
+    const userSnap = await getDocs(
+      query(collection(db, "users"), where("username", "==", username))
+    );
+    if (userSnap.empty) {
+      setError("Пользователь не найден");
+      return;
     }
+    setProfileUser(userSnap.docs[0].data());
   };
 
-  // Изменённая функция загрузки избранных пилотов: теперь получаем массив из коллекции "favoritesPilots"
   const loadFavoritePilots = async (uid) => {
-    try {
-      const favQuery = query(
-        collection(db, "favorites"),
-        where("userId", "==", uid)
-      );
-      const favSnapshot = await getDocs(favQuery);
-      if (!favSnapshot.empty) {
-        const favDocs = favSnapshot.docs.map(doc => doc.data());
-        // Для каждого найденного избранного пилота получаем данные из API
-        const pilotPromises = favDocs.map(async (fav) => {
-          const response = await fetch(
-            "https://api.jolpi.ca/ergast/f1/2025/driverStandings.json"
-          );
-          if (!response.ok) throw new Error("Ошибка получения данных пилотов");
-          const data = await response.json();
-          const drivers =
-            data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings;
-          if (drivers && Array.isArray(drivers)) {
-            return drivers.find(
-              (pilot) => pilot.Driver.driverId === fav.pilotId
-            );
-          } else {
-            throw new Error("Неверный формат данных о пилотах");
-          }
-        });
-        const pilotsData = await Promise.all(pilotPromises);
-        // Фильтруем возможные пустые значения
-        setFavoritePilots(pilotsData.filter(Boolean));
-      } else {
-        setFavoritePilots([]);
-      }
-    } catch (err) {
-      setError("Ошибка при получении данных избранных пилотов");
-      console.error(err);
+    const favSnap = await getDocs(
+      query(collection(db, "favorites"), where("userId", "==", uid))
+    );
+    const pilotIds = favSnap.docs.map(d => d.data().pilotId);
+    if (!pilotIds.length) {
+      setFavoritePilots([]);
+      return;
     }
+    const res = await fetch("https://api.jolpi.ca/ergast/f1/2025/driverStandings.json");
+    if (!res.ok) throw new Error(res.statusText);
+    const data = await res.json();
+    const drivers = data.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings || [];
+    setFavoritePilots(drivers.filter(d => pilotIds.includes(d.Driver.driverId)));
   };
 
   const loadFavoriteConstructors = async (uid) => {
-    try {
-      const q = query(
-        collection(db, "favoritesConstructors"),
-        where("userId", "==", uid)
-      );
-      const snapshot = await getDocs(q);
-      const favorites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setFavoriteConstructors(favorites);
-    } catch (err) {
-      console.error("Ошибка загрузки избранных конструкторов:", err);
-      setError("Ошибка загрузки избранных конструкторов");
-    }
+    const snap = await getDocs(
+      query(collection(db, "favoritesConstructors"), where("userId", "==", uid))
+    );
+    setFavoriteConstructors(snap.docs.map(d => ({ id: d.id, ...d.data() })));
   };
 
   const loadFavoriteTracks = async (uid) => {
-    try {
-      const q = query(
-        collection(db, "favoritesTracks"),
-        where("userId", "==", uid)
-      );
-      const snapshot = await getDocs(q);
-      const favorites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setFavoriteTracks(favorites);
-    } catch (err) {
-      console.error("Ошибка загрузки избранных трасс:", err);
-      setError("Ошибка загрузки избранных трасс");
-    }
+    const snap = await getDocs(
+      query(collection(db, "favoritesTracks"), where("userId", "==", uid))
+    );
+    setFavoriteTracks(snap.docs.map(d => ({ id: d.id, ...d.data() })));
   };
 
   const fetchFollowersCount = async (uid) => {
-    try {
-      const followsQuery = query(
-        collection(db, "follows"),
-        where("followingId", "==", uid)
-      );
-      const snapshot = await getDocs(followsQuery);
-      setFollowersCount(snapshot.size);
-    } catch (err) {
-      console.error("Ошибка при получении количества подписчиков:", err);
-    }
+    const snap = await getDocs(
+      query(collection(db, "follows"), where("followingId", "==", uid))
+    );
+    setFollowersCount(snap.size);
   };
 
-  const handlePostSubmit = async () => {
-    if (!newPost.trim()) return;
-    try {
-      await addDoc(collection(db, "posts"), {
-        uid: currentUser.uid,
-        text: newPost,
-        createdAt: serverTimestamp(),
-      });
-      setNewPost("");
-    } catch (err) {
-      console.error("Ошибка публикации поста:", err);
-    }
-  };
 
   const handleDeletePost = async (postId) => {
-    try {
-      await deleteDoc(doc(db, "posts", postId));
-    } catch (err) {
-      console.error("Ошибка при удалении поста:", err);
-    }
+    await deleteDoc(doc(db, "posts", postId));
   };
 
   const handleEditPost = (post) => {
@@ -297,13 +295,9 @@ const Profile = ({ currentUser }) => {
   };
 
   const handleSaveEdit = async (postId) => {
-    try {
-      await updateDoc(doc(db, "posts", postId), { text: editedText });
-      setEditingPostId(null);
-      setEditedText("");
-    } catch (err) {
-      console.error("Ошибка при сохранении изменений:", err);
-    }
+    await updateDoc(doc(db, "posts", postId), { text: editedText });
+    setEditingPostId(null);
+    setEditedText("");
   };
 
   const handleCancelEdit = () => {
@@ -312,29 +306,26 @@ const Profile = ({ currentUser }) => {
   };
 
   const toggleMenu = (postId) => {
-    setOpenMenuPostId((prev) => (prev === postId ? null : postId));
+    setOpenMenuPostId(prev => (prev === postId ? null : postId));
   };
 
-  const [visibleRole, setVisibleRole] = useState(null);
   useEffect(() => {
-    if (activeRole) {
-      setVisibleRole(activeRole);
-    }
+    if (activeRole) setVisibleRole(activeRole);
   }, [activeRole]);
 
+  const [visibleRole, setVisibleRole] = useState(null);
+
   const togglePostComments = (postId) => {
-    setActiveCommentsPostId((prev) => (prev === postId ? null : postId));
+    setActiveCommentsPostId(prev => (prev === postId ? null : postId));
   };
 
   const handlePilotSelect = (pilot) => {
-    const pilotLastName = normalizeName(pilot.Driver.familyName);
-    navigate(`/pilot-details/${pilotLastName}`);
+    const last = normalizeName(pilot.Driver.familyName);
+    navigate(`/pilot-details/${last}`);
   };
 
-
-  // Для избранной трассы переходим на страницу деталей
-  const handleTrackSelect = (raceData) => {
-    navigate(`/races/${raceData.round}`, { state: { race: raceData } });
+  const handleTrackSelect = (race) => {
+    navigate(`/races/${race.round}`, { state: { race } });
   };
 
   const formatDate = (dateInput) => {
@@ -359,7 +350,6 @@ const Profile = ({ currentUser }) => {
         style={{
           width: "100vw",
           height: "100vh",
-          backgroundColor: "#1D1D1F",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -399,7 +389,6 @@ const Profile = ({ currentUser }) => {
         style={{
           width: "100vw",
           height: "100vh",
-          backgroundColor: "#1D1D1F",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -412,27 +401,16 @@ const Profile = ({ currentUser }) => {
   }
 
   return (
-    <div style={{ backgroundColor: "#1D1D1F", color: "white", padding: "0 15px", marginBottom: "80px" }}>
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          background: "transparent",
-          border: "none",
-          color: "white",
-          fontSize: "18px",
-          cursor: "pointer",
-          marginTop: "15px",
-        }}
-      >
-        ← Назад
-      </button>
+    <div style={{ color: "white", padding: "0 15px", marginBottom: "130px" }}>
+      
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: "15px",
           borderRadius: "15px",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
+          marginTop: "15px",
         }}
       >
         <div style={{ width: "100%" }}>
@@ -456,7 +434,6 @@ const Profile = ({ currentUser }) => {
               display: "flex",
               alignItems: "center",
               gap: "10px",
-              background: "#212124"
             }}
             onClick={() => navigate(`/userprofile/${profileUser.username}/followers`)}
           >
@@ -490,8 +467,8 @@ const Profile = ({ currentUser }) => {
         <img
           src={profileUser.photoUrl || "https://placehold.co/80x80"}
           alt="Avatar"
-          width={129}
-          height={129}
+          width={100}
+          height={100}
           style={{ borderRadius: "50%", background: "#D9D9D9" }}
         />
       </div>
@@ -502,15 +479,14 @@ const Profile = ({ currentUser }) => {
           marginTop: "10px",
           width: "100%",
           padding: "10px",
-          backgroundColor: "#0078FF",
           color: "white",
           borderRadius: "12px",
-          border: "none",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
           cursor: "pointer",
           fontSize: "16px",
         }}
       >
-        Создать пост
+        Новый пост
       </button>
 
       {/* Вкладки */}
@@ -519,12 +495,12 @@ const Profile = ({ currentUser }) => {
           onClick={() => handleTabChange('posts')}
           style={{
             padding: "10px 20px",
-            background: activeTab === "posts" ? "#212124" : "transparent",
+            boxShadow: activeTab === 'posts' ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
             color: "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
-            transition: 'background 0.4s ease',
+            transition: 'box-shadow 0.3s ease',
             fontSize: 14
           }}
         >
@@ -534,12 +510,12 @@ const Profile = ({ currentUser }) => {
           onClick={() => handleTabChange('favorites')}
           style={{
             padding: "10px 20px",
-            background: activeTab === "favorites" ? "#212124" : "transparent",
+            boxShadow: activeTab === 'favorites' ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
             color: "white",
             border: "none",
             borderRadius: "10px",
             cursor: "pointer",
-            transition: 'background 0.4s ease',
+            transition: 'box-shadow 0.3s ease',
             fontSize: 14
           }}
         >
@@ -549,8 +525,14 @@ const Profile = ({ currentUser }) => {
 
       <div style={{ position: "relative", overflow: "hidden" }}>
         <TransitionGroup>
+        <CSSTransition
+            key={activeTab}
+            classNames="tab"
+            timeout={400}
+          >
+        <div {...swipeHandlers} className="">
           {activeTab === "posts" ? (
-            <CSSTransition key="posts" timeout={400} classNames="tab" unmountOnExit>
+            
               <div style={{ top: 0, left: 0, width: "100%" }}>
                 {posts.length > 0 ? (
                   posts.map((post, index) => (
@@ -589,7 +571,6 @@ const Profile = ({ currentUser }) => {
                               position: "absolute",
                               top: "24px",
                               right: "0",
-                              background: "#212124",
                               borderRadius: "12px 0px 12px 12px",
                               padding: "5px",
                               zIndex: 10,
@@ -765,9 +746,9 @@ const Profile = ({ currentUser }) => {
                   <p style={{ textAlign: "center", marginTop: "50px" }}>Нет постов</p>
                 )}
               </div>
-            </CSSTransition>
+            
           ) : (
-            <CSSTransition key="favorites" timeout={400} classNames="tab" unmountOnExit>
+            
               <div style={{ top: 0, left: 0, width: "100%", marginTop: "10px" }}>
                 {/* Секция избранных пилотов */}
                 {favoritePilots.length > 0 ? (
@@ -781,7 +762,6 @@ const Profile = ({ currentUser }) => {
                         onClick={() => handlePilotSelect(pilot)}
                         style={{
                           width: "100%",
-                          background: "#212124",
                           borderRadius: "15px",
                           display: "flex",
                           justifyContent: "space-between",
@@ -789,7 +769,8 @@ const Profile = ({ currentUser }) => {
                           gap: "12px",
                           padding: "10px",
                           cursor: "pointer",
-                          marginBottom: "10px"
+                          marginBottom: "10px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
                         }}
                       >
                         <div
@@ -800,7 +781,6 @@ const Profile = ({ currentUser }) => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            background: "#212124",
                           }}
                         >
                           <div
@@ -865,7 +845,6 @@ const Profile = ({ currentUser }) => {
                         key={fav.id}
                         style={{
                           width: "100%",
-                          background: "#212124",
                           borderRadius: "15px",
                           display: "flex",
                           justifyContent: "space-between",
@@ -873,7 +852,8 @@ const Profile = ({ currentUser }) => {
                           gap: "12px",
                           padding: "10px",
                           cursor: "pointer",
-                          marginBottom: "10px"
+                          marginBottom: "10px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
                         }}
                       >
                         <div
@@ -884,7 +864,6 @@ const Profile = ({ currentUser }) => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            background: "#212124",
                           }}
                         >
                           <div
@@ -930,14 +909,14 @@ const Profile = ({ currentUser }) => {
                         style={{
                           width: "100%",
                           display: "flex",
-                          background: "#212124",
                           borderRadius: "15px",
                           justifyContent: "space-between",
                           alignItems: "center",
                           gap: "12px",
                           padding: "10px",
                           cursor: "pointer",
-                          marginBottom: "10px"
+                          marginBottom: "10px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
                         }}
                       >
                         <div
@@ -948,7 +927,6 @@ const Profile = ({ currentUser }) => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            background: "#212124",
                           }}
                         >
                           <img
@@ -984,8 +962,9 @@ const Profile = ({ currentUser }) => {
                   <p style={{ textAlign: "center", marginTop: "20px" }}>Нет избранных трасс</p>
                 )}
               </div>
-            </CSSTransition>
           )}
+        </div>
+        </CSSTransition>
         </TransitionGroup>
       </div>
 
@@ -1014,7 +993,6 @@ const Profile = ({ currentUser }) => {
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              background: "#1D1D1F",
               padding: "20px",
               borderRadius: "20px",
               textAlign: "center",
@@ -1039,7 +1017,6 @@ const Profile = ({ currentUser }) => {
             <button
               onClick={closeRoleModal}
               style={{
-                background: "#212124",
                 color: "white",
                 border: "none",
                 padding: "10px 20px",

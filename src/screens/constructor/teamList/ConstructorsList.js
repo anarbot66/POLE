@@ -39,7 +39,6 @@ const ConstructorsList = ({ onConstructorSelect }) => {
         flexDirection: "column",
         justifyContent: "flex-start",
         gap: "15px",
-        backgroundColor: "#1D1D1F",
         paddingTop: "20px"
       }}
     >

@@ -75,7 +75,6 @@ const FollowersList = ({ currentUser }) => {
         style={{
           width: "100vw",
           height: "100vh",
-          backgroundColor: "#1D1D1F",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -117,7 +116,6 @@ const FollowersList = ({ currentUser }) => {
         <button
           onClick={goBack}
           style={{
-            backgroundColor: "#212124",
             color: "white",
             border: "none",
             padding: "5px 10px",
@@ -165,7 +163,7 @@ const FollowersList = ({ currentUser }) => {
               <span style={{ color: "white", fontSize: "14px" }}>
                 {user.firstName} {user.lastName}
               </span>
-              <span style={{ color: "#0077FF", fontSize: "12px" }}>
+              <span style={{ color: "#2C8478", fontSize: "12px" }}>
                 {user.username ? "@" + user.username : ""}
               </span>
             </div>

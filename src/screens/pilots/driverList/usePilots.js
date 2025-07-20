@@ -1,36 +1,56 @@
+// usePilots.js
 import { useState, useEffect } from "react";
-import pilotStats from "../../recources/json/driversData.json";
-import {  formatDriverName } from "./formatters";
-import {  driverToConstructor } from "./constants";
+import { driverTranslations, driverToConstructor } from "./constants";
 
 export const usePilots = () => {
   const [pilots, setPilots] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    try {
-      const pilotsFromJson = Object.entries(pilotStats).map(([key, stats]) => {
-        const constructorName = driverToConstructor[key] || "Unknown";
-        const fullName = formatDriverName(key);
-        return {
-          Driver: {
-            givenName: fullName.split(" ")[0] || "",
-            familyName: fullName.split(" ")[1] || fullName,
-            translatedName: fullName,
-            nationality: stats.nationality
-          },
-          Constructors: [{ name: constructorName }],
-          position: stats.pos,
-          points: stats.point,
-          extraStats: { ...stats }
-        };
-      });
+    const fetchPilots = async () => {
+      try {
+        const res = await fetch(
+          "https://api.jolpi.ca/ergast/f1/2025/driverStandings.json"
+        );
+        if (!res.ok) throw new Error("Network response was not ok");
+        const json = await res.json();
 
-      pilotsFromJson.sort((a, b) => a.position - b.position);
-      setPilots(pilotsFromJson);
-    } catch (err) {
-      setError("Ошибка при получении данных");
-    }
+        const standings =
+          json.MRData.StandingsTable.StandingsLists[0]?.DriverStandings || [];
+
+        const pilotsFromApi = standings.map((item) => {
+          const constructorName =
+            item.Constructors[0]?.name || "Unknown";
+          const fullName = `${item.Driver.givenName} ${item.Driver.familyName}`;
+          const translatedName =
+            driverTranslations[item.Driver.familyName] || fullName;
+
+          return {
+            Driver: {
+              givenName: item.Driver.givenName,
+              familyName: item.Driver.familyName,
+              translatedName,
+              nationality: item.Driver.nationality
+            },
+            Constructors: [{ name: constructorName }],
+            position: Number(item.position),
+            points: Number(item.points),
+            extraStats: {
+              wins: item.wins
+            }
+          };
+        });
+
+        // API уже возвращает по порядку, но на всякий случай
+        pilotsFromApi.sort((a, b) => a.position - b.position);
+        setPilots(pilotsFromApi);
+      } catch (err) {
+        console.error(err);
+        setError("Ошибка при получении данных о пилотах");
+      }
+    };
+
+    fetchPilots();
   }, []);
 
   return { pilots, error };

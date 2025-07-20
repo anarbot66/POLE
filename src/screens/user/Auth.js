@@ -59,7 +59,9 @@ const Auth = ({ user }) => {
               firstName: user.firstName,
               lastName: user.lastName,
               photoUrl: photoUrl,
-              uid: firebaseUser.uid
+              uid: firebaseUser.uid,
+              apexPoints: 100,
+              gsCurrency: 10
             });
           } else {
           }
@@ -194,7 +196,8 @@ const Auth = ({ user }) => {
             style={{
               alignSelf: 'stretch',
               height: 100,
-              background: isChecked && !isLoading ? '#0077FF' : 'grey',
+              boxShadow: isChecked && !isLoading ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
+              transition: 'box-shadow 0.3s ease',
               borderRadius: 10,
               justifyContent: 'center',
               alignItems: 'center',
@@ -213,7 +216,7 @@ const Auth = ({ user }) => {
                 wordWrap: 'break-word'
               }}
             >
-              {isLoading ? " " : "Продолжить"}
+              {isLoading ? "Подождите.." : "Продолжить"}
             </div>
           </div>
         </div>

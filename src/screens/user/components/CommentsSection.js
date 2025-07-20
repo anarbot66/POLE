@@ -13,7 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../firebase";
 import RoleIcon from "../components/RoleIcon";
-
+import "../../components/Navigation.css";
 
 const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const [comments, setComments] = useState([]);
@@ -79,7 +79,7 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
   };
 
   return (
-    <div className="comments-section" style={styles.commentsSection}>
+    <div className="navGlass" style={styles.commentsSection}>
       <div style={styles.header}>
         <span style={styles.headerText}>Комментарии</span>
         <button onClick={onClose} style={styles.closeButton}>×</button>
@@ -157,7 +157,6 @@ const styles = {
     bottom: 0,
     left: 0,
     width: "100%",
-    background: "#212124",
     borderTopLeftRadius: "20px",
     borderTopRightRadius: "20px",
     padding: "15px",
@@ -236,8 +235,8 @@ const styles = {
     flex: 1,
     padding: "8px",
     borderRadius: "8px",
-    border: "1px solid #555",
-    background: "#333",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+    background: "transparent",
     color: "white",
     outline: "none",
     resize: "none",
@@ -248,8 +247,8 @@ const styles = {
   sendButton: {
     padding: "8px 12px",
     borderRadius: "8px",
-    border: "none",
-    background: "#3498db",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+    background: "transparent",
     color: "white",
     cursor: "pointer",
   },

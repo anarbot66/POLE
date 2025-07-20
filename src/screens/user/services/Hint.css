@@ -1,0 +1,36 @@
+.hint-container {
+    position: fixed;
+    bottom: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.1); /* полупрозрачный белый фон */
+    backdrop-filter: blur(10px);          /* размытие заднего фона */
+    -webkit-backdrop-filter: blur(10px);  /* для Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* светлая граница */
+    padding: 10px 15px;
+    max-width: 80%;
+    font-size: 14px;
+    font-family: Inter;
+    z-index: 999;
+    opacity: 0;
+    transform: translate(-50%, 20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: auto;
+  }
+  
+  .hint-container.expanded {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  
+  .hint-container.collapsed {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  
+  .hint-content {
+    transition: opacity 0.3s ease;
+  }
+  
