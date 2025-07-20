@@ -188,7 +188,7 @@ function App() {
   if (!dbCheckCompleted) return <div />;
 
   return (
-    <div className="App" style={{ height: "100%", display: "flex", flexDirection: "column", marginTop: '100px' }}>
+    <div className="App" style={{ height: "100%", display: "flex", flexDirection: "column", marginTop: '80px' }}>
       {loading && <LoadingScreen progress={progress} fadeOut={fadeOut} />}
       {!loading && (
         <>
