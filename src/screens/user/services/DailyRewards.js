@@ -23,6 +23,7 @@ import { useSwipeable } from 'react-swipeable';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import logo from "../../recources/images/apex-logo.png";
 import { useNavigate } from "react-router-dom";
+import { ru } from 'date-fns/locale';
 
 export default function DailyRewardsGrid({ currentUser }) {
   const [activeTab, setActiveTab] = useState('daily'); // 'daily' | 'quests'
@@ -211,6 +212,7 @@ export default function DailyRewardsGrid({ currentUser }) {
               flexDirection: 'column',
               marginTop: '110px'
             }} className="">
+              
         {activeTab === "daily" && (
         // ======== DailyRewardsGrid ========
         <div>
@@ -256,7 +258,8 @@ export default function DailyRewardsGrid({ currentUser }) {
                     alignItems: 'center'
                   }}
                 >
-                  <div style={{ fontSize: 14 }}>{day.getDate()}</div>
+                  
+                  <div style={{ fontSize: 14, marginBottom: '5px' }}>{day.getDate()}</div>
                   <div style={{
                     display: 'flex',
                     gap: 6,
@@ -267,10 +270,11 @@ export default function DailyRewardsGrid({ currentUser }) {
                       <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 4
+                        gap: 1,
+                        flexDirection: 'column'
                       }}>
                         <span style={{
-                          fontSize: 12,
+                          fontSize: 9,
                           fontWeight: 'bold'
                         }}>+100</span>
                         <img
@@ -288,10 +292,11 @@ export default function DailyRewardsGrid({ currentUser }) {
                       <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 4
+                        gap: 1,
+                        flexDirection: 'column'
                       }}>
                         <span style={{
-                          fontSize: 12,
+                          fontSize: 9,
                           fontWeight: 'bold'
                         }}>+10</span>
                         <svg width="16" height="15" viewBox="0 0 11 10" fill="none" xmlns="http://www.w3.org/2000/svg">
