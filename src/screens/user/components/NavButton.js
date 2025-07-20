@@ -7,7 +7,7 @@ export function NavButton({ children, label, onClick }) {
       <div
         onClick={onClick}
         style={{
-          width: 77.5,
+          width: 60,
           height: 60,
           borderRadius: 15,
           display: "flex",

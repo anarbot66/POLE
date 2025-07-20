@@ -93,7 +93,7 @@ const BottomNavigation = ({ setActivePage, currentUser }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          gap: 40,
+          gap: 20,
           zIndex: 998,
           width: "calc(100% - 30px)",
           borderRadius: 15,
