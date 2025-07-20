@@ -57,7 +57,7 @@ function App() {
           photoUrl: userData.photo_url || "",
         });
       } else {
-        setUser({ name: "anarbot66", uid: "", photoUrl: "" });
+        setUser({ name: "", uid: "", photoUrl: "" });
       }
     } else {
       setUser({ name: "", uid: "", photoUrl: "" });
