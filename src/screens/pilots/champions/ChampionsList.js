@@ -3,12 +3,11 @@ import React from "react";
 import { useChampionsData } from "./useChampionsData";
 import ChampionsCard from "./ChampionsCard";
 import { useNavigate } from "react-router-dom";
-import { useTelegramBackButton } from "../../user/services/useTelegramBackButton";
+import BackButton from "../../components/BackButton";
 
 const ChampionsList = ({ onChampionSelect }) => {
   const { champions, loading, error } = useChampionsData();
   const navigate = useNavigate();
-  useTelegramBackButton();
 
 
   if (loading) return <div> </div>;
@@ -16,8 +15,6 @@ const ChampionsList = ({ onChampionSelect }) => {
 
   return (
     <div>
-      
-
       <div
         style={{
           width: "calc(100% - 30px)",
@@ -28,9 +25,20 @@ const ChampionsList = ({ onChampionSelect }) => {
           display: "flex",
           flexDirection: "column",
           gap: "15px",
-          marginTop: "60px"
+          marginTop: "20px"
         }}
       >
+        
+        <div style={{position: 'fixed'}}>
+      <BackButton
+        label="Назад"
+        style={{}}
+      />
+        
+      </div>
+        <div style={{marginTop: '50px', display: "flex",
+          flexDirection: "column",
+          gap: "15px",}}>
         {champions.map((champion, index) => (
           <ChampionsCard
             key={index}
@@ -38,6 +46,7 @@ const ChampionsList = ({ onChampionSelect }) => {
             onClick={onChampionSelect}
           />
         ))}
+        </div>
       </div>
     </div>
   );

@@ -323,7 +323,7 @@ body::-webkit-scrollbar {
 
 .truncate {
   display: inline-block;
-  max-width: 200px; /* Укажи подходящую ширину */
+  max-width: 190px; /* Укажи подходящую ширину */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -18,7 +18,7 @@ import { db } from "../../../firebase";
 import FavoriteConstructorButton from "./FavoriteConstructorButton";
 import { useSwipeable } from 'react-swipeable';
 import SeasonPickerModal from "../../components/SeasonPickerModal";
-import { useTelegramBackButton } from "../../user/services/useTelegramBackButton";
+import BackButton from "../../components/BackButton"
 
 const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
   const navigate = useNavigate();
@@ -32,8 +32,10 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
     social:  'Соц.Сети'
   };
   const [pickerOpen, setPickerOpen] = useState(false);
-  
-  useTelegramBackButton();
+
+  const handleGoBack = () => {
+    navigate(-1); // Navigates back one entry in the history stack
+  };
 
   // Состояния для избранного конструктора
   const [isFavorite, setIsFavorite] = useState(false);
@@ -176,7 +178,11 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
         marginTop: "10px"
       }}
     >
-      {/* Верхняя строка: кнопка назад, название команды и соцсети */}
+      <BackButton
+        label="Назад"
+        style={{}}
+      />
+
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ color: teamColor, fontSize: "16px", fontFamily: "Inter" }}>

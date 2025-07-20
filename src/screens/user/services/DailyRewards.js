@@ -24,7 +24,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import logo from "../../recources/images/apex-logo.png";
 import { useNavigate } from "react-router-dom";
 import { ru } from 'date-fns/locale';
-import { useTelegramBackButton } from './useTelegramBackButton';
+import BackButton from '../../components/BackButton';
 
 export default function DailyRewardsGrid({ currentUser }) {
   const [activeTab, setActiveTab] = useState('daily'); // 'daily' | 'quests'
@@ -34,7 +34,6 @@ export default function DailyRewardsGrid({ currentUser }) {
   const [quests, setQuests] = useState([]);
   const [completedQuests, setCompletedQuests] = useState(new Set());
   const navigate = useNavigate();
-  useTelegramBackButton();
   if (!currentUser || !currentUser.uid) {
     navigate("/");
   }
@@ -149,14 +148,24 @@ export default function DailyRewardsGrid({ currentUser }) {
 
   return (
     <div style={{ padding: 20, color: 'white', marginBottom: '150px' }}>
-      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, zIndex: 999, marginTop: '80px'}}>
+      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, zIndex: 999}}>
 
       <div
           style={{
             display: 'flex',
             borderRadius: '20px',
+            flexDirection: 'column',
+            gap: '10px'
           }}
         >
+          <BackButton
+        label="Назад"
+        style={{}}
+      />
+          <div style={{
+            display: 'flex',
+            borderRadius: '20px'
+          }}>
           <button
             onClick={() => setActiveTab('daily')}
             style={{
@@ -187,6 +196,7 @@ export default function DailyRewardsGrid({ currentUser }) {
           >
             Квесты
           </button>
+          </div>
         </div>
       </div>
         <TransitionGroup>
@@ -199,7 +209,7 @@ export default function DailyRewardsGrid({ currentUser }) {
               display: "flex",
               gap: "15px",
               flexDirection: 'column',
-              marginTop: '80px'
+              marginTop: '120px'
             }} className="">
               
         {activeTab === "daily" && (

@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import { db } from "../../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useParams, useNavigate } from "react-router-dom";
-import { useTelegramBackButton } from "./services/useTelegramBackButton";
+import BackButton from "../components/BackButton";
 
 const FollowersList = ({ currentUser }) => {
   // Получаем username из URL
   const { username } = useParams();
   const navigate = useNavigate();
-  useTelegramBackButton();
   const [followers, setFollowers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -110,9 +109,17 @@ const FollowersList = ({ currentUser }) => {
     <div
     className=""
     style={{ padding: "20px" }}>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <h3 style={{ color: "white", marginLeft: "20px" }}>Подписчики {username}</h3>
+      
+      <div style={{ display: "flex", alignItems: "center", position: 'fixed' }}>
+      <div style={{}}>
+      <BackButton
+        label="Назад"
+        style={{}}
+      />
       </div>
+        <span style={{ color: "white", marginLeft: "20px", fontWeight: 'normal' }}>Подписчики {username}</span>
+      </div>
+      <div style={{marginTop: '50px'}}>
       {followers.length > 0 ? (
         followers.map((user, index) => (
           <div
@@ -157,6 +164,7 @@ const FollowersList = ({ currentUser }) => {
       ) : (
         <div style={{ color: "white", fontSize: "14px", marginTop: "50px", textAlign: "center"}}>Пока никто не подписался =(</div>
       )}
+      </div>
     </div>
   );
 };

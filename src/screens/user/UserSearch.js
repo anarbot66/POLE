@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import { db } from "../../firebase";
 import { collection, query, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { useTelegramBackButton } from "./services/useTelegramBackButton";
+import BackButton from "../components/BackButton";
 
 const UserSearch = ({ currentUser }) => {
   const [searchTerm, setSearchTerm] = useState("@"); // Устанавливаем начальное значение как "@"
   const [results, setResults] = useState([]);
   const navigate = useNavigate();
-  useTelegramBackButton();
 
   if (!currentUser || !currentUser.uid) {
     navigate("/");
@@ -88,8 +87,11 @@ const UserSearch = ({ currentUser }) => {
     <div
     style={{ padding: "10px 15px", marginBottom: 50 }}>
       
-      <div style={{ width: "100%", position: "fixed", display: "flex", background: "black", margin: 0, 
-  top: 0, left: 0, padding: 15, marginTop: '100px'}}>
+      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, zIndex: 999, display: 'flex'}}>
+      <BackButton
+        label="Назад"
+        style={{}}
+      />
         
         <input
           type="text"
@@ -98,10 +100,10 @@ const UserSearch = ({ currentUser }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
             marginLeft: "10px",
-            background: "black",
+            background: "transparent",
             width: "100%",
-            padding: "10px 15px",
-            fontSize: "16px",
+            padding: "5px 15px",
+            fontSize: "12px",
             borderRadius: "20px",
             color: "white",
             border: "1px solid rgba(255, 255, 255, 0.2)",
@@ -109,7 +111,7 @@ const UserSearch = ({ currentUser }) => {
           }}
         />
       </div>
-      <div style={{ marginTop: "75px" }}>
+      <div style={{ marginTop: "65px" }}>
         {results.length > 0 ? (
           results.map((user, index) => (
             <div

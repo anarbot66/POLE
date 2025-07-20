@@ -57,7 +57,7 @@ function App() {
           photoUrl: userData.photo_url || "",
         });
       } else {
-        setUser({ name: "", uid: "", photoUrl: "" });
+        setUser({ name: "anarbot66", uid: "", photoUrl: "" });
       }
     } else {
       setUser({ name: "", uid: "", photoUrl: "" });
@@ -188,7 +188,7 @@ function App() {
   if (!dbCheckCompleted) return <div />;
 
   return (
-    <div className="App" style={{ height: "100%", display: "flex", flexDirection: "column", marginTop: '80px' }}>
+    <div className="App" style={{ height: "100%", display: "flex", flexDirection: "column"}}>
       {loading && <LoadingScreen progress={progress} fadeOut={fadeOut} />}
       {!loading && (
         <>

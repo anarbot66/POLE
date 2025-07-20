@@ -10,7 +10,7 @@ import { teamColors } from "./constants";
 import SeasonPickerModal from "../../components/SeasonPickerModal";
 import { useSwipeable } from 'react-swipeable';
 import Hint from "../../user/services/Hint";
-import { useTelegramBackButton } from "../../user/services/useTelegramBackButton";
+import BackButton from "../../components/BackButton";
 
 const driverRating = {
   "verstappen": "92",
@@ -58,7 +58,6 @@ const PilotDetails = ({ currentUser }) => {
     biography: 'Биография',
     seasons:  'Сезоны'
   };
-  useTelegramBackButton();
 
   const [tipOpen, setTipOpen] = useState(false);
 
@@ -152,6 +151,12 @@ const PilotDetails = ({ currentUser }) => {
         marginTop: "10px"
       }}
     >
+      <div style={{position: 'absolute'}}>
+      <BackButton
+        label="Назад"
+        style={{}}
+      />
+      </div>
       <div style={{ 
   textAlign: "center", 
   position: "absolute", 

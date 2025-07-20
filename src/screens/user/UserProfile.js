@@ -14,7 +14,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import CommentsSection from "./components/CommentsSection";
 import RoleIcon, { roleIcons } from "./components/RoleIcon";
 import { useSwipeable } from 'react-swipeable';
-import { useTelegramBackButton } from "./services/useTelegramBackButton";
+import BackButton from "../components/BackButton";
 
 // Объект с цветами команд
 const teamColors = {
@@ -110,7 +110,6 @@ const UserProfile = ({ currentUser }) => {
   const navigate = useNavigate();
   const { uid } = useParams(); // uid профиля, который отображается
   const location = useLocation();
-  useTelegramBackButton();
   const currentUserUid = location.state?.currentUserUid || currentUser?.uid;
 
   const [profileUser, setProfileUser] = useState(null);
@@ -421,7 +420,13 @@ const UserProfile = ({ currentUser }) => {
 
   return (
     <div style={{ color: "white", padding: "0 15px", marginBottom: "80px" }}>
-      {/* Верхний блок с информацией */}
+      <div style={{position: 'fixed'}}>
+      <BackButton
+        label="Назад"
+        style={{}}
+      />
+        
+      </div>
       <div
         style={{
           display: "flex",
@@ -432,12 +437,9 @@ const UserProfile = ({ currentUser }) => {
           marginTop: "15px",
         }}
       >
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "calc(100% - 30px)", marginTop: '50px'}}>
           <div style={{ fontSize: "25px", display: "flex", alignItems: "center", gap: "10px" }}>
-            <span className="truncate">{profileUser.firstName} {profileUser.lastName}</span>{" "}
-            {profileUser.role && profileUser.role.split(",").map((role) => (
-              <RoleIcon key={role} role={role} onClick={() => setActiveRole(role)} size={16} style={{ cursor: "pointer" }} />
-            ))}
+            <span className="truncate">{profileUser.firstName}{profileUser.lastName}</span>
           </div>
           <div style={{ fontSize: "14px" }}>@{profileUser.username}</div>
           <div
