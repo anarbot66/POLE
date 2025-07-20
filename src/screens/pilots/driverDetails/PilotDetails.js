@@ -151,7 +151,7 @@ const PilotDetails = ({ currentUser }) => {
         marginTop: "10px"
       }}
     >
-      <div style={{position: 'absolute'}}>
+      <div style={{position: 'fixed'}}>
       <BackButton
         label="Назад"
         style={{}}
