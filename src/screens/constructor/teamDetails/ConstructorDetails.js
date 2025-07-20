@@ -178,18 +178,6 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
     >
       {/* Верхняя строка: кнопка назад, название команды и соцсети */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <button
-          onClick={goBack}
-          style={{
-            color: "white",
-            border: "none",
-            padding: "5px",
-            borderRadius: "10px",
-            cursor: "pointer"
-          }}
-        >
-          ✕
-        </button>
         <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ color: teamColor, fontSize: "16px", fontFamily: "Inter" }}>
             {constructor.Constructor.name}

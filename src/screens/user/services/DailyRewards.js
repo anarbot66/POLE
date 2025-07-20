@@ -148,7 +148,7 @@ export default function DailyRewardsGrid({ currentUser }) {
 
   return (
     <div style={{ padding: 20, color: 'white', marginBottom: '150px' }}>
-      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, zIndex: 999, marginTop: '100px'}}>
+      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, zIndex: 999, marginTop: '80px'}}>
 
       <div
           style={{
