@@ -19,15 +19,16 @@ import InfoPage from "./screens/user/InfoPage";
 import LoadingScreen from "./screens/components/LoadingScreen";
 import ChampionsList from "./screens/pilots/champions/ChampionsList.js";
 import CreatePost from "./screens/user/components/CreatePost.js";
+import { usePreloadImages } from "./screens/hooks/usePreloadImages";
 
 import { db } from "./firebase";
 import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
 import DailyRewards from "./screens/user/services/DailyRewards.js";
 
 function App() {
+  usePreloadImages();
   const navigate = useNavigate();
   const location = useLocation();
-
   const [, setActivePage] = useState(0);
   const [, setSelectedRace] = useState(null);
   const [, setContentLoaded] = useState(false);
