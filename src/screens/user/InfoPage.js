@@ -1,6 +1,7 @@
 import React, { useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTelegramBackButton } from "./services/useTelegramBackButton";
 
 const licenses = [
   "Jack Doohan JAPAN GP Liauzh, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons",
@@ -54,23 +55,9 @@ const licenses = [
 const InfoPage = () => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
+    useTelegramBackButton();
   return (
     <div  style={{ color: "#fff", padding: "15px", marginBottom: '90px' }}>
-        <div style={{width: "100%"}}>
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "white",
-            fontSize: "18px",
-            cursor: "pointer",
-            marginBottom: "20px"
-          }}
-        >
-          ←
-        </button>
-        </div>
       <div className="mb-4">
         <h1 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <svg

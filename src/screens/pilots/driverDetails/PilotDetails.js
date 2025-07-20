@@ -10,6 +10,7 @@ import { teamColors } from "./constants";
 import SeasonPickerModal from "../../components/SeasonPickerModal";
 import { useSwipeable } from 'react-swipeable';
 import Hint from "../../user/services/Hint";
+import { useTelegramBackButton } from "../../user/services/useTelegramBackButton";
 
 const driverRating = {
   "verstappen": "92",
@@ -57,6 +58,7 @@ const PilotDetails = ({ currentUser }) => {
     biography: 'Биография',
     seasons:  'Сезоны'
   };
+  useTelegramBackButton();
 
   const [tipOpen, setTipOpen] = useState(false);
 
@@ -131,9 +133,6 @@ const PilotDetails = ({ currentUser }) => {
     );
   }
   
-  const goBack = () => {
-    navigate(-1);
-  };
 
   
 
@@ -189,22 +188,6 @@ const PilotDetails = ({ currentUser }) => {
     }}
   />
 </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-        <button
-          onClick={goBack}
-          style={{
-            color: "white",
-            border: "none",
-            padding: "5px",
-            borderRadius: "10px",
-            cursor: "pointer",
-            zIndex: "1000"
-          }}
-        >
-          ✕
-        </button>
-        
-      </div>
 
       <div style={{ display: "flex", marginTop: '230px'}}>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: '10px' }}>
@@ -222,7 +205,7 @@ const PilotDetails = ({ currentUser }) => {
       teamColor={teamColors[pilot.Constructors[0].name] || "#000000"} 
     />
         </div>
-        <div onClick={showTip} style={{display: 'flex', flexDirection: 'column'}}>
+        <div style={{display: 'flex', flexDirection: 'column'}}>
           <span style={{ color: "white", fontSize: "50px", height: '63px', marginTop: -10 }}>
           {rating}
           </span>

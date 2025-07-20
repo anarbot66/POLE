@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useTelegramBackButton } from "../services/useTelegramBackButton";
 
 const CreatePost = ({ currentUser }) => {
   const navigate = useNavigate();
   const [newPost, setNewPost] = useState("");
   const [error, setError] = useState(null);
-
+  useTelegramBackButton();
   const handlePostSubmit = async () => {
     if (!newPost.trim()) return;
     try {
@@ -31,19 +32,6 @@ const CreatePost = ({ currentUser }) => {
         minHeight: "100vh",
       }}
     >
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          background: "transparent",
-          border: "none",
-          color: "white",
-          fontSize: "18px",
-          cursor: "pointer",
-          marginBottom: "20px",
-        }}
-      >
-        ←
-      </button>
       <h2>Создать пост</h2>
       {error && <div style={{ color: "red" }}>{error}</div>}
       <textarea

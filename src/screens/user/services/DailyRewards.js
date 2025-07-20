@@ -148,24 +148,12 @@ export default function DailyRewardsGrid({ currentUser }) {
 
   return (
     <div style={{ padding: 20, color: 'white', marginBottom: '150px' }}>
-      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, zIndex: 999}}>
-      <button
-          onClick={() => navigate(-1)}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "white",
-            fontSize: "18px",
-            cursor: "pointer",
-          }}
-        >
-          ←
-        </button>
+      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, zIndex: 999, marginTop: '100px'}}>
+
       <div
           style={{
             display: 'flex',
             borderRadius: '20px',
-            marginTop: "10px",
           }}
         >
           <button
@@ -210,7 +198,7 @@ export default function DailyRewardsGrid({ currentUser }) {
               display: "flex",
               gap: "15px",
               flexDirection: 'column',
-              marginTop: '110px'
+              marginTop: '80px'
             }} className="">
               
         {activeTab === "daily" && (

@@ -2,19 +2,17 @@ import React, { useState, useEffect } from "react";
 import { db } from "../../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTelegramBackButton } from "./services/useTelegramBackButton";
 
 const FollowersList = ({ currentUser }) => {
   // Получаем username из URL
   const { username } = useParams();
   const navigate = useNavigate();
-  
+  useTelegramBackButton();
   const [followers, setFollowers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const goBack = () => {
-    navigate(-1);
-  };
 
   useEffect(() => {
     if (!username) return; // Предотвращаем ненужные запросы
@@ -113,19 +111,6 @@ const FollowersList = ({ currentUser }) => {
     className=""
     style={{ padding: "20px" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <button
-          onClick={goBack}
-          style={{
-            color: "white",
-            border: "none",
-            padding: "5px 10px",
-            borderRadius: "10px",
-            cursor: "pointer",
-            zIndex: "1000",
-          }}
-        >
-          ✕
-        </button>
         <h3 style={{ color: "white", marginLeft: "20px" }}>Подписчики {username}</h3>
       </div>
       {followers.length > 0 ? (

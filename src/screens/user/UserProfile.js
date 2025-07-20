@@ -14,6 +14,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import CommentsSection from "./components/CommentsSection";
 import RoleIcon, { roleIcons } from "./components/RoleIcon";
 import { useSwipeable } from 'react-swipeable';
+import { useTelegramBackButton } from "./services/useTelegramBackButton";
 
 // Объект с цветами команд
 const teamColors = {
@@ -109,7 +110,7 @@ const UserProfile = ({ currentUser }) => {
   const navigate = useNavigate();
   const { uid } = useParams(); // uid профиля, который отображается
   const location = useLocation();
-  // Если в state передали currentUserUid, используем его, иначе currentUser.uid
+  useTelegramBackButton();
   const currentUserUid = location.state?.currentUserUid || currentUser?.uid;
 
   const [profileUser, setProfileUser] = useState(null);
@@ -420,19 +421,6 @@ const UserProfile = ({ currentUser }) => {
 
   return (
     <div style={{ color: "white", padding: "0 15px", marginBottom: "80px" }}>
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          background: "transparent",
-          border: "none",
-          color: "white",
-          fontSize: "18px",
-          cursor: "pointer",
-          marginTop: "15px",
-        }}
-      >
-        ←
-      </button>
       {/* Верхний блок с информацией */}
       <div
         style={{

@@ -18,6 +18,7 @@ import { db } from "../../../firebase";
 import FavoriteConstructorButton from "./FavoriteConstructorButton";
 import { useSwipeable } from 'react-swipeable';
 import SeasonPickerModal from "../../components/SeasonPickerModal";
+import { useTelegramBackButton } from "../../user/services/useTelegramBackButton";
 
 const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
   };
   const [pickerOpen, setPickerOpen] = useState(false);
   
-
+  useTelegramBackButton();
 
   // Состояния для избранного конструктора
   const [isFavorite, setIsFavorite] = useState(false);

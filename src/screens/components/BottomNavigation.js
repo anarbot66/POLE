@@ -11,7 +11,7 @@ const pages = [
   { path: "/profile",    label: "Профиль"  },
 ];
 
-const BottomNavigation = ({ setActivePage, currentUser }) => {
+const BottomNavigation = ({ setActivePage}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);

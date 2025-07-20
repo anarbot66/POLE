@@ -274,23 +274,6 @@ const labels = {
       
       
 
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            color: "white",
-            border: "none",
-            padding: "5px",
-            borderRadius: "10px",
-            cursor: "pointer",
-            zIndex: "1000"
-          }}
-        >
-          ✕
-        </button>
-      
-      </div>
-
       <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: '200px'}}>
       <img 
           src={`https://flagcdn.com/w80/${countryCode}.png`} 

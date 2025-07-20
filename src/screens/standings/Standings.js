@@ -40,7 +40,7 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
     margin: "0px",
     marginBottom: "20px",  height: '100%'}}>
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '15px', flexDirection: "column", width: 'calc(100% - 30px)', margin: "0px 15px", background: 'black', zIndex: 999 }}>
-      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15}}>
+      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, marginTop: '100px'}}>
       <div
         style={{
           display: "flex",

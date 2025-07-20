@@ -25,7 +25,7 @@ const Services = ({currentUser}) => {
         marginBottom: "100px",
         paddingTop: "15px"
       }}
-    ><div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15}}>
+    ><div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, marginTop: '100px'}}>
       <div
         style={{
           display: "flex",
