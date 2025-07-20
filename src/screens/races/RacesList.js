@@ -236,7 +236,7 @@ const RacesList = ({ currentUser }) => {
               alignContent: "right"
             }} 
           />
-          <span style={{ color: "white", padding: "10px", width: '100%'}}>Расписание</span>
+          <span style={{ color: "white", padding: "10px", width: '100%'}}>Гонки</span>
           {currentUser && <UserStats uid={currentUser.uid} />}
 
           <NotificationsPanel
