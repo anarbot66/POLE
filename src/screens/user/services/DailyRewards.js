@@ -24,6 +24,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import logo from "../../recources/images/apex-logo.png";
 import { useNavigate } from "react-router-dom";
 import { ru } from 'date-fns/locale';
+import { useTelegramBackButton } from './useTelegramBackButton';
 
 export default function DailyRewardsGrid({ currentUser }) {
   const [activeTab, setActiveTab] = useState('daily'); // 'daily' | 'quests'
@@ -33,7 +34,7 @@ export default function DailyRewardsGrid({ currentUser }) {
   const [quests, setQuests] = useState([]);
   const [completedQuests, setCompletedQuests] = useState(new Set());
   const navigate = useNavigate();
-
+  useTelegramBackButton();
   if (!currentUser || !currentUser.uid) {
     navigate("/");
   }
