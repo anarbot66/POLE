@@ -6,6 +6,7 @@ import { useSwipeable } from 'react-swipeable';
 import { nationalityToFlag } from "../pilots/driverList/constants";
 import { TEAM_COLORS } from "../../screens/recources/json/constants";
 import { driverSurnames } from "../pilots/driverDetails/constants";
+import { useTelegramBackButton } from "../user/services/useTelegramBackButton";
 
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
@@ -72,7 +73,7 @@ const RaceDetails = ({ currentUser }) => {
   const [imageSrc, setImageSrc] = useState(null);
   const [RimageSrc, RsetImageSrc] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  useTelegramBackButton();
   
 
   
