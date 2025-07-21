@@ -20,6 +20,9 @@ import LoadingScreen from "./screens/components/LoadingScreen";
 import ChampionsList from "./screens/pilots/champions/ChampionsList.js";
 import CreatePost from "./screens/user/components/CreatePost.js";
 import { usePreloadImages } from "./screens/hooks/usePreloadImages";
+import HallOfFameList from "./screens/pilots/halloffame/HallOfFameList.js";
+import Header from "./screens/components/Header.js";
+import FavoritesDashboard from "./screens/user/fav/FavoritesDashboard.js";
 
 import { db } from "./firebase";
 import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
@@ -40,6 +43,7 @@ function App() {
   const [initialLoad, setInitialLoad] = useState(true);
   const [dbCheckCompleted, setDbCheckCompleted] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [showNotifs, setShowNotifs] = useState(false);
 
   // Инициализация данных пользователя
   useEffect(() => {
@@ -193,6 +197,11 @@ function App() {
       {loading && <LoadingScreen progress={progress} fadeOut={fadeOut} />}
       {!loading && (
         <>
+        <Header
+        currentUser={user}
+        showNotifs={showNotifs}
+        setShowNotifs={setShowNotifs}
+      />
           <div className="content-container">
             <TransitionGroup>
               <CSSTransition key={location.pathname} classNames="page" timeout={500}>
@@ -213,6 +222,8 @@ function App() {
                     <Route path="/champions" element={<ChampionsList />} />
                     <Route path="/create-post" element={<CreatePost currentUser={user} />} />
                     <Route path="/daily-rewards" element={<DailyRewards currentUser={user} />} />
+                    <Route path="/hall-of-fame" element={<HallOfFameList/>} />
+                    <Route path="/favorites" element={<FavoritesDashboard currentUser={user}/>} />
                   </Routes>
                 </div>
               </CSSTransition>

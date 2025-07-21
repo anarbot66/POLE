@@ -456,7 +456,7 @@ const labels = {
         {r.Constructor.name}
       </span>
       <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
-        {r.points} Очков
+        {r.points} очк.
       </span>
     </div>
   );

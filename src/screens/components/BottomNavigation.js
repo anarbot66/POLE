@@ -8,6 +8,7 @@ const pages = [
   { path: "/standings",  label: "Таблица"  },
   { path: "/races",      label: "Гонки"    },
   { path: "/services",   label: "Сервисы"  },
+  { path: "/favorites",    label: "Слежу"  },
   { path: "/profile",    label: "Профиль"  },
 ];
 
@@ -65,6 +66,19 @@ const BottomNavigation = ({ setActivePage}) => {
     },
     {
       id: 3,
+      label: "Слежу",
+      path: "/favorites",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.96689 21.2337C4.43553 21.5068 3.83388 21.0296 3.94086 20.4198L5.08173 13.9167L0.238525 9.30135C-0.214099 8.87002 0.0202014 8.08138 0.626562 7.99524L7.36197 7.03841L10.3651 1.08942C10.6357 0.553527 11.3685 0.553527 11.639 1.08942L14.6422 7.03841L21.3776 7.99524C21.9839 8.08138 22.2182 8.87002 21.7656 9.30135L16.9224 13.9167L18.0633 20.4198C18.1703 21.0296 17.5686 21.5068 17.0373 21.2337L11.0021 18.1318L4.96689 21.2337Z"/>
+</svg>
+
+
+
+      )
+    },
+    {
+      id: 4,
       label: "Профиль",
       path: "/profile",
       icon: (
@@ -93,7 +107,7 @@ const BottomNavigation = ({ setActivePage}) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          gap: 20,
+          gap: 10,
           zIndex: 998,
           width: "calc(100% - 30px)",
           borderRadius: 15,
@@ -109,7 +123,7 @@ const BottomNavigation = ({ setActivePage}) => {
             }}
             style={{
               width: 55,
-              height: 65,
+              height: 55,
               borderRadius: 20,
               display: "flex",
               flexDirection: "column",

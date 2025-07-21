@@ -216,39 +216,11 @@ const RacesList = ({ currentUser }) => {
           flexDirection: "column",
         }}
       >
-        <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15}}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            borderRadius: 15,
-          }}
-        >
-          <img 
-            onClick={() => navigate("/profile")} 
-            src={currentUser.photoUrl || "https://placehold.co/80x80"} 
-            alt="Avatar" 
-            style={{
-              width: "30px",
-              height: "30px",
-              borderRadius: "50%",
-              alignContent: "right"
-            }} 
-          />
-          <span style={{ color: "white", padding: "10px", width: '100%'}}>Гонки</span>
-          {currentUser && <UserStats uid={currentUser.uid} />}
+        <div className="buttonGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 85, left: 15, right: 15, padding: 15}}>
 
-          <NotificationsPanel
-        userId={currentUser.uid}
-        isOpen={showNotifs}
-        onClose={() => setShowNotifs(false)}
-      />
-        </div>
         <div style={{
             display: 'flex',
-            borderRadius: '20px',
-            marginTop: "10px"
+            borderRadius: '20px'
           }}>
   <button
             onClick={() => setActiveTab('upcoming')}
@@ -294,7 +266,7 @@ const RacesList = ({ currentUser }) => {
               display: "flex",
               gap: "15px",
               flexDirection: 'column',
-              marginTop: '120px'
+              marginTop: '135px'
             }}>
               
       {activeTab === 'upcoming' && nextRace && (

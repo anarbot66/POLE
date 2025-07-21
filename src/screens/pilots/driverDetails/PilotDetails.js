@@ -11,6 +11,19 @@ import SeasonPickerModal from "../../components/SeasonPickerModal";
 import { useSwipeable } from 'react-swipeable';
 import Hint from "../../user/services/Hint";
 import BackButton from "../../components/BackButton";
+import { countryToFlag } from "./constants";
+import { raceNameTranslations } from "./constants";
+import { normalizeName } from "./constants";
+
+const convertToMoscowTime = (utcDate, utcTime) => {
+  if (!utcDate || !utcTime) return "—";
+  const date = new Date(`${utcDate}T${utcTime}`);
+  // Прибавляем 3 часа для московского времени (UTC+3)
+  date.setHours(date.getHours());
+  return date.toLocaleString("ru-RU", {
+    day: "numeric", month: "long", hour: "2-digit", minute: "2-digit"
+  });
+};
 
 const driverRating = {
   "verstappen": "92",
@@ -47,21 +60,25 @@ const driverRating = {
 const PilotDetails = ({ currentUser }) => {
   const { lastName } = useParams();
   const navigate = useNavigate();
-  const { pilot, biography, seasons, loading } = usePilotData(lastName);
+  const { pilot, biography, seasons, firstRace, lastRaceData, loading } = usePilotData(lastName);
   const [activeTab, setActiveTab] = useState("biography");
   const [selectedYear, setSelectedYear] = useState("");
   const [imageSrc, setImageSrc] = useState(null);
   const [imgLoading, setImgLoading] = useState(true);
   const rating = driverRating[lastName] || "N/A";
-  const tabs = ['biography','seasons'];
+  const tabs = ['biography','seasons','results'];
   const labels = {
     biography: 'Биография',
-    seasons:  'Сезоны'
+    seasons:  'Сезоны',
+    results:  'Результаты'
   };
+  const [driverResults, setDriverResults] = useState([]);
+  const [resultsLoading, setResultsLoading] = useState(false);
 
   const [tipOpen, setTipOpen] = useState(false);
 
   const showTip = () => setTipOpen(true);
+  
   
   // Для сезонной статистики
   const { seasonStats, loadingStats } = usePilotStats(pilot, selectedYear);
@@ -123,6 +140,54 @@ const PilotDetails = ({ currentUser }) => {
 
     loadPilotImage();
   }, [pilot]);
+
+  useEffect(() => {
+    if (activeTab !== "results" || !pilot) return;
+  
+    const fetchDriverResults = async () => {
+      console.group("⏳ fetchDriverResults start");
+      console.log("activeTab:", activeTab);
+      console.log("pilot.Driver:", pilot.Driver);
+      console.log("selectedYear:", selectedYear);
+  
+      setResultsLoading(true);
+      try {
+        const driverId = normalizeName(pilot.Driver.familyName.toLowerCase());
+        const url = `https://api.jolpi.ca/ergast/f1/2025/drivers/${driverId}/results.json?limit=1000`;
+        console.log("Fetch URL:", url);
+  
+        const res = await fetch(url);
+        console.log("HTTP status:", res.status, res.statusText);
+  
+        if (!res.ok) {
+          throw new Error(`Network response was not ok: ${res.status}`);
+        }
+  
+        const json = await res.json();
+        console.log("Raw JSON response:", json);
+  
+        const races = json?.MRData?.RaceTable?.Races;
+        console.log("Parsed races array:", races);
+  
+        setDriverResults(races || []);
+      } catch (err) {
+        console.error("Ошибка загрузки результатов пилота:", err);
+        setDriverResults([]);
+      } finally {
+        setResultsLoading(false);
+        console.groupEnd();
+      }
+    };
+  
+    fetchDriverResults();
+  }, [activeTab, pilot]);
+
+  const handleRaceSelect = (race) => {
+    navigate(`/races/${race.round}`, { state: { race } });
+  };
+  
+  
+  
   
   if (loading || !pilot || imgLoading) {
     return (
@@ -312,7 +377,14 @@ const PilotDetails = ({ currentUser }) => {
             timeout={400}
           >
             <div {...swipeHandlers} className="">
-      {activeTab === "biography" && <BiographyTab biography={biography} />}
+            {activeTab === "biography" && (
+  <BiographyTab
+    biography={biography}
+    firstRace={firstRace}
+    lastRaceData={lastRaceData}
+  />
+)}
+
       
       {activeTab === "seasons" && (
   <div
@@ -428,13 +500,84 @@ const PilotDetails = ({ currentUser }) => {
     </CSSTransition>
   </div>
 )}
+{activeTab === "results" && (
+  <div style={{
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    overflowY: "auto"
+  }}>
+    {resultsLoading && <p style={{ color: "white" }}> </p>}
+    {!resultsLoading && driverResults.map((race, idx) => {
+      // извлечём данные
+      const { raceName, date, Circuit, Results } = race;
+      const result = Results[0]; // всегда один элемент для конкретного пилота
+      const pos = result.position;
+      const pts = result.points;
+      // код трассы для флага
+      const countryCode = countryToFlag[Circuit.Location.country] || "un";
+      const translatedRaceName = raceNameTranslations[race?.raceName] || race?.raceName;
+
+      return (
+        <div
+          key={idx}
+          className="Frame24 inline-flex items-center justify-between p-2"
+          style={{
+            borderRadius: 10,
+            cursor: "pointer",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }}
+          onClick={() => handleRaceSelect(race)}
+        >
+          <div className="inline-flex items-center gap-4">
+            <div style={{
+              width: 30,
+              height: 32,
+              borderRadius: 10,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}>
+              <span style={{ color: teamColors[pilot.Constructors[0].name] || "#888", fontSize: 15, fontWeight: 500 }}>
+                P{pos}
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
+                {translatedRaceName}
+              </span>
+              <img
+                src={`https://flagcdn.com/w20/${countryCode}.png`}
+                alt={Circuit.Location.country}
+                style={{
+                  width: "15px",
+                  height: "15px",
+                  borderRadius: "50%",
+                  objectFit: "cover"
+                }}
+              />
+            </div>
+          </div>
+          <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
+            +{pts} очк.
+          </span>
+        </div>
+      );
+    })}
+    {!resultsLoading && driverResults.length === 0 && (
+      <p style={{ color: "lightgray", textAlign: "center" }}>
+        Нет данных по выбранному сезону
+      </p>
+    )}
+  </div>
+)}
+
 </div>
       </CSSTransition>
         </TransitionGroup>
 
 
   
-      {/* Плавное появление уведомления реализовано через CSSTransition */}
       <CSSTransition
         in={false}  // Здесь логика показа уже вынесена в FavoriteButton
         timeout={300}

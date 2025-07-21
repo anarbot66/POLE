@@ -135,4 +135,52 @@ export const driverTranslations = {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
+
+  export const countryToFlag = {
+    "Bahrain": "bh", "Saudi Arabia": "sa", "Australia": "au", "Japan": "jp",
+    "China": "cn", "USA": "us", "United States": "us", "Miami": "us",
+    "Italy": "it", "Monaco": "mc", "Canada": "ca", "Spain": "es",
+    "Austria": "at", "Great Britain": "gb", "United Kingdom": "gb", "UK": "gb",
+    "Hungary": "hu", "Belgium": "be", "Netherlands": "nl", "Singapore": "sg",
+    "Mexico": "mx", "Brazil": "br", "Las Vegas": "us", "UAE": "ae",
+    "Qatar": "qa", "Azerbaijan": "az"
+  };
+  
+  // Перевод названий гонок
+  export const raceNameTranslations = {
+    "Bahrain Grand Prix": "Бахрейн",
+    "Saudi Arabian Grand Prix": "Саудовская Аравия",
+    "Australian Grand Prix": "Австралия",
+    "Japanese Grand Prix": "Япония",
+    "Chinese Grand Prix": "Китай",
+    "Miami Grand Prix": "Майами",
+    "Emilia Romagna Grand Prix": "Эмилия-Романья",
+    "Monaco Grand Prix": "Монако",
+    "Canadian Grand Prix": "Канада",
+    "Spanish Grand Prix": "Испания",
+    "Austrian Grand Prix": "Австрия",
+    "British Grand Prix": "Великобритания",
+    "Hungarian Grand Prix": "Венгрия",
+    "Belgian Grand Prix": "Бельгия",
+    "Dutch Grand Prix": "Нидерланды",
+    "Italian Grand Prix": "Италия",
+    "Azerbaijan Grand Prix": "Азербайджан",
+    "Singapore Grand Prix": "Сингапур",
+    "United States Grand Prix": "США",
+    "Mexico City Grand Prix": "Мексика",
+    "São Paulo Grand Prix": "Бразилия",
+    "Las Vegas Grand Prix": "Лас-Вегас",
+    "Qatar Grand Prix": "Катар",
+    "Abu Dhabi Grand Prix": "Абу-Даби"
+  };
+  
+  // Функция форматирования даты в "7 марта"
+  export const formatRaceWeekend = (firstPracticeDate, raceDate) => {
+    const months = [
+      "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня",
+      "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"
+    ];
+    const startDate = new Date(firstPracticeDate);
+    return `${startDate.getDate()} ${months[startDate.getMonth()]}`;
+  };
   

@@ -1,95 +1,95 @@
 // FavoriteConstructorButton.js
 import React, { useState, useEffect } from "react";
 import {
-  doc,
-  getDoc,
-  setDoc,
-  deleteDoc,
   collection,
   query,
   where,
-  getDocs
+  getDocs,
+  setDoc,
+  deleteDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "../../../firebase";
-import { normalizeName } from "../../pilots/driverDetails/constants"; // можно переиспользовать, либо удалить, если не нужен
+import { CONSTRUCTOR_API_NAMES } from "../../recources/json/constants";
 
 const FavoriteConstructorButton = ({ currentUser, constructor }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
   const [showFavoriteAlert, setShowFavoriteAlert] = useState(false);
 
-  // нормализованный ID конструктора
-  const formattedConstructorId = normalizeName(constructor.Constructor.name);
+  // Переводим имя команды в её API-версию
+  const constructorId =
+    CONSTRUCTOR_API_NAMES[constructor.Constructor.name] ||
+    constructor.Constructor.name
+      .toLowerCase()
+      .replace(/\s+/g, "_");
 
-  // Проверяем, в избранном ли уже конструктор
+  // Проверяем, добавлен ли уже в избранное
   useEffect(() => {
-    const checkFavoriteStatus = async () => {
-      if (!currentUser || !constructor) return;
+    if (!currentUser?.uid) return;
+
+    const checkFavorite = async () => {
       try {
-        const favDocRef = doc(
-          db,
-          "favoritesConstructors",
-          `${currentUser.uid}_${formattedConstructorId}`
+        const favColl = collection(db, "favoritesConstructors");
+        const q = query(
+          favColl,
+          where("userId", "==", currentUser.uid),
+          where("constructorId", "==", constructorId)
         );
-        const favDoc = await getDoc(favDocRef);
-        setIsFavorite(favDoc.exists());
-      } catch (error) {
-        console.error("Ошибка проверки избранного конструктора:", error);
+        const snap = await getDocs(q);
+        setIsFavorite(snap.docs.length > 0);
+      } catch (err) {
+        console.error("Ошибка проверки избранного:", err);
       }
     };
-    checkFavoriteStatus();
-  }, [currentUser, constructor, formattedConstructorId]);
+
+    checkFavorite();
+  }, [currentUser, constructorId]);
 
   // Добавление в избранное
   const handleFavorite = async () => {
-    if (!currentUser || !constructor) return;
+    if (!currentUser?.uid) return;
+  
     try {
-      // проверяем лимит в 3 команды
-      const favCollRef = collection(db, "favoritesConstructors");
-      const q = query(
-        favCollRef,
-        where("userId", "==", currentUser.uid)
-      );
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.docs.length >= 3) {
-        setShowFavoriteAlert(true);
-        return;
-      }
-
       setFavLoading(true);
-      const favDocRef = doc(
+  
+      // сохраняем документ по ключу userId_constructorId
+      const docRef = doc(
         db,
         "favoritesConstructors",
-        `${currentUser.uid}_${formattedConstructorId}`
+        `${currentUser.uid}_${constructorId}`
       );
-      await setDoc(favDocRef, {
+      await setDoc(docRef, {
         userId: currentUser.uid,
-        constructorId: formattedConstructorId,
+        constructorId,
         constructorData: constructor,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
+  
       setIsFavorite(true);
-    } catch (error) {
-      console.error("Ошибка при добавлении конструктора в избранное:", error);
+    } catch (err) {
+      console.error("Ошибка добавления в избранное:", err);
     } finally {
       setFavLoading(false);
     }
   };
+  
 
   // Удаление из избранного
   const handleUnfavorite = async () => {
-    if (!currentUser || !constructor) return;
+    if (!currentUser?.uid) return;
+
     setFavLoading(true);
     try {
-      const favDocRef = doc(
+      const docRef = doc(
         db,
         "favoritesConstructors",
-        `${currentUser.uid}_${formattedConstructorId}`
+        `${currentUser.uid}_${constructorId}`
       );
-      await deleteDoc(favDocRef);
+      await deleteDoc(docRef);
       setIsFavorite(false);
-    } catch (error) {
-      console.error("Ошибка при удалении конструктора из избранного:", error);
+    } catch (err) {
+      console.error("Ошибка удаления из избранного:", err);
     } finally {
       setFavLoading(false);
     }
@@ -114,64 +114,15 @@ const FavoriteConstructorButton = ({ currentUser, constructor }) => {
             width: "110px",
             height: "28px",
             transition:
-              "background 300ms ease, color 300ms ease, border 300ms ease"
+              "background 300ms ease, color 300ms ease, border 300ms ease",
           }}
         >
-          {favLoading
-            ? " "
-            : isFavorite
-            ? "Слежу"
-            : "Подписаться"}
+          {favLoading ? "..." : isFavorite ? "Слежу" : "Подписаться"}
         </button>
       )}
 
-      {/* Лимит */}
-      {showFavoriteAlert && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000
-          }}
-          onClick={() => setShowFavoriteAlert(false)}
-        >
-          <div
-            style={{
-              padding: "20px",
-              borderRadius: "20px",
-              textAlign: "center",
-              color: "white",
-              maxWidth: "300px"
-            }}
-          >
-            <p style={{ marginBottom: "20px" }}>
-              У вас уже выбрано 3 любимых команды
-            </p>
-            <button
-              onClick={() => setShowFavoriteAlert(false)}
-              style={{
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                color: "white",
-                padding: "10px 20px",
-                borderRadius: "15px",
-                cursor: "pointer",
-                width: "100%"
-              }}
-            >
-              Хорошо
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
-}
+};
 
 export default FavoriteConstructorButton;

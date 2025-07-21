@@ -25,22 +25,7 @@ const Services = ({currentUser}) => {
         marginBottom: "100px",
         paddingTop: "15px"
       }}
-    ><div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15}}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          borderRadius: 15,
-        }}
-      >
-        
-        <img onClick={() => navigate("/profile")} src={currentUser.photoUrl || "https://placehold.co/80x80"} alt="Avatar" style={{ width: "30px", height: "30px", borderRadius: "50%", alignContent: "right" }} />
-
-        <span style={{color: "white", padding: "10px", width: '100%'}}>Сервисы</span>
-        {currentUser && <UserStats uid={currentUser.uid} />}
-      </div>
-      </div>
+    >
 
       <NotificationsPanel
         userId={currentUser.uid}
@@ -52,7 +37,7 @@ const Services = ({currentUser}) => {
           display: "flex",
           gap: "30px",
           alignItems: "flex-start",
-          marginTop: '90px'
+          marginTop: '80px'
         }}
       >
         {/* Кнопка "Информация" – навигация */}
@@ -118,7 +103,7 @@ const Services = ({currentUser}) => {
             </span>
             </NavButton>
 
-            <NavButton label="Зал славы" onClick={handleUnavailableFeature}>
+            <NavButton label="Зал славы" onClick={() => navigate("/hall-of-fame")}>
             <span
               style={{
                 display: "flex",

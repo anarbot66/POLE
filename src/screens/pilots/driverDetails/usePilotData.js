@@ -1,17 +1,18 @@
-// usePilotData.js
+// src/hooks/usePilotData.js
 import { useState, useEffect } from "react";
 import biographies from "../../recources/json/bio";
 import seasonsData from "../../recources/json/seasons";
 import {
   normalizeName,
   driverTranslations,
-  driverToConstructor,
 } from "./constants";
 
 export function usePilotData(lastName) {
   const [pilot, setPilot] = useState(null);
   const [biography, setBiography] = useState("");
   const [seasons, setSeasons] = useState([]);
+  const [firstRace, setFirstRace] = useState("");      // из локального JSON
+  const [lastRaceData, setLastRaceData] = useState(null); // весь объект последней гонки
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -20,68 +21,62 @@ export function usePilotData(lastName) {
 
     const fetchFromApi = async () => {
       try {
-        // 1) Запросим текущее положение пилотов в 2025-м
+        // 1) Текущее положение пилотов в 2025-м
         const resStandings = await fetch(
           "https://api.jolpi.ca/ergast/f1/2025/driverStandings.json"
         );
         if (!resStandings.ok) {
           throw new Error(`API error: ${resStandings.status}`);
         }
-        const jsonStandings = await resStandings.json();
+        const { MRData } = await resStandings.json();
         const standings =
-          jsonStandings.MRData.StandingsTable.StandingsLists[0]
-            ?.DriverStandings || [];
+          MRData.StandingsTable.StandingsLists[0]?.DriverStandings || [];
 
-        // 2) Найдём нужного пилота по нормализованной фамилии
+        // 2) Найти пилота по нормализованной фамилии
         const found = standings.find((item) =>
           normalizeName(item.Driver.familyName) === lastName
-          
         );
         if (!found) {
-          if (!found) {
-            throw new Error(`Пилот с фамилией "${lastName}" не найден в текущем сезоне`);
-          }          
+          throw new Error(`Пилот "${lastName}" не найден в текущем сезоне`);
         }
 
-        // 3) Соберём базовый объект пилота
-        const constructorName =
-          found.Constructors[0]?.name || "Unknown";
+        // 3) Собрать базовые данные пилота
+        const constructorName = found.Constructors[0]?.name || "Unknown";
         const fullName = `${found.Driver.givenName} ${found.Driver.familyName}`;
         const translatedName =
           driverTranslations[found.Driver.familyName] || fullName;
 
-        // 4) Запросим все результаты этого пилота в 2025-м
+        // 4) Запросить все результаты этого пилота в 2025-м
         const driverId = found.Driver.driverId;
         const resResults = await fetch(
           `https://api.jolpi.ca/ergast/f1/2025/drivers/${driverId}/results.json`
         );
         if (!resResults.ok) {
-          throw new Error(
-            `Results API error: ${resResults.status}`
-          );
+          throw new Error(`Results API error: ${resResults.status}`);
         }
         const jsonResults = await resResults.json();
-        const races =
-          jsonResults.MRData.RaceTable.Races || [];
+        const races = jsonResults.MRData.RaceTable.Races || [];
 
-        // 5) Подсчитаем поулы, подиумы и DNF
-        const poles = races.filter(
-          (r) => r.Results?.[0]?.grid === "1"
-        ).length;
+        // 4.1) Сохранить весь объект последней гонки
+        if (races.length > 0) {
+          setLastRaceData(races[races.length - 1]);
+        }
+
+        // 5) Подсчитать поулы, подиумы и DNF
+        const poles = races.filter((r) => r.Results?.[0]?.grid === "1").length;
         const podiums = races.filter((r) => {
           const pos = parseInt(r.Results?.[0]?.position, 10);
           return pos >= 1 && pos <= 3;
         }).length;
         const dnf = races.filter((r) => {
           const status = r.Results?.[0]?.status || "";
-          // считаем DNF всё, что не "Finished" и не допущено как +n laps
           return (
             status !== "Finished" &&
             !status.toLowerCase().includes("lap")
           );
         }).length;
 
-        // 6) Собираем объект с полным набором
+        // 6) Собрать объект pilot
         const pilotObj = {
           Driver: {
             givenName: found.Driver.givenName,
@@ -112,19 +107,30 @@ export function usePilotData(lastName) {
     fetchFromApi();
   }, [lastName]);
 
-  // Как только из API придёт pilot — подхватываем биографию и сезоны
+  // После загрузки pilot — подтянуть локальные данные: биография, сезоны и первая гонка
   useEffect(() => {
     if (!pilot) return;
 
+    // firstRace из локального JSON
+    const localFirst = biographies[lastName]?.firstRace;
+    setFirstRace(localFirst || "");
+
     // Локальная биография
-    const bio =
-      biographies[lastName]?.biography || "Биография не найдена";
+    const bio = biographies[lastName]?.biography || "Биография не найдена";
     setBiography(bio);
 
-    // Локальный список сезонов
+    // Локальные сезоны
     const pilotSeasons = seasonsData[lastName] || [];
     setSeasons(pilotSeasons);
   }, [pilot, lastName]);
 
-  return { pilot, biography, seasons, loading, error };
+  return {
+    pilot,
+    biography,
+    seasons,
+    firstRace,
+    lastRaceData,
+    loading,
+    error,
+  };
 }

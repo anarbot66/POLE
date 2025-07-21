@@ -565,7 +565,7 @@ const Profile = ({ currentUser }) => {
                           unmountOnExit
                           nodeRef={menuRef}
                         >
-                          <div
+                          <div className="commentGlass"
                             ref={menuRef}
                             style={{
                               position: "absolute",

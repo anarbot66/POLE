@@ -40,32 +40,12 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
     margin: "0px",
     marginBottom: "20px",  height: '100%'}}>
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '15px', flexDirection: "column", width: 'calc(100% - 30px)', margin: "0px 15px", background: 'black', zIndex: 999 }}>
-      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15}}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          borderRadius: 15,
-        }}
-      >
-        <img onClick={() => navigate("/profile")} src={currentUser.photoUrl || "https://placehold.co/80x80"} alt="Avatar" style={{ width: "30px", height: "30px", borderRadius: "50%", alignContent: "right" }} />
-
-        <span style={{color: "white", padding: "10px", width: '100%'}}>Таблицы</span>
-        {currentUser && <UserStats uid={currentUser.uid} />}
-        
-
-      <NotificationsPanel
-        userId={currentUser.uid}
-        isOpen={showNotifs}
-        onClose={() => setShowNotifs(false)}
-      />
-      </div>
+      <div className="buttonGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 85, left: 15, right: 15, padding: 15}}>
+      
         <div
           style={{
             display: 'flex',
-            borderRadius: '20px',
-            marginTop: "10px"
+            borderRadius: '20px'
           }}
         >
           <button
@@ -112,7 +92,7 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
               display: "flex",
               gap: "15px",
               flexDirection: 'column',
-              marginTop: '120px'
+              marginTop: '135px'
             }}>
               {activeTab === 'pilots' ? (
                 <PilotsList />
