@@ -21,22 +21,8 @@ export function usePreloadImages() {
         /\.(png|jpe?g|svg|webp)$/
       )
     );
-    const gameAssets = importAll(
-      require.context(
-        '../user/activity/games/graphic/FormulaRunnerAssets',
-        false,
-        /\.(png|jpe?g|svg|webp)$/
-      )
-    );
-    const gameControls = importAll(
-      require.context(
-        '../user/activity/games/graphic/FormulaRunnerAssets/buttons',
-        false,
-        /\.(png|jpe?g|svg|webp)$/
-      )
-    );
 
-    const allImages = [...circuitImages, ...pilotImages, ...gameAssets, gameControls];
+    const allImages = [...circuitImages, ...pilotImages];
 
     allImages.forEach((src) => {
       const img = new Image();
