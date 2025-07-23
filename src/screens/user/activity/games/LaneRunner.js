@@ -458,7 +458,7 @@ export default function LaneRunnerGame({ currentUser }) {
   }, [gameState]);
 
   return (
-    <div style={{ textAlign: 'center', color: 'white', marginBottom: '30px', justifyItems: 'center' }}>
+    <div style={{ textAlign: 'center', color: 'white', marginBottom: '90px', justifyItems: 'center' }}>
       {gameState === 'start' ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '490px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
