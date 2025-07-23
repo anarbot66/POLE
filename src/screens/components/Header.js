@@ -8,7 +8,7 @@ const Header = ({ currentUser, showNotifs, setShowNotifs }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const visibleRoutes = ['/races', '/standings', '/services', "/favorites"];
+  const visibleRoutes = ['/races', '/standings', '/services', "/favorites", "/profile", "/activity"];
   const isVisible = visibleRoutes.includes(location.pathname);
 
   return (

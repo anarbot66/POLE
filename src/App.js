@@ -23,6 +23,7 @@ import { usePreloadImages } from "./screens/hooks/usePreloadImages";
 import HallOfFameList from "./screens/pilots/halloffame/HallOfFameList.js";
 import Header from "./screens/components/Header.js";
 import FavoritesDashboard from "./screens/user/fav/FavoritesDashboard.js";
+import MiniGamesPage from "./screens/user/activity/MiniGamesPage.js";
 
 import { db } from "./firebase";
 import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
@@ -117,7 +118,13 @@ function App() {
           photoUrl: doc.photoUrl,
           role: doc.role ?? null,
           selectedTheme: doc.selectedTheme || "default",
-        }));
+          gsCurrency: doc.gsCurrency ?? 0,
+          apexPoints: doc.apexPoints ?? 0,
+          lastPlayedWordle: doc.lastPlayedWordle ?? null,
+          bestRunner: doc.bestRunner ?? 0,
+          runnerAttempts: doc.runnerAttempts ?? 0,
+          runnerAttemptsDate: doc.runnerAttemptsDate ?? null,
+        }));        
         setIsAuthenticated(true);
         if (initialLoad) {
           setInitialLoad(false);
@@ -224,6 +231,7 @@ function App() {
                     <Route path="/daily-rewards" element={<DailyRewards currentUser={user} />} />
                     <Route path="/hall-of-fame" element={<HallOfFameList/>} />
                     <Route path="/favorites" element={<FavoritesDashboard currentUser={user}/>} />
+                    <Route path="/activity" element={<MiniGamesPage currentUser={user}/>} />
                   </Routes>
                 </div>
               </CSSTransition>

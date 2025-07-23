@@ -106,11 +106,6 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
                 >
                   {comment.authorName}
                 </p>
-                <RoleIcon 
-                  role={comment.role} 
-                  style={{ marginLeft: "5px", pointerEvents: "none" }} 
-                  size={16}
-                />
               </div>
 
                 {(currentUser.uid === comment.authorId ||

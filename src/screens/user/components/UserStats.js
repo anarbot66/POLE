@@ -1,6 +1,6 @@
 // UserStats.jsx
 import React, { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import logo from "../../recources/images/apex-logo.png";
 
@@ -25,25 +25,29 @@ const UserStats = ({ uid }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const userRef = doc(db, 'users', uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const data = userSnap.data();
+    if (!uid) return;
+
+    const userRef = doc(db, 'users', uid);
+
+    const unsubscribe = onSnapshot(
+      userRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
           setStats({
             apexPoints: data.apexPoints || 0,
             gsCurrency: data.gsCurrency || 0,
           });
         }
-      } catch (err) {
-        console.error('Ошибка загрузки статусов пользователя:', err);
-      } finally {
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Ошибка при подписке на UserStats:', error);
         setLoading(false);
       }
-    };
+    );
 
-    if (uid) fetchStats();
+    return () => unsubscribe();
   }, [uid]);
 
   if (loading) return null;

@@ -209,7 +209,7 @@ const Services = ({currentUser}) => {
             </span>
             </NavButton>
 
-        <NavButton label="Угадайки"  onClick={handleUnavailableFeature}>
+        <NavButton label="Активности" onClick={() => navigate("/activity")}>
             <span
               style={{
                 display: "flex",

@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "glob": "^11.0.3",
-    "i18next-scanner": "^4.6.0"
+    "i18next-scanner": "^4.6.0",
+    "localtunnel": "^2.0.2"
   }
 }

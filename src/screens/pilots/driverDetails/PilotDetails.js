@@ -145,29 +145,21 @@ const PilotDetails = ({ currentUser }) => {
     if (activeTab !== "results" || !pilot) return;
   
     const fetchDriverResults = async () => {
-      console.group("⏳ fetchDriverResults start");
-      console.log("activeTab:", activeTab);
-      console.log("pilot.Driver:", pilot.Driver);
-      console.log("selectedYear:", selectedYear);
   
       setResultsLoading(true);
       try {
         const driverId = normalizeName(pilot.Driver.familyName.toLowerCase());
         const url = `https://api.jolpi.ca/ergast/f1/2025/drivers/${driverId}/results.json?limit=1000`;
-        console.log("Fetch URL:", url);
   
         const res = await fetch(url);
-        console.log("HTTP status:", res.status, res.statusText);
   
         if (!res.ok) {
           throw new Error(`Network response was not ok: ${res.status}`);
         }
   
         const json = await res.json();
-        console.log("Raw JSON response:", json);
   
         const races = json?.MRData?.RaceTable?.Races;
-        console.log("Parsed races array:", races);
   
         setDriverResults(races || []);
       } catch (err) {

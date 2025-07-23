@@ -394,7 +394,7 @@ const labels = {
       )}
 
     {activeTab === "results" && (
-  <div style={{ display: "flex", flexDirection: "column", gap: '10px', maxHeight: '350px', overflowY: "auto", overflowX: "hidden"  }}>
+  <div style={{ display: "flex", flexDirection: "column", gap: '10px', overflowY: "auto", overflowX: "hidden"  }}>
     {resultsLoading && <p style={{ color: "white" }}> </p>}
     {!resultsLoading && results.map((r, i) => {
   const driverName = driverSurnames[r.Driver.familyName] || r.Driver.familyName;
@@ -418,7 +418,7 @@ const labels = {
       <div
       key={i}
       className="Frame24 inline-flex items-center justify-between p-2"
-      style={{ borderRadius: 10, cursor: 'pointer', border: "1px solid rgba(255, 255, 255, 0.2)", }}
+      style={{ borderRadius: 10, cursor: 'pointer', }}
       onClick={() => navigate(`/pilot-details/${slug}`)}
     >
       <div className="inline-flex items-center gap-4">
@@ -433,7 +433,7 @@ const labels = {
           }}
         >
           <span style={{ color: bg, fontSize: 15, fontWeight: 500 }}>
-            {r.position}
+            P{r.position}
           </span>
         </div>
           <div style={{width: '130px', display: 'flex', alignItems: 'center', gap:'10px' }}>

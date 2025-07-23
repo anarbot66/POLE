@@ -866,7 +866,6 @@ const UserProfile = ({ currentUser }) => {
           >
             {visibleRole && (
               <>
-                <RoleIcon role={visibleRole} size={32} fullWidth />
                 <div>
                   <h3>
                     {profileUser.firstName} {roleIcons[visibleRole].name}

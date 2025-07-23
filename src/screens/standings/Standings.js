@@ -39,7 +39,7 @@ const Standings = ({ onConstructorSelect, currentUser }) => {
     style={{ width: "100%",
     margin: "0px",
     marginBottom: "20px",  height: '100%'}}>
-      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '15px', flexDirection: "column", width: 'calc(100% - 30px)', margin: "0px 15px", background: 'black', zIndex: 999 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '15px', flexDirection: "column", width: 'calc(100% - 30px)', margin: "0px 15px", zIndex: 999 }}>
       <div className="buttonGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 85, left: 15, right: 15, padding: 15}}>
       
         <div
