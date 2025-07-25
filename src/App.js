@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { Navigate } from "react-router-dom";
 
 import Standings from "./screens/standings/Standings";
 import ConstructorDetails from "./screens/constructor/teamDetails/ConstructorDetails";
@@ -108,6 +109,7 @@ function App() {
         <TransitionGroup>
           <CSSTransition key={location.pathname} classNames="page" timeout={500}>
             <Routes location={location}>
+            <Route path="/" element={<Navigate to="/standings" />} />
               <Route
                 path="/standings"
                 element={<Standings onConstructorSelect={() => {}} currentUser={currentUser} />}
