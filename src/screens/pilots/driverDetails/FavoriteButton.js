@@ -43,7 +43,6 @@ const FavoriteButton = ({ currentUser, pilot, teamColor }) => {
       await setDoc(favDocRef, {
         userId: currentUser.uid,
         pilotId: normalizedPilotName,
-        pilotData: pilot,
         createdAt: new Date(),
       });
       setIsFavorite(true);

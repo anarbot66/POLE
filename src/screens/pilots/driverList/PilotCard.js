@@ -17,7 +17,6 @@ const PilotCard = ({ pilot, onClick }) => {
       onClick={onClick}
       style={{
         width: "100%",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
         borderRadius: "15px",
         display: "flex",
         justifyContent: "space-between",

@@ -567,8 +567,8 @@ export default function LaneRunnerGame({ currentUser }) {
             >
               <h3>Вы проиграли</h3>
               <p>Очки: {Math.floor(score)}</p>
-              <p>GS бонусы: {collectedGS} + {Math.floor(score / 100)}</p>
-              <p>Apex бонусы: {collectedAP * 10} + {Math.floor(score / 100) * 10}</p>
+              <p>GS получено: {collectedGS + Math.floor(score / 100)}</p>
+              <p>Apex получено: {collectedAP * 10 + Math.floor(score / 100) * 10}</p>
               <p>Рекорд: {Math.max(record, Math.floor(score))}</p>
             </div>
           )}

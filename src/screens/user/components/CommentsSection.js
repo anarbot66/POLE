@@ -1,19 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { 
-  collection, 
-  query, 
-  where, 
-  orderBy, 
-  onSnapshot, 
-  addDoc, 
-  serverTimestamp, 
-  deleteDoc, 
-  doc 
-} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { db } from "../../../firebase";
-import RoleIcon from "../components/RoleIcon";
-import "../../components/Navigation.css";
+import axios from "axios";
+import { useInitData } from "../../hooks/InitDataContext";
+
+const API = process.env.REACT_APP_API_URL;
 
 const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const [comments, setComments] = useState([]);
@@ -21,24 +11,29 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const textareaRef = useRef(null);
   const navigate = useNavigate();
 
-  // Подписка на комментарии для новости с parentId
-  useEffect(() => {
-    const commentsQuery = query(
-      collection(db, "comments"),
-      where("parentId", "==", parentId),
-      orderBy("createdAt", "asc")
-    );
-    const unsubscribe = onSnapshot(commentsQuery, (snapshot) => {
-      const commentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setComments(commentsData);
-    });
-    return () => unsubscribe();
-  }, [parentId]);
+  const initData = useInitData();
 
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
+          headers: {
+            'x-init-data': initData || '',  // передаем initData на бекенд
+          }
+        });
+        setComments(res.data);
+      } catch (err) {
+        console.error("Ошибка при получении комментариев:", err);
+      }
+    };
+  
+    fetchComments();
+  }, [parentId, initData]);
+  
   // Автоматическая регулировка высоты textarea
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // сброс высоты
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [newComment]);
@@ -46,29 +41,51 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const handleSend = async () => {
     if (newComment.trim() === "") return;
     try {
-      await addDoc(collection(db, "comments"), {
+      const payload = {
         parentId,
         authorId: currentUser.uid,
         authorName: currentUser.firstName + currentUser.lastName || "Аноним",
         authorPhotoUrl: currentUser.photoUrl || "",
         text: newComment,
-        createdAt: serverTimestamp(),
         role: currentUser.role
+      };
+      await axios.post(`${API}/api/comments`, payload, {
+        headers: {
+          'x-init-data': initData || '',
+        }
       });
       setNewComment("");
+      // Перезагрузить комментарии
+      const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
+        headers: {
+          'x-init-data': initData || '',
+        }
+      });
+      setComments(res.data);
     } catch (err) {
       console.error("Ошибка при отправке комментария:", err);
     }
   };
-
+  
   const handleDelete = async (commentId) => {
     try {
-      await deleteDoc(doc(db, "comments", commentId));
+      await axios.delete(`${API}/api/comments/${commentId}`, {
+        headers: {
+          'x-init-data': initData || '',
+        }
+      });
+      // Перезагрузить комментарии
+      const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
+        headers: {
+          'x-init-data': initData || '',
+        }
+      });
+      setComments(res.data);
     } catch (err) {
       console.error("Ошибка при удалении комментария:", err);
     }
   };
-
+  
   // Переход на профиль пользователя по клику на аватар или ник
   const handleProfileClick = (commentAuthorId) => {
     if (currentUser.uid === commentAuthorId) {
@@ -99,15 +116,14 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
             />
             <div style={styles.commentContent}>
               <div style={styles.commentHeader}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <p 
-                  style={styles.commentAuthor}
-                  onClick={() => handleProfileClick(comment.authorId)}
-                >
-                  {comment.authorName}
-                </p>
-              </div>
-
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <p 
+                    style={styles.commentAuthor}
+                    onClick={() => handleProfileClick(comment.authorId)}
+                  >
+                    {comment.authorName}
+                  </p>
+                </div>
                 {(currentUser.uid === comment.authorId ||
                   currentUser.role === "admin" ||
                   currentUser.role === "owner") && (

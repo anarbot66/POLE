@@ -159,9 +159,6 @@ const UserProfile = ({ currentUser }) => {
         if (!snapshot.empty) {
           setProfileUser(snapshot.docs[0].data());
         }
-        await loadFavoritePilots(uid);
-        await loadFavoriteConstructors(uid);
-        await loadFavoriteTracks(uid);
         await fetchFollowersCount(uid);
         await fetchPosts(uid);
       } catch (err) {
@@ -261,72 +258,6 @@ const UserProfile = ({ currentUser }) => {
     } catch (err) {
       console.error("Ошибка при загрузке постов:", err);
       setError("Ошибка при загрузке постов");
-    }
-  };
-
-  // Функция загрузки избранных пилотов (запрос всех документов из коллекции "favorites" по userId)
-  const loadFavoritePilots = async (uid) => {
-    try {
-      const favQuery = query(
-        collection(db, "favorites"),
-        where("userId", "==", uid)
-      );
-      const favSnapshot = await getDocs(favQuery);
-      if (!favSnapshot.empty) {
-        const favDocs = favSnapshot.docs.map(doc => doc.data());
-        const pilotPromises = favDocs.map(async (fav) => {
-          const response = await fetch(
-            "https://api.jolpi.ca/ergast/f1/2025/driverStandings.json"
-          );
-          if (!response.ok) throw new Error("Ошибка получения данных пилотов");
-          const data = await response.json();
-          const drivers = data?.MRData?.StandingsTable?.StandingsLists[0]?.DriverStandings;
-          if (drivers && Array.isArray(drivers)) {
-            return drivers.find(
-              (pilot) => pilot.Driver.driverId === fav.pilotId
-            );
-          } else {
-            throw new Error("Неверный формат данных о пилотах");
-          }
-        });
-        const pilotsData = await Promise.all(pilotPromises);
-        setFavoritePilots(pilotsData.filter(Boolean));
-      } else {
-        setFavoritePilots([]);
-      }
-    } catch (err) {
-      console.error("Ошибка при загрузке избранных пилотов:", err);
-      setError("Ошибка при загрузке избранных пилотов");
-    }
-  };
-
-  const loadFavoriteConstructors = async (uid) => {
-    try {
-      const q = query(
-        collection(db, "favoritesConstructors"),
-        where("userId", "==", uid)
-      );
-      const snapshot = await getDocs(q);
-      const favorites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setFavoriteConstructors(favorites);
-    } catch (err) {
-      console.error("Ошибка загрузки избранных конструкторов:", err);
-      setError("Ошибка загрузки избранных конструкторов");
-    }
-  };
-
-  const loadFavoriteTracks = async (uid) => {
-    try {
-      const q = query(
-        collection(db, "favoritesTracks"),
-        where("userId", "==", uid)
-      );
-      const snapshot = await getDocs(q);
-      const favorites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setFavoriteTracks(favorites);
-    } catch (err) {
-      console.error("Ошибка загрузки избранных трасс:", err);
-      setError("Ошибка загрузки избранных трасс");
     }
   };
 

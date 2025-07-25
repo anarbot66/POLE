@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
-import NotificationsPanel from '../user/notify/NotificationsPanel'
 import { NavButton } from "./components/NavButton";
 import logo from "../recources/images/apex-logo.png";
-import UserStats from "./components/UserStats";
 
 const Services = ({currentUser}) => {
   const navigate = useNavigate();
@@ -26,12 +24,6 @@ const Services = ({currentUser}) => {
         paddingTop: "15px"
       }}
     >
-
-      <NotificationsPanel
-        userId={currentUser.uid}
-        isOpen={showNotifs}
-        onClose={() => setShowNotifs(false)}
-      />
       <div
         style={{
           display: "flex",

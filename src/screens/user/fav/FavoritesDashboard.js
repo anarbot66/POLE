@@ -111,7 +111,7 @@ const FavoritesDashboard = ({ currentUser }) => {
   }, [userId, navigate]);
 
   if (loading) {
-    return <p>Загрузка ваших фаворитов…</p>;
+    return <p></p>;
   }
 
   if (!pilotResults.length && !teamResults.length) {

@@ -62,7 +62,6 @@ const FavoriteConstructorButton = ({ currentUser, constructor }) => {
       await setDoc(docRef, {
         userId: currentUser.uid,
         constructorId,
-        constructorData: constructor,
         createdAt: new Date(),
       });
   

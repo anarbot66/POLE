@@ -3,7 +3,6 @@ import RaceDetails from "./RaceDetails";
 import { useNavigate } from "react-router-dom";
 import { useSwipeable } from 'react-swipeable';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import NotificationsPanel from '../user/notify/NotificationsPanel'
 import UserStats from "../user/components/UserStats";
 
 const countryToFlag = {

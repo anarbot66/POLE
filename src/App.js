@@ -24,6 +24,9 @@ import HallOfFameList from "./screens/pilots/halloffame/HallOfFameList.js";
 import Header from "./screens/components/Header.js";
 import FavoritesDashboard from "./screens/user/fav/FavoritesDashboard.js";
 import MiniGamesPage from "./screens/user/activity/MiniGamesPage.js";
+import { initTheme } from "./screens/hooks/theme.js";
+import Settings from "./screens/user/services/Settings.js";
+import InitDataContext from "./screens/hooks/InitDataContext.js"
 
 import { db } from "./firebase";
 import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
@@ -45,6 +48,8 @@ function App() {
   const [dbCheckCompleted, setDbCheckCompleted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showNotifs, setShowNotifs] = useState(false);
+
+  const initData = window.Telegram?.WebApp?.initData || null;
 
   // Инициализация данных пользователя
   useEffect(() => {
@@ -143,6 +148,10 @@ function App() {
     checkUserInDB();
   }, [user, navigate, initialLoad]);
 
+  useEffect(() => {
+    initTheme(user);
+  }, [user]);
+
   // Прогресс-бар
   useEffect(() => {
     if (loading) {
@@ -200,6 +209,7 @@ function App() {
   if (!dbCheckCompleted) return <div />;
 
   return (
+    <InitDataContext.Provider value={initData}>
     <div className="App" style={{ height: "100%", display: "flex", flexDirection: "column"}}>
       {loading && <LoadingScreen progress={progress} fadeOut={fadeOut} />}
       {!loading && (
@@ -232,6 +242,7 @@ function App() {
                     <Route path="/hall-of-fame" element={<HallOfFameList/>} />
                     <Route path="/favorites" element={<FavoritesDashboard currentUser={user}/>} />
                     <Route path="/activity" element={<MiniGamesPage currentUser={user}/>} />
+                    <Route path="/settings" element={<Settings currentUser={user}/>} />
                   </Routes>
                 </div>
               </CSSTransition>
@@ -241,6 +252,7 @@ function App() {
         </>
       )}
     </div>
+    </InitDataContext.Provider>
   );
 }
 

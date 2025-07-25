@@ -1,7 +1,6 @@
 // ConstructorDetails.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import CustomSelect from "../../user/components/CustomSelect";
 import SocialIcons from "../../../screens/recources/SocialIcons";
 import seasonsData from "../../recources/json/seasons";
 import StatsCard from "./StatsCard";
@@ -58,15 +57,11 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
   // Для текущего календарного года
     const {
       stats: statsCurrent,
-      loading: loadCurrent,
-      error: errCurrent
     } = useConstructorStats(constructor, currentYear);
 
     // Для выбранного пользователем года
     const {
       stats: statsSelected,
-      loading: loadSelected,
-      error: errSelected
     } = useConstructorStats(constructor, selectedYear);
 
   // Проверка, добавлен ли данный конструктор в избранное
@@ -107,7 +102,6 @@ const ConstructorDetails = ({ constructor, goBack, currentUser }) => {
       await setDoc(favDocRef, {
         userId: currentUser.uid,
         constructorId: formattedConstructorName,
-        constructorData: constructor,
         createdAt: new Date()
       });
       setIsFavorite(true);

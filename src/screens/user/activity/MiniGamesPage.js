@@ -90,12 +90,6 @@ export default function MiniGamesPage({ currentUser }) {
                 }}
               >
                 <GameCard
-                  title="Прямая в Монце"
-                  description="Собирайте бонусы и избегайте препятствий."
-                  record={currentUser.bestRunner ?? 0}
-                  onClick={onSelectLane}
-                />
-                <GameCard
                   title="F1 Wordle"
                   description="Угадайте фамилию чемпиона F1 за 3 попытки."
                   record={null}

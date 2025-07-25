@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import PilotsList from '../pilots/driverList/PilotsList';
 import ConstructorsList from '../constructor/teamList/ConstructorsList';
-import NotificationsPanel from '../user/notify/NotificationsPanel'
 import { useSwipeable } from 'react-swipeable';
 import UserStats from '../user/components/UserStats';
 
