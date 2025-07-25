@@ -66,7 +66,7 @@ const Auth = ({ user }) => {
           } else {
           }
         }
-        navigate("/feed");
+        navigate("/standings");
       } catch (error) {
         console.error("Ошибка аутентификации или сохранения пользователя в Firestore: ", error);
         setErrorMessage(`Ошибка: ${error.message}`);
