@@ -27,6 +27,7 @@ import MiniGamesPage from "./screens/user/activity/MiniGamesPage.js";
 import { initTheme } from "./screens/hooks/theme.js";
 import Settings from "./screens/user/services/Settings.js";
 import InitDataContext from "./screens/hooks/InitDataContext.js"
+import axios from 'axios';
 
 import { db } from "./firebase";
 import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
@@ -147,6 +148,30 @@ function App() {
     };
     checkUserInDB();
   }, [user, navigate, initialLoad]);
+
+  useEffect(() => {
+  if (!initData) return;
+
+  const loginWithTelegram = async () => {
+    try {
+      const res = await axios.post("http://37.1.199.12:5000/auth/telegram-login", { initData });
+      const { token, user: serverUser } = res.data;
+
+      localStorage.setItem('token', token); // сохраняем JWT
+      setUser(serverUser);                  // устанавливаем данные пользователя из ответа backend
+      setIsAuthenticated(true);
+      setInitialLoad(false);
+      navigate("/standings");
+    } catch (error) {
+      console.error("Ошибка авторизации:", error);
+      setIsAuthenticated(false);
+      setInitialLoad(false);
+      navigate("/");
+    }
+  };
+
+  loginWithTelegram();
+}, [initData, navigate]);
 
   useEffect(() => {
     initTheme(user);

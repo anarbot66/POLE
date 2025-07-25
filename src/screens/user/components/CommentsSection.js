@@ -14,6 +14,8 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
 
   const initData = useInitData();
 
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
     if (!initData) {
       setError("Ошибка: initData не получен. Авторизация необходима.");
@@ -22,18 +24,21 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
     }
     setError(null);
 
-    const fetchComments = async () => {
-      try {
-        const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
-          headers: { "x-init-data": initData },
-        });
-        setComments(res.data);
-      } catch (err) {
-        console.error("Ошибка при получении комментариев:", err);
-        setError("Ошибка при загрузке комментариев");
-        setComments([]);
-      }
-    };
+    
+
+const fetchComments = async () => {
+  try {
+    const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setComments(res.data);
+  } catch (err) {
+    console.error("Ошибка при получении комментариев:", err);
+    setError("Ошибка при загрузке комментариев");
+    setComments([]);
+  }
+};
+
 
     fetchComments();
   }, [parentId, initData]);
@@ -59,14 +64,15 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
       };
       await axios.post(`${API}/api/comments`, payload, {
         headers: {
-          'x-init-data': initData || '',
+          Authorization: `Bearer ${token}`,
         }
       });
+      
       setNewComment("");
       // Перезагрузить комментарии
       const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
         headers: {
-          'x-init-data': initData || '',
+          Authorization: `Bearer ${token}`,
         }
       });
       setComments(res.data);
@@ -79,13 +85,14 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
     try {
       await axios.delete(`${API}/api/comments/${commentId}`, {
         headers: {
-          'x-init-data': initData || '',
+          Authorization: `Bearer ${token}`,
         }
       });
+      
       // Перезагрузить комментарии
       const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
         headers: {
-          'x-init-data': initData || '',
+          Authorization: `Bearer ${token}`,
         }
       });
       setComments(res.data);
