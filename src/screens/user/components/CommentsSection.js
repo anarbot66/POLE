@@ -9,24 +9,32 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const textareaRef = useRef(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const initData = useInitData();
 
   useEffect(() => {
+    if (!initData) {
+      setError("Ошибка: initData не получен. Авторизация необходима.");
+      setComments([]);
+      return;
+    }
+    setError(null);
+
     const fetchComments = async () => {
       try {
         const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
-          headers: {
-            'x-init-data': initData || '',  // передаем initData на бекенд
-          }
+          headers: { "x-init-data": initData },
         });
         setComments(res.data);
       } catch (err) {
         console.error("Ошибка при получении комментариев:", err);
+        setError("Ошибка при загрузке комментариев");
+        setComments([]);
       }
     };
-  
+
     fetchComments();
   }, [parentId, initData]);
   
@@ -103,10 +111,12 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
       </div>
       
       <div style={styles.commentsList}>
-        {comments.length === 0 && (
+      {error ? (
+          <p style={{ ...styles.noComments, color: "red" }}>{error}</p>
+        ) : comments.length === 0 ? (
           <p style={styles.noComments}>Пока нет комментариев</p>
-        )}
-        {comments.map((comment) => (
+        ) : (
+          comments.map((comment) => (
           <div key={comment.id} style={styles.commentItem}>
             <img
               src={comment.authorPhotoUrl || "https://placehold.co/40x40"}
@@ -140,7 +150,7 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
               <span style={styles.commentText}>{comment.text}</span>
             </div>
           </div>
-        ))}
+        )))}
       </div>
       
       <div style={styles.inputContainer}>
