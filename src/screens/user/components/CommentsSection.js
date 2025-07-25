@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useInitData } from "../../hooks/InitDataContext";
 
-const API = process.env.REACT_APP_API_URL;
+const API = "http://37.1.199.12:5000";
 
 const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const [comments, setComments] = useState([]);
