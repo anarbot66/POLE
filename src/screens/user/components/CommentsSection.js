@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useInitData } from "../../hooks/InitDataContext";
 
 const API = "http://37.1.199.12:5000";
 
@@ -12,25 +11,13 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const initData = useInitData();
-
-  const token = localStorage.getItem('token');
-
   useEffect(() => {
-    if (!initData) {
-      setError("Ошибка: initData не получен. Авторизация необходима.");
-      setComments([]);
-      return;
-    }
-    setError(null);
 
     
 
 const fetchComments = async () => {
   try {
-    const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await axios.get(`${API}/api/comments?parentId=${parentId}`);
     setComments(res.data);
   } catch (err) {
     console.error("Ошибка при получении комментариев:", err);
@@ -41,7 +28,7 @@ const fetchComments = async () => {
 
 
     fetchComments();
-  }, [parentId, initData]);
+  }, [parentId]);
   
   // Автоматическая регулировка высоты textarea
   useEffect(() => {
@@ -62,19 +49,11 @@ const fetchComments = async () => {
         text: newComment,
         role: currentUser.role
       };
-      await axios.post(`${API}/api/comments`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
+      await axios.post(`${API}/api/comments`);
       
       setNewComment("");
       // Перезагрузить комментарии
-      const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
+      const res = await axios.get(`${API}/api/comments?parentId=${parentId}`);
       setComments(res.data);
     } catch (err) {
       console.error("Ошибка при отправке комментария:", err);
@@ -83,18 +62,10 @@ const fetchComments = async () => {
   
   const handleDelete = async (commentId) => {
     try {
-      await axios.delete(`${API}/api/comments/${commentId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
+      await axios.delete(`${API}/api/comments/${commentId}`);
       
       // Перезагрузить комментарии
-      const res = await axios.get(`${API}/api/comments?parentId=${parentId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
+      const res = await axios.get(`${API}/api/comments?parentId=${parentId}`);
       setComments(res.data);
     } catch (err) {
       console.error("Ошибка при удалении комментария:", err);
