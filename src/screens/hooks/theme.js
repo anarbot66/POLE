@@ -24,7 +24,7 @@ export async function initTheme(user) {
 
   let theme = localStorage.getItem(THEME_KEY);
   if (theme !== 'light' && theme !== 'dark') {
-    theme = 'light';
+    theme = 'dark';
     localStorage.setItem(THEME_KEY, theme);
   }
   applyTheme(theme);
