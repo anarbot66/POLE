@@ -2,14 +2,12 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
 import axios from "axios";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
-import Auth from "./screens/user/Auth";
 import Standings from "./screens/standings/Standings";
-import PilotDetails from "./screens/pilots/driverDetails/PilotDetails";
-import RacesList from "./screens/races/RacesList";
 import ConstructorDetails from "./screens/constructor/teamDetails/ConstructorDetails";
+import RacesList from "./screens/races/RacesList";
 import RaceDetails from "./screens/races/RaceDetails";
 import Profile from "./screens/user/Profile";
 import UserProfile from "./screens/user/UserProfile";
@@ -24,6 +22,7 @@ import HallOfFameList from "./screens/pilots/halloffame/HallOfFameList";
 import FavoritesDashboard from "./screens/user/fav/FavoritesDashboard";
 import MiniGamesPage from "./screens/user/activity/MiniGamesPage";
 import Settings from "./screens/user/services/Settings";
+import PilotDetails from "./screens/pilots/driverDetails/PilotDetails";
 
 import LoadingScreen from "./screens/components/LoadingScreen";
 import BottomNavigation from "./screens/components/BottomNavigation";
@@ -35,7 +34,16 @@ import { initTheme } from "./screens/hooks/theme";
 const API = "http://37.1.199.12:5000";
 
 function App() {
+  // Preload images
   usePreloadImages();
+
+  // Configure axios
+  axios.defaults.baseURL = API;
+  const savedToken = localStorage.getItem("token");
+  if (savedToken) {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
+  }
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -43,51 +51,52 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [showNotifs, setShowNotifs] = useState(false);
 
+  // 1) Try restore session from existing token
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!savedToken) {
       setLoading(false);
-      navigate("/");
       return;
     }
     axios
-      .get(`${API}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get("/auth/me")
       .then((res) => {
         setCurrentUser(res.data.user);
-        setLoading(false);
+        initTheme(res.data.user);
         navigate("/standings");
       })
       .catch(() => {
         localStorage.removeItem("token");
-        setCurrentUser(null);
-        setLoading(false);
-        navigate("/");
-      });
-  }, [navigate]);
+      })
+      .finally(() => setLoading(false));
+  }, [navigate, savedToken]);
 
+  // 2) If no session but have Telegram initData, perform Telegram login
   useEffect(() => {
+    if (currentUser) return; // already logged in
     const initData = window.Telegram?.WebApp?.initData;
-    if (!initData) return;
-
-    (async () => {
-      try {
-        const res = await axios.post(`${API}/auth/telegram-login`, { initData });
-        localStorage.setItem("token", res.data.token);
-        setCurrentUser(res.data.user);
+    if (!initData) {
+      setLoading(false);
+      return;
+    }
+    axios
+      .post("/auth/telegram-login", { initData })
+      .then((res) => {
+        const { token, user } = res.data;
+        localStorage.setItem("token", token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        setCurrentUser(user);
+        initTheme(user);
         navigate("/standings");
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error("Telegram login failed:", err);
-        localStorage.removeItem("token");
-        setCurrentUser(null);
-        navigate("/");
-      }
-    })();
-  }, [navigate]);
+      })
+      .finally(() => setLoading(false));
+  }, [currentUser, navigate]);
 
-
-  if (loading) return <LoadingScreen />;
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="App" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -99,7 +108,6 @@ function App() {
         <TransitionGroup>
           <CSSTransition key={location.pathname} classNames="page" timeout={500}>
             <Routes location={location}>
-              <Route path="/" element={<Auth user={currentUser} />} />
               <Route
                 path="/standings"
                 element={<Standings onConstructorSelect={() => {}} currentUser={currentUser} />}
@@ -111,7 +119,7 @@ function App() {
                 element={
                   <ConstructorDetails
                     constructor={null}
-                    goBack={() => {}}
+                    goBack={() => navigate(-1)}
                     currentUser={currentUser}
                   />
                 }
@@ -138,7 +146,6 @@ function App() {
         </TransitionGroup>
       </div>
 
-      {/* Bottom nav */}
       {currentUser && <BottomNavigation setActivePage={() => {}} currentUser={currentUser} />}
     </div>
   );
