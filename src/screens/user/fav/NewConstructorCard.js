@@ -21,7 +21,6 @@ const NewConstructorCard = ({ constructor, drivers, onClick, suffix }) => {
       style={{
         width: "100%",
         background: "rgba(0,0,0,0.4)",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
         borderRadius: 16,
         padding: 20,
         display: "flex",
