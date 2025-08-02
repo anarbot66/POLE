@@ -63,7 +63,7 @@ const Services = ({currentUser}) => {
             </span>
             </NavButton>
 
-        <NavButton label="Люди" onClick={() => navigate("/usersearch")}>
+        <NavButton label="Друзья" onClick={handleUnavailableFeature}>
             <span
               style={{
                 display: "flex",
