@@ -6,7 +6,7 @@ const BackButton = ({
   label = "Назад",
   className = "",
   style = {},
-  iconSize = 20,
+  iconSize = 30,
   ...props
 }) => {
   const navigate = useNavigate();
@@ -20,11 +20,9 @@ const BackButton = ({
         borderRadius: "20px",
         color: "white",
         fontSize: "10px",
-        padding: "5px 12px 5px 10px",
         display: "flex",
         alignItems: "center",
         gap: "2px",
-        width: '80px',
         ...style,
       }}
       {...props}
@@ -43,7 +41,6 @@ const BackButton = ({
           fill="white"
         />
       </svg>
-      {label}
     </button>
   );
 };

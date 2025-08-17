@@ -10,6 +10,7 @@ export function usePilotStats(pilot, selectedYear) {
     podiums: 0,
     poles: 0,
     dnf: 0,
+    constructor: "-"
   });
   const [loadingStats, setLoadingStats] = useState(true);
   const [statsError, setStatsError] = useState(null);
@@ -26,8 +27,7 @@ export function usePilotStats(pilot, selectedYear) {
         const list =
           MRData.StandingsTable.StandingsLists[0]?.DriverStandings || [];
         if (!list.length) throw new Error("Нет данных по standings");
-
-        // ищем по driverId из pilot (для 2025) или по фамилии
+  
         const normFam = normalizeName(familyName);
         const found = list.find(
           (d) =>
@@ -35,19 +35,21 @@ export function usePilotStats(pilot, selectedYear) {
             normalizeName(d.Driver.familyName) === normFam
         );
         if (!found) throw new Error("Пилот не найден в standings");
-
+  
         return {
           driverId: found.Driver.driverId,
           position: found.position || "-",
           points: found.points || "-",
+          constructor: found.Constructors?.[0]?.name || "-"
         };
       } catch (err) {
         console.error("Ошибка загрузки standings:", err);
-        return { driverId: null, position: "-", points: "-" };
+        return { driverId: null, position: "-", points: "-", constructor: "-" };
       }
     },
     [pilot]
   );
+  
 
   // 2) По driverId считаем wins/podiums/poles/dnf
   const fetchPilotResults = useCallback(
@@ -97,19 +99,13 @@ export function usePilotStats(pilot, selectedYear) {
       setLoadingStats(true);
       setStatsError(null);
 
-      // Сначала standings → получаем driverId, position, points
-      const { driverId, position, points } = await fetchPilotStandings(
-        pilot.Driver.familyName,
-        selectedYear
-      );
+      const { driverId, position, points, constructor } =
+      await fetchPilotStandings(pilot.Driver.familyName, selectedYear);
 
-      // Затем результаты по этому driverId
-      const { wins, podiums, poles, dnf } = await fetchPilotResults(
-        driverId,
-        selectedYear
-      );
+    const { wins, podiums, poles, dnf } =
+    await fetchPilotResults(driverId, selectedYear);
 
-      setSeasonStats({ position, points, wins, podiums, poles, dnf });
+    setSeasonStats({ position, points, wins, podiums, poles, dnf, constructor });
       setLoadingStats(false);
     }
 

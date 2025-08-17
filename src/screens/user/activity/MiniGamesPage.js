@@ -95,6 +95,12 @@ export default function MiniGamesPage({ currentUser }) {
                   record={null}
                   onClick={onSelectWordle}
                 />
+                <GameCard
+                  title="F1 Wordle"
+                  description="Угадайте фамилию чемпиона F1 за 3 попытки."
+                  record={null}
+                  onClick={onSelectLane}
+                />
               </div>
             </div>
           )}

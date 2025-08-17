@@ -99,8 +99,14 @@ export const TEAM_COLORS = {
   "Matra": "#059BFF",
   "Tyrell": "#014897",
   "Benetton": "#F8DA0E",
-  "Renault": "#369FEA",
+  "Renault": "#e2c90d",
   "BrawnGP": "#D3FA61",
+  "Force India" : "#F27836",
+  "Manor Marussia" : "#006DC1",
+  "Toro Rosso" : "#002076",
+  "AlphaTauri": "#20394C",
+  "Racing Point" : "#F363B9",
+  "Minardi" : "yellow"
   };
   
   export const DRIVER_TRANSLATIONS = {

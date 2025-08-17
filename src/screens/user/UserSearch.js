@@ -87,7 +87,7 @@ const UserSearch = ({ currentUser }) => {
     <div
     style={{ padding: "10px 15px", marginBottom: 90 }}>
       
-      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, zIndex: 999, display: 'flex'}}>
+      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: "15px 0px 10px 0px", zIndex: 999, display: 'flex'}}>
       <BackButton
         label="Назад"
         style={{}}

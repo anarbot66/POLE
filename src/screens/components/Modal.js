@@ -13,7 +13,7 @@ import "./Modal.css";
  */
 const Modal = ({ show, onClose, message, buttonText = "Понятно" }) => (
   <CSSTransition in={show} timeout={300} classNames="fade" unmountOnExit>
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-bak" onClick={onClose}>
       <div className="commentGlass" onClick={e => e.stopPropagation()}>
         <p className="modal-message">{message}</p>
         <button className="modal-button" onClick={onClose}>

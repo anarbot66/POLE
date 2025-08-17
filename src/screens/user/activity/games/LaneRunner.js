@@ -14,7 +14,7 @@ import fireUrl from './graphic/FormulaRunnerAssets/fire.png';
 import puddleUrl from './graphic/FormulaRunnerAssets/puddle.png';
 import playerUrl from './graphic/FormulaRunnerAssets/player.png';
 import trackUrl from './graphic/FormulaRunnerAssets/track2.png';
-import apIconUrl from '../../../recources/images/apex-logo.png';
+import apIconUrl from '../../../recources/images/racehub-logo.png';
 import shieldUrl from './graphic/FormulaRunnerAssets/shield.png';         
 import bonusModeUrl from './graphic/FormulaRunnerAssets/bonusMode.png';   
 

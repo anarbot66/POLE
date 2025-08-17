@@ -70,7 +70,7 @@ export const teamColors = {
     "Pérez": "Серхио Перес",
     "Alonso": "Фернандо Алонсо",
     "Gasly": "Пьер Гасли",
-    "Hulkenberg": "Нико Хюлькенберг",
+    "Hülkenberg": "Нико Хюлькенберг",
     "Tsunoda": "Юки Цунода",
     "Stroll": "Лэнс Стролл",
     "Ocon": "Эстебан Окон",

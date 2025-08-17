@@ -1,26 +1,33 @@
 // NavButton.jsx
 import React from "react";
 
-export function NavButton({ children, label, onClick }) {
+export function NavButton({ children, label, onClick, tip }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+    <div onClick={onClick} style={{ display: "flex", alignItems: "center", width: "100%", gap: '10px' }}>
       <div
-        onClick={onClick}
         style={{
-          width: 60,
-          height: 60,
+          width: 40,
           borderRadius: 15,
           display: "flex",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
           justifyContent: "center",
           alignItems: "center",
           cursor: "pointer",
           transition: "background 0.3s ease, transform 0.2s ease",
+          padding: "5px 0px"
         }}
       >
         {children}
       </div>
-      <div style={{ marginTop: 8, color: "white", fontSize: 10 }}>{label}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+        <span style={{ color: "white", fontSize: 15, fontWeight: 200 }}>
+          {label}
+        </span>
+        {tip && (
+          <span style={{ color: "gray", fontSize: 11, fontWeight: 200 }}>
+            {tip}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

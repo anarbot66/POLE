@@ -9,7 +9,9 @@ import {
 
 export function usePilotData(lastName) {
   const [pilot, setPilot] = useState(null);
-  const [biography, setBiography] = useState("");
+  const [childhood, setChildhood] = useState("");
+  const [waytoformula, setWaytoformula] = useState("");
+  const [career, setCareer] = useState("");
   const [seasons, setSeasons] = useState([]);
   const [firstRace, setFirstRace] = useState("");      // из локального JSON
   const [lastRaceData, setLastRaceData] = useState(null); // весь объект последней гонки
@@ -116,21 +118,29 @@ export function usePilotData(lastName) {
     setFirstRace(localFirst || "");
 
     // Локальная биография
-    const bio = biographies[lastName]?.biography || "Биография не найдена";
-    setBiography(bio);
+    const childhood = biographies[lastName]?.childhood || "Биография не найдена";
+    setChildhood(childhood);
+
+    const waytoformula = biographies[lastName]?.waytoformula || "Биография не найдена";
+    setWaytoformula(waytoformula);
+
+    const career = biographies[lastName]?.career || "Биография не найдена";
+    setCareer(career);
 
     // Локальные сезоны
-    const pilotSeasons = seasonsData[lastName] || [];
+    const pilotSeasons = seasonsData[lastName] || {};
     setSeasons(pilotSeasons);
   }, [pilot, lastName]);
 
   return {
     pilot,
-    biography,
     seasons,
     firstRace,
     lastRaceData,
     loading,
     error,
+    childhood,
+    waytoformula,
+    career
   };
 }

@@ -1,0 +1,96 @@
+/* Фон */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    backdrop-filter: brightness(60%);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+  
+  .backdrop-show {
+    opacity: 1;
+  }
+  
+  /* Модальное окно */
+  .modal-window {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 30px;
+    border-radius: 25px 25px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 1001;
+    max-height: 500px;
+    background: #141416;
+  }
+  
+  /* Анимация выезда */
+  .modal-slide-enter {
+    transform: translateY(100%);
+  }
+  .modal-slide-enter-active {
+    transform: translateY(0);
+    transition: transform 300ms ease-out;
+  }
+  .modal-slide-exit {
+    transform: translateY(0);
+  }
+  .modal-slide-exit-active {
+    transform: translateY(100%);
+    transition: transform 300ms ease-in;
+  }
+  
+  /* Заголовок */
+  .modal-title {
+    text-align: left;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Список */
+  .modal-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  /* Кнопки */
+  .modal-item {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 11px 0px;
+    border-radius: 30px;
+    background: transparent;
+    color: #fff;
+    font-size: 13px;
+    font-family: Inter;
+    font-weight: 500;
+    letter-spacing: 0.65px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .f1-label {
+    color: red;
+  }
+  
+  .modal-slide-appear {
+    transform: translateY(100%);
+  }
+  .modal-slide-appear-active {
+    transform: translateY(0);
+    transition: transform 200ms ease-out;
+  }
+  
+  

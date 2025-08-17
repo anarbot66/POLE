@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../firebase';
-import logo from "../../recources/images/apex-logo.png";
+import logo from "../../recources/images/racehub-logo.png";
 
 const pillStyle = {
   padding: '8px 15px 8px 15px',

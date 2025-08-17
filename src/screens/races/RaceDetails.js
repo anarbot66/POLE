@@ -1,5 +1,5 @@
 // RaceDetails.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { useSwipeable } from 'react-swipeable';
@@ -7,6 +7,7 @@ import { nationalityToFlag } from "../pilots/driverList/constants";
 import { TEAM_COLORS } from "../../screens/recources/json/constants";
 import { driverSurnames } from "../pilots/driverDetails/constants";
 import BackButton from "../components/BackButton";
+import { CONSTRUCTOR_API_NAMES } from "../../screens/recources/json/constants";
 
 // Сопоставление стран с кодами флагов
 const countryToFlag = {
@@ -69,9 +70,9 @@ const convertToMoscowTime = (utcDate, utcTime) => {
   });
 };
 
-const RaceDetails = ({ currentUser }) => {
+const RaceDetails = () => {
   const [imageSrc, setImageSrc] = useState(null);
-  const [RimageSrc, RsetImageSrc] = useState(null);
+  const [, RsetImageSrc] = useState(null);
   const [loading, setLoading] = useState(true);
   
 
@@ -89,11 +90,30 @@ const RaceDetails = ({ currentUser }) => {
   const [activeTab, setActiveTab] = useState("schedule");
 
   const tabs = ['schedule','results','circuit'];
-const labels = {
-  schedule: 'Расписание',
-  results:  'Результаты',
-  circuit:'Трасса'
-};
+
+const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
+
+  const scheduleRef = useRef(null);
+  const resultsRef = useRef(null);
+  const circuitRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const updateUnderline = () => {
+      let ref;
+      if (activeTab === "schedule") ref = scheduleRef;
+      if (activeTab === "results") ref = resultsRef;
+      if (activeTab === "circuit") ref = circuitRef;
+  
+      if (ref?.current) {
+        const { offsetLeft, offsetWidth } = ref.current;
+        setUnderlineStyle({ left: offsetLeft, width: offsetWidth });
+      }
+    };
+  
+    requestAnimationFrame(updateUnderline); // ждем, пока браузер нарисует DOM
+    window.addEventListener("resize", updateUnderline);
+    return () => window.removeEventListener("resize", updateUnderline);
+  }, [activeTab, scheduleRef.current, resultsRef.current, circuitRef.current]);
 
   
   const goPrev = () => {
@@ -223,64 +243,31 @@ const labels = {
 
   return (
     <div>
-      <div style={{ 
-  textAlign: "center", 
-  position: "absolute", 
-  zIndex: -1, 
-  margin: 0, 
-  top: 0, 
-  width: "100%", 
-  height: "400px", 
-  overflow: "hidden", 
-  left: 0,
-}}>
-  <img
-    src={RimageSrc}
-    alt="Изображение трассы"
-    style={{ 
-      width: "100%", 
-      height: '400px', 
-      objectFit: 'cover',
-      display: "block",
-      position: "relative",
-      zIndex: 1,
-    }}
-  />
-  <div
-    style={{
-      position: "absolute",
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: '400px', 
-      background: "linear-gradient(to top, rgba(0, 0, 0, 1), transparent)",
-      zIndex: 2,
-      pointerEvents: "none",
-    }}
-  />
-</div>
 
-    <div className="race-details" style={{
-      width: "calc(100% - 20px)",
-      margin: "10px",
-      padding: "10px",
+    <div style={{
+      marginBottom: "65px",
+      overflowY: "auto",
+      borderRadius: "20px",
       display: "flex",
       flexDirection: "column",
-      gap: "15px",
-      position: "relative",
-      marginBottom: '100px'
-    }}>
+      gap: "19px",
+      marginTop: "10px"
+    }}
+    >
       
-      <div style={{position: 'fixed'}}>
+      <div style={{display: "flex",
+        flexDirection: "column",
+        gap: "19px", position: 'fixed', width: '100%', background: 'rgb(17, 17, 19)', left: '0', top: '0', padding: '20px 20px 0px 20px', zIndex: 100}}>
+      <div style={{display: 'flex', width: "100%"}}>
       <BackButton
         label="Назад"
-        style={{}}
+        style={{width: '100%'}}
       />
-        
       </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: '200px'}}>
-      <img 
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px"}}>
+      
+        <div style={{ display: "flex", gap: "4px", flex: 1 }}>
+        <img 
           src={`https://flagcdn.com/w80/${countryCode}.png`} 
           alt={race.Circuit.Location.country}
           style={{ 
@@ -292,73 +279,93 @@ const labels = {
               ? "20% center" : "center"
           }} 
         />
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
-          <div style={{ color: "white", fontSize: "26px" }}>{translatedRaceName}</div>
           <div style={{ color: "lightgray", fontSize: "20px" }}>{race.Circuit.circuitName}</div>
         </div>
+        <div style={{ color: "white", fontSize: "26px" }}>{translatedRaceName}</div>
       </div>
+      <div style={{ position: "relative", display: "flex", borderRadius: "20px", gap: "19px" }}>
+      <button
+        ref={scheduleRef}
+        onClick={() => setActiveTab("schedule")}
+        style={{
+          padding: "10px 5px",
+          color: activeTab === "schedule" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "schedule" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Расписание
+      </button>
 
-      
+      <button
+        ref={resultsRef}
+        onClick={() => setActiveTab("results")}
+        style={{
+          padding: "10px 5px",
+          color: activeTab === "results" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "results" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Результаты
+      </button>
 
-      
+      <button
+        ref={circuitRef}
+        onClick={() => setActiveTab("circuit")}
+        style={{
+          padding: "10px 5px",
+          color: activeTab === "circuit" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "circuit" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Трасса
+      </button>
 
-
-
+      {/* Полоска */}
       <div
-  style={{
-    position: 'relative',
-    display: 'flex',
-    marginTop: '10px',
-    overflow: 'hidden',
-    padding: '2px'
-  }}
->
-  {tabs.map(tab => (
-    <button
-      key={tab}
-      onClick={() => setActiveTab(tab)}
-      style={{
-        flex: 1,
-        padding: '10px 0',
-        background: 'transparent',
-        color: 'white',
-        boxShadow: activeTab === tab
-          ? '0 0 0 1px rgba(255,255,255,0.2)'
-          : '0 0 0 0 rgba(255,255,255,0)',
-        borderRadius: '10px',
-        cursor: 'pointer',
-        fontSize: 14,
-        textAlign: 'center',
-        transition: 'box-shadow 0.3s ease'
-      }}
-    >
-      {labels[tab]}
-    </button>
-  ))}
-</div>
-
-        <div style={{ position: 'relative', height: 'calc(100% - 70px)' }}>
-        <div
-  {...swipeHandlers}
-  style={{ position: 'relative', height: 'calc(100% - 70px)' }}
->
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: underlineStyle.left,
+          height: "3px",
+          width: underlineStyle.width,
+          backgroundColor: "blue",
+          borderRadius: "2px",
+          transition: "left 0.3s ease, width 0.3s ease",
+          pointerEvents: "none",
+        }}
+      />
+    </div>
+      </div>
+      <div style={{ width: "100%" }}>
         <TransitionGroup>
           <CSSTransition
             key={activeTab}
             classNames="tab"
             timeout={400}
           >
-            <div className="">
+            <div {...swipeHandlers}
+  style={{ position: 'relative', marginTop: '200px', padding: '15px'}}>
             {activeTab === "schedule" && (
-            <div>
+            <div style={{background: '#141416', padding: '20px', borderRadius: '15px', display: 'flex', flexDirection: "column", gap: "10px"}}>
           {sessions.map((session, index) => (
             <div key={index} style={{
-              padding: "15px",
+              padding: "5px",
               borderRadius: "10px",
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "10px"
+              alignItems: "center"
             }}>
               <span style={{ fontSize: "12px", color: "white" }}>
                 {sessionTypeTranslations[session.type] || session.type}
@@ -394,13 +401,15 @@ const labels = {
       )}
 
     {activeTab === "results" && (
-  <div style={{ display: "flex", flexDirection: "column", gap: '10px', overflowY: "auto", overflowX: "hidden"  }}>
+  <div style={{ display: "flex", flexDirection: "column", gap: '10px', overflowY: "auto", overflowX: "hidden", padding: "20px", background: '#141416', borderRadius: "15px" }}>
     {resultsLoading && <p style={{ color: "white" }}> </p>}
     {!resultsLoading && results.map((r, i) => {
   const driverName = driverSurnames[r.Driver.familyName] || r.Driver.familyName;
   const nat = r.Driver.nationality;
   const countryCode = nationalityToFlag[nat] || "un";
   const bg = TEAM_COLORS[r.Constructor.name] || "#888";
+    const constructorName = r.Constructor.name;
+    const apiName = CONSTRUCTOR_API_NAMES?.[constructorName];
 
   function slugify(name) {
   return name
@@ -417,11 +426,10 @@ const labels = {
   return (
       <div
       key={i}
-      className="Frame24 inline-flex items-center justify-between p-2"
+      className="Frame24 inline-flex items-center justify-between"
       style={{ borderRadius: 10, cursor: 'pointer', }}
-      onClick={() => navigate(`/pilot-details/${slug}`)}
     >
-      <div className="inline-flex items-center gap-4">
+      <div className="inline-flex items-center gap-2">
         <div
           style={{
             width: 30,
@@ -432,15 +440,12 @@ const labels = {
             justifyContent: "center"
           }}
         >
-          <span style={{ color: bg, fontSize: 15, fontWeight: 500 }}>
-            P{r.position}
+          <span style={{ color: "white", fontSize: 15, fontWeight: 500 }}>
+            {r.position}
           </span>
         </div>
-          <div style={{width: '130px', display: 'flex', alignItems: 'center', gap:'10px' }}>
-          <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
-          {driverName}
-        </span>
-        <img
+          <div style={{width: '130px', display: 'flex', alignItems: 'center', gap:'10px' }} onClick={() => navigate(`/pilot-details/${slug}`)}>
+          <img
             src={`https://flagcdn.com/w40/${countryCode}.png`}
             alt={nat}
             style={{
@@ -449,10 +454,13 @@ const labels = {
               borderRadius: "50%",
               objectFit: "cover"
             }}
-          />
+          ></img>
+          <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
+          {driverName}
+        </span>
           </div>
       </div>
-      <span style={{ color: bg, fontSize: 13, fontWeight: 500, width: '100px', textAlign: 'left' }}>
+      <span style={{ color: bg, fontSize: 13, fontWeight: 500, width: '100px', textAlign: 'left' }} onClick={() => navigate(`/constructor-details/${apiName}`)}>
         {r.Constructor.name}
       </span>
       <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
@@ -486,7 +494,6 @@ const labels = {
     </div>
       </CSSTransition>
         </TransitionGroup>
-        </div>
       </div>
 
 

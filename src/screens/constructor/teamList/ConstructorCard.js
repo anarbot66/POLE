@@ -1,13 +1,28 @@
 // ConstructorCard.js
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { TEAM_COLORS, DRIVER_TRANSLATIONS } from "../../recources/json/constants";
 
-const ConstructorCard = ({ constructor, drivers, onClick }) => {
+const toId = (constructorObj) => {
+  // сначала пробуем constructorId из Ergast
+  const cid = constructorObj?.Constructor?.constructorId;
+  if (cid) return cid;
+  // fallback: делаем слаг из имени
+  const name = constructorObj?.Constructor?.name || "";
+  return name.toLowerCase().replace(/[^a-z0-9а-яё\-]+/ig, "-").replace(/-+/g, "-").replace(/(^-|-$)/g, "");
+};
+
+const ConstructorCard = ({ constructor, drivers }) => {
+  const navigate = useNavigate();
   const teamColor = TEAM_COLORS[constructor.Constructor.name] || "#000000";
 
   // Отбираем пилотов, связанных с данным конструктором
   const pilots = drivers.filter(driver =>
-    driver.Constructors.some(c => c.name === constructor.Constructor.name)
+    // сначала пробуем сопоставление по constructorId (надежнее), затем по name
+    driver.Constructors.some(c =>
+      (c.constructorId && c.constructorId === constructor.Constructor.constructorId) ||
+      c.name === constructor.Constructor.name
+    )
   ).slice(0, 2);
 
   // Формируем имена пилотов с переводом (если есть)
@@ -18,12 +33,16 @@ const ConstructorCard = ({ constructor, drivers, onClick }) => {
     })
     .join(" & ");
 
+  const handleClick = () => {
+    const id = toId(constructor);
+    navigate(`/constructor-details/${encodeURIComponent(id)}`, { state: { constructor } });
+  };
+
   return (
-    <div onClick={() => onClick(constructor)} style={{ cursor: "pointer" }}>
+    <div onClick={handleClick} style={{ cursor: "pointer" }}>
       <div
         style={{
           width: "100%",
-          border: '1px solid rgba(255, 255, 255, 0.2)',
           borderRadius: "15px",
           display: "flex",
           justifyContent: "space-between",

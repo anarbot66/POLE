@@ -1,12 +1,12 @@
 // PilotDetails.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import BiographyTab from "./BiographyTab";
 import FavoriteButton from "./FavoriteButton";
 import { usePilotData } from "./usePilotData";
 import { usePilotStats } from "./usePilotStats";
-import { teamColors } from "./constants";
+import { CONSTRUCTOR_API_NAMES, TEAM_COLORS } from "../../recources/json/constants";
 import SeasonPickerModal from "../../components/SeasonPickerModal";
 import { useSwipeable } from 'react-swipeable';
 import Hint from "../../user/services/Hint";
@@ -60,13 +60,13 @@ const driverRating = {
 const PilotDetails = ({ currentUser }) => {
   const { lastName } = useParams();
   const navigate = useNavigate();
-  const { pilot, biography, seasons, firstRace, lastRaceData, loading } = usePilotData(lastName);
+  const { pilot, childhood, waytoformula, career, seasons, firstRace, lastRaceData, loading } = usePilotData(lastName);
   const [activeTab, setActiveTab] = useState("biography");
-  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedYear, setSelectedYear] = useState("2024");
   const [imageSrc, setImageSrc] = useState(null);
   const [imgLoading, setImgLoading] = useState(true);
   const rating = driverRating[lastName] || "N/A";
-  const tabs = ['biography','seasons','results'];
+  const tabs = ['biography','seasons','results', 'achievements'];
   const labels = {
     biography: 'Биография',
     seasons:  'Сезоны',
@@ -78,6 +78,18 @@ const PilotDetails = ({ currentUser }) => {
   const [tipOpen, setTipOpen] = useState(false);
 
   const showTip = () => setTipOpen(true);
+
+  const goToConstructor = useCallback(() => {
+    const constructorName = pilot?.Constructors?.[0]?.name;
+    const apiName = CONSTRUCTOR_API_NAMES?.[constructorName];
+
+    if (apiName) {
+      navigate(`/constructor-details/${apiName}`);
+    } else {
+      console.warn("Constructor id not found for", constructorName);
+    }
+  }, [pilot, navigate]);
+
   
   
   // Для сезонной статистики
@@ -101,6 +113,31 @@ const PilotDetails = ({ currentUser }) => {
     trackMouse: true,    // чтобы работало и мышью
     preventDefaultTouchmoveEvent: true
   });
+
+  const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
+
+  const bioRef = useRef(null);
+  const seasonsRef = useRef(null);
+  const resultsRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const updateUnderline = () => {
+      let ref;
+      if (activeTab === "biography") ref = bioRef;
+      if (activeTab === "seasons") ref = seasonsRef;
+      if (activeTab === "results") ref = resultsRef;
+  
+      if (ref?.current) {
+        const { offsetLeft, offsetWidth } = ref.current;
+        setUnderlineStyle({ left: offsetLeft, width: offsetWidth });
+      }
+    };
+  
+    requestAnimationFrame(updateUnderline); // ждем, пока браузер нарисует DOM
+    window.addEventListener("resize", updateUnderline);
+    return () => window.removeEventListener("resize", updateUnderline);
+  }, [activeTab, bioRef.current, seasonsRef.current, resultsRef.current]);
+  
 
   
   useEffect(() => {
@@ -195,11 +232,8 @@ const PilotDetails = ({ currentUser }) => {
   return (
     <div
       style={{
-        width: "calc(100% - 20px)",
-        margin: "10px",
-        padding: "10px",
         height: "100%",
-        marginBottom: "100px",
+        marginBottom: "65px",
         overflowY: "auto",
         borderRadius: "20px",
         display: "flex",
@@ -208,67 +242,46 @@ const PilotDetails = ({ currentUser }) => {
         marginTop: "10px"
       }}
     >
-      <div style={{position: 'fixed'}}>
+      <div style={{display: "flex",
+        flexDirection: "column",
+        gap: "19px", position: 'fixed', width: '100%', background: 'rgb(17, 17, 19)', left: '0', top: '0', padding: '20px 20px 0px 20px'}}>
+      <div style={{display: 'flex', width: "100%"}}>
       <BackButton
         label="Назад"
-        style={{}}
+        style={{width: '100%'}}
       />
-      </div>
-      <div style={{ 
-  textAlign: "center", 
-  position: "absolute", 
-  zIndex: -1, 
-  margin: 0, 
-  top: 0, 
-  width: "100%", 
-  height: "400px", 
-  overflow: "hidden", 
-  left: 0,
-}}>
-  <img
-    src={imageSrc}
-    alt=" "
-    style={{ 
-      width: "100%", 
-      height: '400px', 
-      objectFit: 'cover',
-      display: "block",
-      position: "relative",
-      zIndex: 1,
-    }}
-  />
-  <div
-    style={{
-      position: "absolute",
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: '400px', 
-      background: "linear-gradient(to top, rgba(0, 0, 0, 1), transparent)",
-      zIndex: 2,
-      pointerEvents: "none",
-    }}
-  />
-</div>
-
-      <div style={{ display: "flex", marginTop: '230px'}}>
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: '10px' }}>
-          <div>
-          <div style={{ color: "white", fontSize: "26px", fontFamily: "Inter" }}>
-            {pilot.Driver.translatedName}
-          </div>
-          <div style={{ color: teamColors[pilot.Constructors[0].name] || "#000000", fontSize: "20px", fontFamily: "Inter" }}>
-            {pilot.Constructors[0].name}
-          </div>
-          </div>
-          <FavoriteButton 
+      <FavoriteButton 
       currentUser={currentUser} 
       pilot={pilot} 
-      teamColor={teamColors[pilot.Constructors[0].name] || "#000000"} 
+      teamColor={TEAM_COLORS[pilot.Constructors[0].name] || "#000000"} 
     />
+      </div>
+
+      <div style={{ display: "flex"}}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: '10px' }}>
+          <div style={{display: 'flex', gap: '10px'}}>
+          <div style={{ display: "flex", flexDirection: "column", gap: '5px' }}>
+          <div style={{ color: "white", fontSize: "20px", fontFamily: "Inter" }}>
+            {pilot.Driver.translatedName}
+          </div>
+          <div onClick={goToConstructor} style={{
+          padding: '5px 15px',
+          background: 'rgb(25, 25, 25, 0.7)',
+          borderRadius: '30px',
+          display: "inline-flex",     
+          alignSelf: "flex-start",    
+          whiteSpace: "nowrap"  
+        }}>
+          <span style={{ color: TEAM_COLORS[pilot.Constructors[0].name] || "#000000", fontSize: "14px", fontFamily: "Inter" }}>
+            {pilot.Constructors[0].name}
+          </span>
+          </div>
+          </div>
+          </div>
+          
         </div>
         <div style={{display: 'flex', flexDirection: 'column'}}>
-          <span style={{ color: "white", fontSize: "50px", height: '63px', marginTop: -10 }}>
+          <span style={{ color: "white", fontSize: "30px", }}>
           {rating}
           </span>
           <span style={{ color: "white", fontSize: "10px", textAlign: 'center' }}>
@@ -277,13 +290,6 @@ const PilotDetails = ({ currentUser }) => {
           </div>
           
       </div>
-
-      <Hint
-        isOpen={tipOpen}
-        message="Рейтинг пилота от Apex"
-        onClose={() => setTipOpen(false)}
-        duration={3000} // 10 секунд
-      />
         
 
 
@@ -329,38 +335,71 @@ const PilotDetails = ({ currentUser }) => {
         </div>
       </div>
 
+      <div style={{ position: "relative", display: "flex", borderRadius: "20px", gap: "19px" }}>
+      <button
+        ref={bioRef}
+        onClick={() => setActiveTab("biography")}
+        style={{
+          padding: "10px 5px",
+          color: activeTab === "biography" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "biography" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Биография
+      </button>
+
+      <button
+        ref={seasonsRef}
+        onClick={() => setActiveTab("seasons")}
+        style={{
+          padding: "10px 5px",
+          color: activeTab === "seasons" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "seasons" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Сезоны
+      </button>
+
+      <button
+        ref={resultsRef}
+        onClick={() => setActiveTab("results")}
+        style={{
+          padding: "10px 5px",
+          color: activeTab === "results" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "results" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Результаты
+      </button>
+
+      {/* Полоска */}
       <div
-  style={{
-    position: 'relative',
-    display: 'flex',
-    marginTop: '10px',
-    overflow: 'hidden',
-    padding: '2px'
-  }}
->
-  {tabs.map(tab => (
-    <button
-      key={tab}
-      onClick={() => setActiveTab(tab)}
-      style={{
-        flex: 1,
-        padding: '10px 0',
-        background: 'transparent',
-        color: 'white',
-        boxShadow: activeTab === tab
-          ? '0 0 0 1px rgba(255,255,255,0.2)'
-          : '0 0 0 0 rgba(255,255,255,0)',
-        borderRadius: '10px',
-        cursor: 'pointer',
-        fontSize: 14,
-        textAlign: 'center',
-        transition: 'box-shadow 0.3s ease'
-      }}
-    >
-      {labels[tab]}
-    </button>
-  ))}
-</div>
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: underlineStyle.left,
+          height: "3px",
+          width: underlineStyle.width,
+          backgroundColor: "blue",
+          borderRadius: "2px",
+          transition: "left 0.3s ease, width 0.3s ease",
+          pointerEvents: "none",
+        }}
+      />
+    </div>
+      </div>
 
 <TransitionGroup>
           <CSSTransition
@@ -368,13 +407,15 @@ const PilotDetails = ({ currentUser }) => {
             classNames="tab"
             timeout={400}
           >
-            <div {...swipeHandlers} className="">
+            <div style={{marginTop: '240px'}} {...swipeHandlers} className="">
             {activeTab === "biography" && (
-  <BiographyTab
-    biography={biography}
-    firstRace={firstRace}
-    lastRaceData={lastRaceData}
+  <div style={{padding: '15px'}}>
+    <BiographyTab
+    childhood={childhood}
+    waytoformula={waytoformula}
+    career={career}
   />
+  </div>
 )}
 
       
@@ -389,20 +430,33 @@ const PilotDetails = ({ currentUser }) => {
       onClick={() => setPickerOpen(true)}
       style={{
         width: "100%",
-        padding: "10px 15px",
-        borderRadius: "10px",
-        border: "1px solid #505050",
+        padding: "15px 20px",
         background: "transparent",
         color: "#fff",
         fontSize: "13px",
         fontFamily: "Inter",
         fontWeight: 500,
-        letterSpacing: "0.65px",
-        textAlign: "left",
         cursor: "pointer",
+        borderBottom: "1px solid #242424",
+        display: 'flex',
+        gap: '10px',
+        alignItems: 'center'
       }}
     >
-      {selectedYear || "Выберите сезон"}
+      <span
+  style={{
+        color: TEAM_COLORS[seasonStats.constructor] || "#000000",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {seasonStats.constructor}
+    </span>
+
+      <span style={{width: '100%', textAlign: 'left'}}>{selectedYear || "Выберите сезон"}</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.24738 11.1399L2.45115 5.6585C1.88539 5.01192 2.34457 4 3.20373 4H12.7962C13.6554 4 14.1145 5.01192 13.5488 5.6585L8.75254 11.1399C8.35413 11.5952 7.6458 11.5952 7.24738 11.1399Z" fill="white"/>
+</svg>
+
     </button>
 
     <CSSTransition
@@ -418,18 +472,19 @@ const PilotDetails = ({ currentUser }) => {
     isOpen={pickerOpen}
     onClose={() => setPickerOpen(false)}
     onSelect={(year) => setSelectedYear(year)}
+    type={"driver"}
   />
 </CSSTransition>
 
 
 
 <CSSTransition
-      in={!loadingStats}         // показываться, когда данные загрузились
+      in={!loadingStats}         
       timeout={300}
       classNames="window-fade"
-      mountOnEnter                // не рендерить до начала анимации
-      unmountOnExit               // удалять после скрытия
-      appear                      // анимировать при первом появлении
+      mountOnEnter                
+      unmountOnExit              
+      appear                     
     >
       <div
         style={{
@@ -437,7 +492,10 @@ const PilotDetails = ({ currentUser }) => {
           flexDirection: "row",
           justifyContent: "space-between",
           gap: "12px",
-          marginTop: "10px"
+          padding: '15px',
+          background: '#141416',
+          borderRadius: '15px',
+          margin: '10px'
         }}
       >
         {/* ПОЗИЦИЯ */}
@@ -494,11 +552,9 @@ const PilotDetails = ({ currentUser }) => {
 )}
 {activeTab === "results" && (
   <div style={{
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-    overflowY: "auto"
+    padding: '15px',
   }}>
+    <div style={{borderRadius: '15px', background: '#141416', display: 'flex', gap: '10px', flexDirection: 'column', overflowY: 'auto', padding: '10px'}}>
     {resultsLoading && <p style={{ color: "white" }}> </p>}
     {!resultsLoading && driverResults.map((race, idx) => {
       // извлечём данные
@@ -517,7 +573,6 @@ const PilotDetails = ({ currentUser }) => {
           style={{
             borderRadius: 10,
             cursor: "pointer",
-            border: "1px solid rgba(255, 255, 255, 0.2)"
           }}
           onClick={() => handleRaceSelect(race)}
         >
@@ -530,7 +585,7 @@ const PilotDetails = ({ currentUser }) => {
               alignItems: "center",
               justifyContent: "center"
             }}>
-              <span style={{ color: teamColors[pilot.Constructors[0].name] || "#888", fontSize: 15, fontWeight: 500 }}>
+              <span style={{ fontSize: 15, fontWeight: 500 }}>
                 P{pos}
               </span>
             </div>
@@ -561,6 +616,30 @@ const PilotDetails = ({ currentUser }) => {
         Нет данных по выбранному сезону
       </p>
     )}
+      </div>
+  </div>
+)}
+
+{activeTab === "achievements" && (
+  <div style={{
+    padding: '15px',
+  }}>
+    <p style={{
+    textAlign: "center",
+    marginTop: 20,
+    lineHeight: "1.4em",
+    display: 'flex',
+    gap: '0px',
+    flexDirection: 'column'
+  }}>
+    <span style={{ color: "white", fontSize: 15}}>
+      Этот раздел еще в разработке
+    </span>
+    <br/>
+    <span style={{ color: "lightgray", fontSize: 11}}>
+      Следите за обновлениями в Telegram канале проекта
+    </span>
+  </p>
   </div>
 )}
 

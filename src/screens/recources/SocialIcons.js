@@ -35,9 +35,9 @@ const ICONS = {
 
 const SocialIcons = ({ social }) => (
   <div style={{ display: "flex",
-  justifyContent: "center",  
   gap: "16px",
-  width: "100%"              }}>
+  flexDirection: "column",
+  justifyItems: 'left'              }}>
     {Object.entries(social).map(([network, url]) => {
       if (!url || !ICONS[network]) return null;
       const handle = getHandle(url);
@@ -51,8 +51,6 @@ const SocialIcons = ({ social }) => (
             textDecoration: "none",
             color: "white",
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
             fontSize: "12px",
             gap: "15px"
           }}

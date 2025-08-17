@@ -14,7 +14,7 @@
     transition: opacity 300ms ease-out;
   }
   
-  .modal-backdrop {
+  .modal-bak {
     position: fixed;
     top: 0;
     left: 0;

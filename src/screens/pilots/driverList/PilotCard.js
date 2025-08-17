@@ -24,7 +24,7 @@ const PilotCard = ({ pilot, onClick }) => {
         gap: "12px",
         padding: "10px",
         cursor: "pointer",
-        paddingTop: "10px"
+        paddingTop: "10px",
       }}
     >
       <div

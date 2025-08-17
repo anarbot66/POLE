@@ -4,6 +4,7 @@
   "private": true,
   "proxy": "http://api.jolpi.ca",
   "dependencies": {
+    "@use-gesture/react": "^10.3.1",
     "autoprefixer": "^10.4.20",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",

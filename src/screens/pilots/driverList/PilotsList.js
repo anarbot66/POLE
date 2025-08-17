@@ -16,13 +16,12 @@ const PilotsList = () => {
       style={{
         width: "calc(100% - 30px)",
         margin: "0 auto",
-        marginBottom: "100px",
+        marginBottom: "50px",
         height: "100%",
         overflowY: "auto",
         display: "flex",
         flexDirection: "column",
         gap: "15px",
-        paddingTop: "20px"
       }}
     >
       {pilots.map((pilot) => (

@@ -1,6 +1,6 @@
 // LoadingScreen.js
 import React from "react";
-import logo from "../recources/images/apex-logo.png";
+import logo from "../recources/images/racehub-logo.png";
 
 const LoadingScreen = ({ progress, fadeOut }) => {
   return (

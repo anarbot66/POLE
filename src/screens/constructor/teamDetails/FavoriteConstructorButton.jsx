@@ -1,4 +1,3 @@
-// FavoriteConstructorButton.js
 import React, { useState, useEffect } from "react";
 import {
   collection,
@@ -15,16 +14,18 @@ import { CONSTRUCTOR_API_NAMES } from "../../recources/json/constants";
 const FavoriteConstructorButton = ({ currentUser, constructor }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
-  const [showFavoriteAlert, setShowFavoriteAlert] = useState(false);
 
-  // Переводим имя команды в её API-версию
+  // Безопасно достаём имя конструктора
+  const constructorName =
+    constructor?.Constructor?.name || constructor?.name || null;
+
+
+  // Формируем ID конструктора для API
   const constructorId =
-    CONSTRUCTOR_API_NAMES[constructor.Constructor.name] ||
-    constructor.Constructor.name
-      .toLowerCase()
-      .replace(/\s+/g, "_");
+    CONSTRUCTOR_API_NAMES[constructorName] ||
+    constructorName.toLowerCase().replace(/\s+/g, "_");
 
-  // Проверяем, добавлен ли уже в избранное
+  // Проверяем, в избранном ли
   useEffect(() => {
     if (!currentUser?.uid) return;
 
@@ -46,14 +47,11 @@ const FavoriteConstructorButton = ({ currentUser, constructor }) => {
     checkFavorite();
   }, [currentUser, constructorId]);
 
-  // Добавление в избранное
+  // Добавление
   const handleFavorite = async () => {
     if (!currentUser?.uid) return;
-  
     try {
       setFavLoading(true);
-  
-      // сохраняем документ по ключу userId_constructorId
       const docRef = doc(
         db,
         "favoritesConstructors",
@@ -64,7 +62,6 @@ const FavoriteConstructorButton = ({ currentUser, constructor }) => {
         constructorId,
         createdAt: new Date(),
       });
-  
       setIsFavorite(true);
     } catch (err) {
       console.error("Ошибка добавления в избранное:", err);
@@ -72,14 +69,12 @@ const FavoriteConstructorButton = ({ currentUser, constructor }) => {
       setFavLoading(false);
     }
   };
-  
 
-  // Удаление из избранного
+  // Удаление
   const handleUnfavorite = async () => {
     if (!currentUser?.uid) return;
-
-    setFavLoading(true);
     try {
+      setFavLoading(true);
       const docRef = doc(
         db,
         "favoritesConstructors",
@@ -95,32 +90,26 @@ const FavoriteConstructorButton = ({ currentUser, constructor }) => {
   };
 
   return (
-    <>
-      {currentUser?.uid && (
-        <button
-          onClick={isFavorite ? handleUnfavorite : handleFavorite}
-          disabled={favLoading}
-          style={{
-            padding: "5px 15px",
-            borderRadius: "50px",
-            border: isFavorite
-              ? "none"
-              : "1px solid rgba(255, 255, 255, 0.2)",
-            background: isFavorite ? "white" : "transparent",
-            color: isFavorite ? "black" : "white",
-            cursor: "pointer",
-            fontSize: 12,
-            width: "110px",
-            height: "28px",
-            transition:
-              "background 300ms ease, color 300ms ease, border 300ms ease",
-          }}
-        >
-          {favLoading ? "..." : isFavorite ? "Слежу" : "Подписаться"}
-        </button>
-      )}
-
-    </>
+    currentUser?.uid && (
+      <button
+        onClick={isFavorite ? handleUnfavorite : handleFavorite}
+        disabled={favLoading}
+        style={{
+          padding: "5px 15px",
+          borderRadius: "50px",
+          border: isFavorite ? "none" : "1px solid rgba(255, 255, 255, 0.2)",
+          background: isFavorite ? "white" : "transparent",
+          color: isFavorite ? "black" : "white",
+          cursor: "pointer",
+          fontSize: 12,
+          width: "110px",
+          height: "28px",
+          transition: "background 300ms ease, color 300ms ease, border 300ms ease",
+        }}
+      >
+        {favLoading ? "..." : isFavorite ? "Слежу" : "Подписаться"}
+      </button>
+    )
   );
 };
 

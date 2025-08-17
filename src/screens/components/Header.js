@@ -4,7 +4,7 @@ import { CSSTransition } from 'react-transition-group';
 import UserStats from '../user/components/UserStats';
 import './Header.css';
 
-const Header = ({ currentUser, showNotifs, setShowNotifs }) => {
+const Header = ({ currentUser }) => {
   const location = useLocation();
   const navigate = useNavigate();
 

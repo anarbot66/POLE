@@ -21,7 +21,7 @@ import {
 } from 'date-fns';
 import { useSwipeable } from 'react-swipeable';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import logo from "../../recources/images/apex-logo.png";
+import logo from "../../recources/images/racehub-logo.png";
 import { useNavigate } from "react-router-dom";
 import { ru } from 'date-fns/locale';
 import BackButton from '../../components/BackButton';

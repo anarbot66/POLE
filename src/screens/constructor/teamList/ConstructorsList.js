@@ -2,21 +2,9 @@ import React from "react";
 import { useConstructorsData } from "./useConstructorsData";
 import ConstructorCard from "./ConstructorCard";
 
-const getFormattedDate = () => {
-  const now = new Date();
-  const day = now.getDate();
-  const monthNames = [
-    "января", "февраля", "марта", "апреля", "мая", "июня",
-    "июля", "августа", "сентября", "октября", "ноября", "декабря"
-  ];
-  const month = monthNames[now.getMonth()];
-  const year = now.getFullYear();
-  return `${day} ${month} ${year}`;
-};
 
-const ConstructorsList = ({ onConstructorSelect }) => {
+const ConstructorsList = ({ }) => {
   const { constructors, drivers, error } = useConstructorsData();
-  const formattedDate = getFormattedDate();
 
   if (error) {
     return <div>Ошибка: {error}</div>;
@@ -39,7 +27,6 @@ const ConstructorsList = ({ onConstructorSelect }) => {
         flexDirection: "column",
         justifyContent: "flex-start",
         gap: "15px",
-        paddingTop: "20px"
       }}
     >
       
@@ -48,7 +35,6 @@ const ConstructorsList = ({ onConstructorSelect }) => {
           key={index}
           constructor={constructor}
           drivers={drivers}
-          onClick={onConstructorSelect}
         />
       ))}
     </div>

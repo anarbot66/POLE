@@ -82,7 +82,7 @@ const fetchComments = async () => {
   };
 
   return (
-    <div className="navGlass" style={styles.commentsSection}>
+    <div className="topHeaderGlass" style={styles.commentsSection}>
       <div style={styles.header}>
         <span style={styles.headerText}>Комментарии</span>
         <button onClick={onClose} style={styles.closeButton}>×</button>

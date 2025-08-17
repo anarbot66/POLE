@@ -1,0 +1,115 @@
+:root {
+  --col-orange: rgb(0, 81, 255);
+  --col-dark: rgb(17, 17, 19);
+  --col-darkGray: #52555a;
+  --col-gray: #aeaeae;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+}
+
+/* контейнер панели */
+.navGlass {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 30px);
+  max-width: 840px;
+  z-index: 998;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* секция с кнопками */
+.navSection {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: var(--col-dark);
+  border-radius: 15px;
+  padding: 10px 15px;
+  width: 100%;
+  height: 100%;
+}
+
+/* общий стиль для каждой кнопки */
+.label {
+  padding: 8px 14px;
+  transition: all 180ms ease;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  width: 100%;
+}
+
+/* скрываем native input */
+.label input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+/* иконка (svg контейнер) */
+.label .icon {
+  display: inline-flex;
+  transition: transform 200ms ease, color 200ms ease;
+  color: var(--col-darkGray);
+  width: 20px;
+  height: 20px;
+}
+
+/* иконки внутри svg должны наследовать currentColor */
+.label .icon svg {
+  fill: currentColor;
+}
+
+/* текст под иконкой */
+.label .text {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #a6a6a6;
+  transition: color 200ms ease;
+}
+
+/* hover (если не выбран) */
+.label:hover .icon,
+.label:hover .text {
+  color: var(--col-orange);
+  opacity: 0.9;
+}
+
+/* активное состояние с классом active */
+.label.active .icon {
+  color: var(--col-orange);
+  transform: translateY(-4px) scale(1.16);
+}
+
+.label.active .text {
+  color: white;
+  font-weight: 600;
+}
+
+/* подсветка-строчка под выбранной кнопкой */
+.label::after {
+  content: "";
+  display: block;
+  width: 0%;
+  height: 2px;
+  border-radius: 4px;
+  background: var(--col-orange);
+  transition: all 200ms ease;
+  position: relative;
+  top: 5px;
+}
+.label.active::after {
+  width: 100%;
+  left: 0;
+}
