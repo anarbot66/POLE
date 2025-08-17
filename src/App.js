@@ -29,6 +29,7 @@ import FavoritesDashboard from "./screens/user/fav/FavoritesDashboard.js";
 import MiniGamesPage from "./screens/user/activity/MiniGamesPage.js";
 import { initTheme } from "./screens/hooks/theme.js";
 import Settings from "./screens/user/services/Settings.js";
+import AuthError from "./screens/components/AuthError.js";
 
 function App() {
   usePreloadImages();
@@ -43,33 +44,41 @@ function App() {
 
   const initData = window.Telegram?.WebApp?.initData || null;
 
-  useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.expand();
+  const [authError, setAuthError] = useState(null);
 
-      const authUser = async () => {
-        try {
-          const res = await axios.post(
-            `${process.env.REACT_APP_API_URL}/api/auth/telegram`,
-            { initData },
-            { withCredentials: true }
-          );
-          if (res.data.user) {
-            setUser(res.data.user);
-            setIsAuthenticated(true);
-            navigate("/standings");
-          }
-        } catch (err) {
-          console.error("Auth failed:", err);
+useEffect(() => {
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.expand();
+
+    const authUser = async () => {
+      try {
+        const res = await axios.post(
+          `${process.env.REACT_APP_API_URL}/api/auth/telegram`,
+          { initData },
+          { withCredentials: true }
+        );
+        if (res.data.user) {
+          setUser(res.data.user);
+          setIsAuthenticated(true);
+          navigate("/standings");
+        } else {
+          setAuthError("Не удалось получить данные пользователя");
           setIsAuthenticated(false);
           navigate("/");
         }
-        setDbCheckCompleted(true);
-      };
+      } catch (err) {
+        console.error("Auth failed:", err);
+        setAuthError(err.response?.data?.message || "Ошибка авторизации");
+        setIsAuthenticated(false);
+        navigate("/");
+      }
+      setDbCheckCompleted(true);
+    };
 
-      if (initData) authUser();
-    }
-  }, [navigate, initData]);
+    if (initData) authUser();
+  }
+}, [navigate, initData]);
+
 
   useEffect(() => {
     initTheme(user);
@@ -108,7 +117,7 @@ function App() {
                 <CSSTransition key={location.pathname} classNames="page" timeout={500}>
                   <div key={location.pathname}>
                     <Routes location={location}>
-                      <Route path="/" element={<Auth user={user} />} />
+                    <Route path="/" element={<AuthError message={authError} />} />
                       <Route path="/standings" element={<Standings currentUser={user} />} />
                       <Route path="/pilot-details/:lastName" element={<PilotDetails currentUser={user} />} />
                       <Route path="/races" element={<RacesList currentUser={user} />} />
