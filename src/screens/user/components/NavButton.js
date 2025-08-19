@@ -19,11 +19,11 @@ export function NavButton({ children, label, onClick, tip }) {
         {children}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-        <span style={{ color: "white", fontSize: 15, fontWeight: 200 }}>
+        <span style={{ color: "white", fontSize: 15 }}>
           {label}
         </span>
         {tip && (
-          <span style={{ color: "gray", fontSize: 11, fontWeight: 200 }}>
+          <span style={{ color: "gray", fontSize: 11}}>
             {tip}
           </span>
         )}
