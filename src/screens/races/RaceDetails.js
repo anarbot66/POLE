@@ -75,7 +75,23 @@ const RaceDetails = () => {
   const [, RsetImageSrc] = useState(null);
   const [loading, setLoading] = useState(true);
   
+  const headerRef = useRef(null);   // ref на верхний блок
+  const [headerHeight, setHeaderHeight] = useState(0);
 
+  useLayoutEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.offsetHeight);
+    }
+
+    const handleResize = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   
 
   const [results, setResults] = useState([]);
@@ -255,7 +271,7 @@ const RaceDetails = () => {
     }}
     >
       
-      <div style={{display: "flex",
+      <div ref={headerRef} style={{display: "flex",
         flexDirection: "column",
         gap: "19px", position: 'fixed', width: '100%', background: 'rgb(17, 17, 19)', left: '0', top: '0', padding: '20px 20px 0px 20px', zIndex: 100}}>
       <div style={{display: 'flex', width: "100%"}}>
@@ -266,22 +282,22 @@ const RaceDetails = () => {
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "10px"}}>
       
-        <div style={{ display: "flex", gap: "10px", flex: 1 }}>
+        <div style={{ display: "flex", gap: "10px", flex: 1, alignItems: "center" }}>
         <img 
           src={`https://flagcdn.com/w80/${countryCode}.png`} 
           alt={race.Circuit.Location.country}
           style={{ 
-            width: "30px",
-            height: "30px",
+            width: "20px",
+            height: "20px",
             borderRadius: "50%",
             objectFit: "cover",
             objectPosition: ["UAE", "United States", "Singapore", "USA", "Qatar"].includes(race.Circuit.Location.country)
               ? "20% center" : "center"
           }} 
         />
-          <div style={{ color: "lightgray", fontSize: "18px" }}>{translatedRaceName}</div>
+          <div style={{ color: "lightgray", fontSize: "16px" }}>{translatedRaceName}</div>
         </div>
-        <div style={{ color: "white", fontSize: "24px" }}>{race.Circuit.circuitName}</div>
+        <div style={{ color: "white", fontSize: "20px" }}>{race.Circuit.circuitName}</div>
       </div>
       <div style={{ position: "relative", display: "flex", borderRadius: "20px", gap: "19px" }}>
       <button
@@ -356,7 +372,7 @@ const RaceDetails = () => {
             timeout={400}
           >
             <div {...swipeHandlers}
-  style={{ position: 'relative', marginTop: '200px', padding: '15px'}}>
+  style={{ position: 'relative', marginTop: '190px', padding: '15px'}}>
             {activeTab === "schedule" && (
             <div style={{background: '#141416', padding: '20px', borderRadius: '15px', display: 'flex', flexDirection: "column", gap: "10px"}}>
           {sessions.map((session, index) => (
