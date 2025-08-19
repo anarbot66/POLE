@@ -1,0 +1,184 @@
+{
+  "piastri": {
+    "Formula Renault Eurocup (2019)": "1",
+    "FIA Formula 3 (2020)": "1",
+    "FIA Formula 2 (2021)": "1"
+  },
+  "norris": {
+    "MSA Formula (2015)": "1",
+    "Toyota Racing Series (2016)": "1",
+    "Eurocup Formula Renault (2016)": "1",
+    "Formula Renault 2.0 Northern European Cup (2016)": "1",
+    "FIA Formula 3 (2017)": "1",
+    "FIA Formula 2 (2018)": "2",
+    "Formula One World Championship (2024)": "2"
+  },
+  "leclerc": {
+    "Formula Renault 2.0 Alps (2014)": "2",
+    "GP3 Series (2016)": "1",
+    "FIA Formula 2 (2017)": "1",
+    "Formula One World Championship (2022)": "2",
+    "Formula One World Championship (2024)": "3"
+  },
+  "hamilton": {
+    "Formula Renault 2.0 UK (2002)": "3",
+    "Formula Renault 2.0 UK (2003)": "1",
+    "Formula 3 Euro Series (2005)": "1",
+    "GP2 Series (2006)": "1",
+    "Formula One World Championship (2023)": "3",
+    "Formula One World Championship (2007, 2016, 2021)": "2",
+    "Formula One World Championship (2008, 2014, 2015, 2017, 2018, 2019, 2020)": "1"
+  },
+  "russell": {
+    "BRDC F4 Championship (2014)": "1",
+    "FIA Formula 3 European Championship (2016)": "3",
+    "GP3 Series (2017)": "1",
+    "FIA Formula 2 Championship (2018)": "1"
+  },
+  "antonelli": {
+    "Italian F4 Championship (2022)": "1",
+    "ADAC Formula 4 (2022)": "1",
+    "Formula Regional Middle East Championship (2023)": "1",
+    "Formula Regional European Championship (2023)": "1"
+  },
+  "verstappen": {
+    "FIA Formula 3 European Championship (2014)": "3",
+    "Karting World Championship (2013)": "1",
+    "Formula One World Championship (2019, 2020)": "3",
+    "Formula One World Championship (2021, 2022, 2023, 2024)": "1"
+  },
+  "tsunoda": {
+    "F4 Japanese Championship (2018)": "1",
+    "FIA Formula 2 Championship (2020)": "3"
+  },
+  "albon": {
+    "GP3 Series (2016)": "2",
+    "FIA Formula 2 Championship (2018)": "3"
+  },
+  "sainz": {
+    "Formula Renault NEC (2011)": "1",
+    "Eurocup Formula Renault 2.0 (2011)": "1",
+    "Formula Renault 3.5 Series (2014)": "1"
+  },
+  "stroll": {
+    "Italian F4 Championship (2014)": "1",
+    "Toyota Racing Series (2015)": "1",
+    "FIA Formula 3 European Championship (2016)": "1"
+  },
+  "alonso": {
+    "Euro Open by Nissan (1999)": "1",
+    "Formula One World Championship (2005, 2006)": "1",
+    "Formula One World Championship (2007)": "3",
+    "Formula One World Championship (2010, 2012, 2013)": "2",
+    "24 Hours of Le Mans (2018, 2019)": "1",
+    "FIA World Endurance Championship (2019)": "1"
+  },
+  "hulkenberg": {
+	  "Formula BMW (2005)": "1",
+    "A1 GP (2007)": "1",
+    "GP2 Series (2009)": "1",
+    "24 Hours of Le Mans (2015)": "1",
+    "Formula 3 Euro Series (2007)": "3",
+    "Formula 3 Euro Series (2008)": "1"
+  },
+  "bortoleto": {
+    "FIA Formula 3 Championship (2023)": "1",
+	  "FIA Formula 2 Championship (2024)": "1"
+  },
+  "lawson": {
+    "Formula First Manfeild Winter Series (2015)": "2",
+    "NZ F1600 Championship Series (2017)": "1",
+    "Australian Formula 4 Championship (2017)" : "1",
+    "ADAC Formula 4 Championship (2018)" : "1",
+    "Euroformula Open Championship (2019)": "2",
+    "Toyota Racing Series (2019)": "1",
+    "Toyota Racing Series (2020)": "2",
+    "FIA Formula 2 Championship (2022)": "3",
+    "Super Formula (2023)": "2"
+  },
+  "hadjar": {
+    "French F4 Championship (2020)": "3",
+    "Formula Regional Asian Championship (2022)": "3",
+    "FIA Formula 2 Championship (2024)": "2"
+  },
+  "ocon": {
+    "Eurocup Formula Renault 2.0" : "3",
+    "FIA Formula 3 European Championship (2014)": "1",
+    "GP3 Series (2015)": "1"
+  },
+  "bearman": {
+    "Italian F4 Championship (2021)": "1",
+    "ADAC Formula 4 Championship (2021)": "1",
+    "FIA Formula 3 Championship (2022)": "3"
+  },
+  "gasly": {
+    "French F4 Championship (2011)": "3",
+    "Eurocup Formula Renault 2.0 (2013)": "1",
+    "Formula Renault 3.5 Series (2014)": "2",
+    "GP2 Series (2016)": "1",
+    "Super Formula (2017)": "1"
+  },
+  "colapinto": {
+    "Spanish F4 Championship (2019)": "1",
+    "Formula Renault Eurocup (2020)": "3",
+    "Toyota Racing Series (2020)": "3",
+    "Asian Le Mans Series – LMP2 (2021)" : "3"
+  },
+  "mclaren": {
+    "F1 Championship (1972, 1973, 1975, 1977, 2002, 2003, 2006, 2009, 2012, 2020)": "3",
+    "F1 Championship (1968, 1976, 1982, 1986, 1987, 1992, 1993, 1999, 2000, 2001, 2005, 2008, 2010, 2011)": "2",
+    "F1 Championship (1974, 1984, 1985, 1988, 1989, 1990, 1991, 1998, 2024)": "1"
+  }
+  ,
+  "ferrari": {
+    "F1 Championship (1960, 1971, 1989, 1991, 1994, 1995, 2005, 2010, 2011, 2013, 2016, 2021, 2023)": "3",
+    "F1 Championship (1958, 1959, 1966, 1970, 1974, 1978, 1984, 1985, 1988, 1990, 1996, 1997, 1998, 2006, 2012, 2015, 2017, 2018, 2019, 2022, 2024)": "2",
+    "F1 Championship (1961, 1964, 1975, 1976, 1977, 1979, 1982, 1983, 1999, 2000, 2001, 2002, 2003, 2004, 2007, 2008)": "1"
+  }
+  ,
+  "mercedes": {
+    "F1 Championship (2017, 2018, 2019, 2024)": "3",
+    "F1 Championship (2009, 2014, 2016, 2020, 2021)": "2",
+    "F1 Championship (2010, 2011, 2012, 2013, 2022, 2023)": "1"
+  }
+  ,
+  "red_bull": {
+    "F1 Championship (2022)": "3",
+    "F1 Championship (2013, 2023)": "2",
+    "F1 Championship (2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021)": "1"
+  }
+  ,
+  "williams": {
+    "F1 Championship (1985, 1998, 2000, 2001, 2014, 2015)": "3",
+    "F1 Championship (1979, 1989, 1991, 1995, 2002, 2003)": "2",
+    "F1 Championship (1980, 1981, 1986, 1987, 1992, 1993, 1994, 1996, 1997)": "1"
+  }
+  ,
+  "aston_martin": {
+    "F1 Championship (2023, 2024)": "5"
+  }
+  ,
+  "sauber": {
+    "F1 Championship (2007)": "2",
+    "F1 Championship (2008)": "3"
+  }
+  ,
+  "rb": {
+    "[ToroRosso] F1 Championship (2008, 2019)": "6",
+    "[AlphaTauri] F1 Championship (2021)": "6"
+  }
+  ,
+  "haas": {
+    "F1 Championship (2018)": "5"
+  }
+  ,
+  "alpine": {
+    "[Benneton] F1 Championship (1988, 1990, 1992, 1993, 1996, 1997)": "3",
+    "[Benneton] F1 Championship (1994)": "2",
+    "[Benneton] F1 Championship (1995)": "1",
+    "[Renault] F1 Championship (1981, 1982, 2004, 2007)": "3",
+    "[Renault] F1 Championship (1983)": "2",
+    "[Renault] F1 Championship (2005, 2006)": "1"
+  }
+  
+}

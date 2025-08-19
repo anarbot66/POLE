@@ -37,7 +37,7 @@ const HallOfFameList = () => {
           width: "calc(100% - 30px)",
           margin: "0 auto",
           height: "100%",
-          marginBottom: "100px",
+          marginBottom: "80px",
           overflowY: "auto",
           display: "flex",
           flexDirection: "column",
@@ -45,16 +45,23 @@ const HallOfFameList = () => {
           marginTop: "20px"
         }}
       >
-      <div style={{position: 'fixed'}}>
+      <div style={{display: "flex",
+        flexDirection: "column",
+        gap: "19px", position: 'fixed', width: '100%', background: 'rgb(17, 17, 19)', left: '0', top: '0', padding: '20px 20px 20px 20px', zIndex: 100}}>
+      <div style={{display: 'flex', width: "100%", gap: "10px", alignItems: "center"}}>
       <BackButton
         label="Назад"
         style={{}}
       />
-        
+      <span style={{ color: 'white', fontSize: '18px'}}>
+          Лучшие пилоты всех времен
+        </span>
       </div>
-      <div style={{marginTop: '50px', display: "flex",
+      
+      </div>
+      <div style={{marginTop: '60px', display: "flex",
           flexDirection: "column",
-          gap: "15px",}}>
+          gap: "10px",}}>
       {hallOfFamePilots.map((pilot, index) => {
         const translatedName =
           driverTranslations[pilot.familyName] ||
@@ -65,18 +72,17 @@ const HallOfFameList = () => {
           const positionColor = getMedalColor(index);
 
         return (
-            <div
+            <div style={{display: 'flex', flexDirection: 'column'}}>
+              <div
             style={{
               width: "100%",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
               borderRadius: "15px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               gap: "12px",
-              padding: "10px",
+              padding: "0px 0px 10px 0px",
               cursor: "pointer",
-              paddingTop: "10px",
               
             }}
           >
@@ -137,7 +143,67 @@ const HallOfFameList = () => {
               <br />
               <span style={{ color: "white", fontSize: "10px" }}>WDC</span>
             </div>
-          </div>
+            
+              </div>
+              <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          gap: "12px",
+          padding: '15px',
+          background: '#141416',
+          borderRadius: '15px'
+        }}
+      >
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+          {pilot.gp}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>GP</div>
+        </div>
+
+        {/* Победы */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+            {pilot.wins}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>Побед</div>
+        </div>
+
+        {/* Поулы */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+          {pilot.poles}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>Поулов</div>
+        </div>
+
+        {/* Подиумы */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+          {pilot.podiums}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>Подиумов</div>
+        </div>
+
+        {/* Очки */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+          {pilot.pts}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>Очков</div>
+        </div>
+
+        {/* Сходы */}
+        <div style={{ width: "65px", textAlign: "center" }}>
+          <span style={{ color: "white", fontSize: "16px", fontWeight: 600 }}>
+            {pilot.dnf}
+          </span>
+          <div style={{ color: "#B9B9B9", fontSize: "10px" }}>DNF</div>
+        </div>
+      </div>
+              </div>
         );
       })}
       </div>

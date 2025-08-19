@@ -5,6 +5,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { useSwipeable } from "react-swipeable";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { RACE_NAME_ADAPTATION } from "../../pilots/driverDetails/constants";
 
 import NewPilotCard from "./NewPilotCard";
 import NewConstructorCard from "./NewConstructorCard";
@@ -51,7 +52,7 @@ const FavoritesDashboard = ({ currentUser }) => {
         const json = await res.json();
         const race = json.MRData.RaceTable.Races[0] || {};
         const results = race.Results || [];
-        const locality = race.Circuit?.Location?.locality || "—";
+        const locality = RACE_NAME_ADAPTATION[race.raceName] || "—";
 
         // 3) Build and sort pilot cards data by points descending
         const pr = favPilotIds
@@ -63,7 +64,7 @@ const FavoritesDashboard = ({ currentUser }) => {
               key: pid,
               position: Number(r.position),
               points: Number(r.points),
-              suffix: `финишировал P${r.position} на ${locality}`,
+              suffix: `Финишировал P${r.position} на ${locality}`,
               Driver: {
                 givenName: r.Driver.givenName,
                 familyName: r.Driver.familyName,
@@ -88,7 +89,7 @@ const FavoritesDashboard = ({ currentUser }) => {
             return {
               key: tid,
               points: pts,
-              suffix: `${name} заработали ${pts} очков на ${locality}`,
+              suffix: `${name} заработали ${pts} PTS на ${locality}`,
               Constructor: { name },
               drivers: teamRes.map(r => ({
                 Driver: { givenName: r.Driver.givenName, familyName: r.Driver.familyName },
@@ -120,55 +121,85 @@ const FavoritesDashboard = ({ currentUser }) => {
 
   return (
     <div>
-      {/* Tab buttons */}
+      <div className="buttonGlass" style={{borderRadius: '15px', position: 'fixed', width: "100%", left: '0', top: '0'}}>
+      <div style={{background: 'rgb(17, 17, 19)', height: '110px', display: 'flex', flexDirection: 'column', alignItems: "center"}}>
       <div
-        className="buttonGlass"
         style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
           borderRadius: 15,
-          position: "fixed",
-          width: "calc(100% - 30px)",
-          top: 85,
-          left: 15,
-          right: 15,
-          padding: 15
+          height: '100%',
+          width: '100%',
+          width: 'calc(100% - 50px)'
         }}
       >
-        <div style={{ display: "flex", borderRadius: 20 }}>
-          <button
-            onClick={() => setActiveTab("pilots")}
-            style={{
-              padding: "10px 20px",
-              flex: 1,
-              boxShadow:
-                activeTab === "pilots"
-                  ? "0 0 0 1px rgba(255,255,255,0.2)"
-                  : "none",
-              color: "white",
-              borderRadius: 10,
-              cursor: "pointer",
-              fontSize: 14
-            }}
-          >
-            Пилоты
-          </button>
-          <button
-            onClick={() => setActiveTab("constructors")}
-            style={{
-              padding: "10px 20px",
-              flex: 1,
-              boxShadow:
-                activeTab === "constructors"
-                  ? "0 0 0 1px rgba(255,255,255,0.2)"
-                  : "none",
-              color: "white",
-              borderRadius: 10,
-              cursor: "pointer",
-              fontSize: 14
-            }}
-          >
-            Команды
-          </button>
+        <span style={{ color: 'white', width: '100%', fontSize: '18px'}}>
+          Слежу
+        </span>
+        <div style={{display: 'flex', gap: '20px', width : "100%", justifyContent: 'end', alignItems: 'center'}}>
+        <img
+          src={currentUser.photoUrl || 'https://placehold.co/80x80'}
+          alt="Avatar"
+          style={{
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+          }}
+        ></img>
         </div>
+        </div>
+        <div style={{ position: "relative", display: "flex", borderRadius: "20px", width: '100%'}}>
+        
+      {/* Кнопки */}
+      <button
+        onClick={() => setActiveTab("pilots")}
+        style={{
+          padding: "10px 20px",
+          width: "100%",
+          color: activeTab === "pilots" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "pilots" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Пилоты
+      </button>
+      <button
+        onClick={() => setActiveTab("constructors")}
+        style={{
+          padding: "10px 20px",
+          width: "100%",
+          color: activeTab === "constructors" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "constructors" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Команды
+      </button>
+
+      <div
+    style={{
+      position: "absolute",
+      bottom: -3,
+      left: activeTab === "pilots" ? "25%" : "75%", 
+      transform: "translateX(-50%)",                
+      height: "6px",
+      width: "40%",
+      backgroundColor: "blue",
+      transition: "left 0.3s ease",
+      pointerEvents: "none",
+      borderRadius: '3px'
+    }}
+  />
+    </div>
+      </div>
+      
       </div>
 
       {/* Swipeable content */}
@@ -176,14 +207,14 @@ const FavoritesDashboard = ({ currentUser }) => {
         <CSSTransition key={activeTab} classNames="tab" timeout={400}>
           <div
             {...swipeHandlers}
-            style={{ padding: 15, marginTop: 155, marginBottom: 100 }}
+            style={{ padding: 15, marginTop: 105, marginBottom: 100 }}
           >
             {activeTab === "pilots" && (
               <div
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-                  gap: 15
+                  gap: 10
                 }}
               >
                 {pilotResults.map(p => (
@@ -201,7 +232,7 @@ const FavoritesDashboard = ({ currentUser }) => {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-                  gap: 15
+                  gap: 10
                 }}
               >
                 {teamResults.map(t => (

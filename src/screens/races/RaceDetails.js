@@ -91,7 +91,7 @@ const RaceDetails = () => {
 
   const tabs = ['schedule','results','circuit'];
 
-const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
+  const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
 
   const scheduleRef = useRef(null);
   const resultsRef = useRef(null);
@@ -266,7 +266,7 @@ const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "10px"}}>
       
-        <div style={{ display: "flex", gap: "4px", flex: 1 }}>
+        <div style={{ display: "flex", gap: "10px", flex: 1 }}>
         <img 
           src={`https://flagcdn.com/w80/${countryCode}.png`} 
           alt={race.Circuit.Location.country}
@@ -279,9 +279,9 @@ const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
               ? "20% center" : "center"
           }} 
         />
-          <div style={{ color: "lightgray", fontSize: "20px" }}>{race.Circuit.circuitName}</div>
+          <div style={{ color: "lightgray", fontSize: "18px" }}>{translatedRaceName}</div>
         </div>
-        <div style={{ color: "white", fontSize: "26px" }}>{translatedRaceName}</div>
+        <div style={{ color: "white", fontSize: "24px" }}>{race.Circuit.circuitName}</div>
       </div>
       <div style={{ position: "relative", display: "flex", borderRadius: "20px", gap: "19px" }}>
       <button
@@ -379,18 +379,19 @@ const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
         )}
       {activeTab === "circuit" && (
         <div style={{
-          padding: "15px",
-          borderRadius: "10px",
+          padding: "25px",
+          borderRadius: "15px",
           color: "white",
           alignItems: 'center',
-          justifyItems: 'center'
+          justifyItems: 'center',
+          background: '#141416'
         }}>
           <img
     src={imageSrc}
     alt="Изображение трассы"
     style={{ 
       width: "100%", 
-      height: '100px', 
+      aspectRatio: '2 / 1',
       objectFit: 'contain',
       display: "block",
       position: "relative",
@@ -429,10 +430,9 @@ const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
       className="Frame24 inline-flex items-center justify-between"
       style={{ borderRadius: 10, cursor: 'pointer', }}
     >
-      <div className="inline-flex items-center gap-2">
+      <div className="inline-flex items-center gap-4">
         <div
           style={{
-            width: 30,
             height: 32,
             borderRadius: 10,
             display: "flex",
@@ -464,7 +464,7 @@ const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
         {r.Constructor.name}
       </span>
       <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
-        {r.points} очк.
+        {r.points} PTS
       </span>
     </div>
   );
@@ -472,7 +472,6 @@ const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
 {!resultsLoading && results.length === 0 && (
   <p style={{
     textAlign: "center",
-    marginTop: 20,
     lineHeight: "1.4em",
     display: 'flex',
     gap: '0px',

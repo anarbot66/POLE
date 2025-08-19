@@ -1,8 +1,7 @@
+// CommentsSection.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
-const API = "http://37.1.199.12:5000";
 
 const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const [comments, setComments] = useState([]);
@@ -10,26 +9,27 @@ const CommentsSection = ({ parentId, onClose, currentUser }) => {
   const textareaRef = useRef(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const apiBase = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-
-    
-
-const fetchComments = async () => {
-  try {
-    const res = await axios.get(`${API}/api/comments?parentId=${parentId}`);
-    setComments(res.data);
-  } catch (err) {
-    console.error("Ошибка при получении комментариев:", err);
-    setError("Ошибка при загрузке комментариев");
-    setComments([]);
-  }
-};
-
+    const fetchComments = async () => {
+      try {
+        const res = await axios.get(`${apiBase}/api/comments`, {
+          params: { parentId }
+        });
+        setComments(res.data || []);
+        setError(null);
+      } catch (err) {
+        console.error("Ошибка при получении комментариев:", err);
+        setError("Ошибка при загрузке комментариев");
+        setComments([]);
+      }
+    };
 
     fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parentId]);
-  
+
   // Автоматическая регулировка высоты textarea
   useEffect(() => {
     if (textareaRef.current) {
@@ -38,46 +38,54 @@ const fetchComments = async () => {
     }
   }, [newComment]);
 
+  const reloadComments = async () => {
+    try {
+      const res = await axios.get(`${apiBase}/api/comments`, { params: { parentId } });
+      setComments(res.data || []);
+      setError(null);
+    } catch (err) {
+      console.error("Ошибка при перезагрузке комментариев:", err);
+      setError("Ошибка при загрузке комментариев");
+    }
+  };
+
   const handleSend = async () => {
     if (newComment.trim() === "") return;
     try {
+      // Отправляем только поля, которые нужны для создания комментария.
+      // Автор определяется на сервере по JWT (middleware).
       const payload = {
         parentId,
-        authorId: currentUser.uid,
-        authorName: currentUser.firstName + currentUser.lastName || "Аноним",
-        authorPhotoUrl: currentUser.photoUrl || "",
-        text: newComment,
-        role: currentUser.role
+        text: newComment.trim()
       };
-      await axios.post(`${API}/api/comments`);
-      
+      await axios.post(`${apiBase}/api/comments`, payload);
+
       setNewComment("");
-      // Перезагрузить комментарии
-      const res = await axios.get(`${API}/api/comments?parentId=${parentId}`);
-      setComments(res.data);
+      await reloadComments();
     } catch (err) {
-      console.error("Ошибка при отправке комментария:", err);
+      console.error("Ошибка при отправке комментария:", err?.response?.data || err.message);
+      // можно показать более детальное сообщение в UI
+      setError("Не удалось отправить комментарий");
     }
   };
-  
+
   const handleDelete = async (commentId) => {
     try {
-      await axios.delete(`${API}/api/comments/${commentId}`);
-      
-      // Перезагрузить комментарии
-      const res = await axios.get(`${API}/api/comments?parentId=${parentId}`);
-      setComments(res.data);
+      await axios.delete(`${apiBase}/api/comments/${commentId}`);
+      await reloadComments();
     } catch (err) {
-      console.error("Ошибка при удалении комментария:", err);
+      console.error("Ошибка при удалении комментария:", err?.response?.data || err.message);
+      setError("Не удалось удалить комментарий");
     }
   };
-  
+
   // Переход на профиль пользователя по клику на аватар или ник
   const handleProfileClick = (commentAuthorId) => {
-    if (currentUser.uid === commentAuthorId) {
+    if (!commentAuthorId) return;
+    if (currentUser?.uid === commentAuthorId || currentUser?.uid === currentUser?.id) {
       navigate("/profile");
     } else {
-      navigate(`/userprofile/${commentAuthorId}`, { state: { currentUserUid: currentUser.uid } });
+      navigate(`/userprofile/${commentAuthorId}`, { state: { currentUserUid: currentUser?.uid } });
     }
   };
 
@@ -87,50 +95,52 @@ const fetchComments = async () => {
         <span style={styles.headerText}>Комментарии</span>
         <button onClick={onClose} style={styles.closeButton}>×</button>
       </div>
-      
+
       <div style={styles.commentsList}>
-      {error ? (
+        {error ? (
           <p style={{ ...styles.noComments, color: "red" }}>{error}</p>
         ) : comments.length === 0 ? (
           <p style={styles.noComments}>Пока нет комментариев</p>
         ) : (
           comments.map((comment) => (
-          <div key={comment.id} style={styles.commentItem}>
-            <img
-              src={comment.authorPhotoUrl || "https://placehold.co/40x40"}
-              alt="avatar"
-              style={styles.avatar}
-              onClick={() => handleProfileClick(comment.authorId)}
-            />
-            <div style={styles.commentContent}>
-              <div style={styles.commentHeader}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <p 
-                    style={styles.commentAuthor}
-                    onClick={() => handleProfileClick(comment.authorId)}
-                  >
-                    {comment.authorName}
-                  </p>
+            <div key={comment._id || comment.id} style={styles.commentItem}>
+              <img
+                src={comment.authorPhotoUrl || "https://placehold.co/40x40"}
+                alt="avatar"
+                style={styles.avatar}
+                onClick={() => handleProfileClick(comment.authorId)}
+              />
+              <div style={styles.commentContent}>
+                <div style={styles.commentHeader}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <p
+                      style={styles.commentAuthor}
+                      onClick={() => handleProfileClick(comment.authorId)}
+                    >
+                      {comment.authorName || comment.authorUsername || "Аноним"}
+                    </p>
+                  </div>
+                  {(currentUser?.uid === comment.authorId ||
+                    currentUser?.role === "admin" ||
+                    currentUser?.role === "owner") && (
+                    <button
+                      onClick={() => handleDelete(comment._id || comment.id)}
+                      style={styles.deleteButton}
+                      aria-label="Удалить комментарий"
+                    >
+                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.34375 0.9375C1.82598 0.9375 1.40625 1.35723 1.40625 1.875V2.8125C1.40625 3.33027 1.82598 3.75 2.34375 3.75H2.8125V12.1875C2.8125 13.223 3.65197 14.0625 4.6875 14.0625H10.3125C11.348 14.0625 12.1875 13.223 12.1875 12.1875V3.75H12.6562C13.174 3.75 13.5938 3.33027 13.5938 2.8125V1.875C13.5938 1.35723 13.174 0.9375 12.6562 0.9375H9.375C9.375 0.419733 8.95527 0 8.4375 0H6.5625C6.04473 0 5.625 0.419733 5.625 0.9375H2.34375ZM5.15625 4.6875C5.41513 4.6875 5.625 4.89737 5.625 5.15625V11.7188C5.625 11.9776 5.41513 12.1875 5.15625 12.1875C4.89737 12.1875 4.6875 11.9776 4.6875 11.7188V5.15625C4.6875 4.89737 4.89737 4.6875 5.15625 4.6875ZM7.5 4.6875C7.75888 4.6875 7.96875 4.89737 7.96875 5.15625V11.7188C7.96875 11.9776 7.75888 12.1875 7.5 12.1875C7.24112 12.1875 7.03125 11.9776 7.03125 11.7188V5.15625C7.03125 4.89737 7.24112 4.6875 7.5 4.6875ZM10.3125 5.15625V11.7188C10.3125 11.9776 10.1026 12.1875 9.84375 12.1875C9.58487 12.1875 9.375 11.9776 9.375 11.7188V5.15625C9.375 4.89737 9.58487 4.6875 9.84375 4.6875C10.1026 4.6875 10.3125 4.89737 10.3125 5.15625Z" fill="white"/>
+                      </svg>
+                    </button>
+                  )}
                 </div>
-                {(currentUser.uid === comment.authorId ||
-                  currentUser.role === "admin" ||
-                  currentUser.role === "owner") && (
-                  <button
-                    onClick={() => handleDelete(comment.id)}
-                    style={styles.deleteButton}
-                  >
-                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2.34375 0.9375C1.82598 0.9375 1.40625 1.35723 1.40625 1.875V2.8125C1.40625 3.33027 1.82598 3.75 2.34375 3.75H2.8125V12.1875C2.8125 13.223 3.65197 14.0625 4.6875 14.0625H10.3125C11.348 14.0625 12.1875 13.223 12.1875 12.1875V3.75H12.6562C13.174 3.75 13.5938 3.33027 13.5938 2.8125V1.875C13.5938 1.35723 13.174 0.9375 12.6562 0.9375H9.375C9.375 0.419733 8.95527 0 8.4375 0H6.5625C6.04473 0 5.625 0.419733 5.625 0.9375H2.34375ZM5.15625 4.6875C5.41513 4.6875 5.625 4.89737 5.625 5.15625V11.7188C5.625 11.9776 5.41513 12.1875 5.15625 12.1875C4.89737 12.1875 4.6875 11.9776 4.6875 11.7188V5.15625C4.6875 4.89737 4.89737 4.6875 5.15625 4.6875ZM7.5 4.6875C7.75888 4.6875 7.96875 4.89737 7.96875 5.15625V11.7188C7.96875 11.9776 7.75888 12.1875 7.5 12.1875C7.24112 12.1875 7.03125 11.9776 7.03125 11.7188V5.15625C7.03125 4.89737 7.24112 4.6875 7.5 4.6875ZM10.3125 5.15625V11.7188C10.3125 11.9776 10.1026 12.1875 9.84375 12.1875C9.58487 12.1875 9.375 11.9776 9.375 11.7188V5.15625C9.375 4.89737 9.58487 4.6875 9.84375 4.6875C10.1026 4.6875 10.3125 4.89737 10.3125 5.15625Z" fill="white"/>
-                    </svg>
-                  </button>
-                )}
+                <span style={styles.commentText}>{comment.text}</span>
               </div>
-              <span style={styles.commentText}>{comment.text}</span>
             </div>
-          </div>
-        )))}
+          ))
+        )}
       </div>
-      
+
       <div style={styles.inputContainer}>
         <textarea
           ref={textareaRef}

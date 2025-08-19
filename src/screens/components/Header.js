@@ -28,7 +28,6 @@ const Header = ({ currentUser }) => {
         }}
       >
         <img
-          onClick={() => navigate('/profile')}
           src={currentUser.photoUrl || 'https://placehold.co/80x80'}
           alt="Avatar"
           style={{

@@ -52,10 +52,8 @@ const NewPilotCard = ({ pilot, onClick, suffix }) => {
       onClick={onClick}
       style={{
         width: "100%",
-        background: "rgba(0,0,0,0.4)",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
         borderRadius: 16,
-        padding: 20,
+        padding: "20px 10px 0px 10px",
         display: "flex",
         flexDirection: "column",
         cursor: "pointer",

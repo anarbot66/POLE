@@ -16,7 +16,6 @@ const GameCard = React.memo(function GameCard({
       onClick={onClick}
       style={{
         cursor: 'pointer',
-        border: '1px solid rgba(255,255,255,0.2)',
         borderRadius: 12,
         padding: 20,
         color: 'white',
@@ -24,6 +23,7 @@ const GameCard = React.memo(function GameCard({
         margin: 10,
         display: 'flex',
         flexDirection: 'column',
+        background: "#141416",
       }}
     >
       <h3 style={{ margin: 0, marginBottom: 8 }}>{title}</h3>
@@ -35,9 +35,8 @@ const GameCard = React.memo(function GameCard({
         onClick={onClick}
         style={{
           marginTop: 10,
-          padding: '8px 12px',
-          background: 'transparent',
-          border: '1px solid rgba(255,255,255,0.2)',
+          padding: '12px 12px',
+          background: 'rgb(17, 17, 19)',
           borderRadius: 8,
           color: 'white',
           fontWeight: 'bold',
@@ -58,7 +57,7 @@ export default function MiniGamesPage({ currentUser }) {
   const goBack = useCallback(() => setSelected(null), []);
 
   return (
-    <div style={{ padding: 15, marginTop: 80, color: 'white' }}>
+    <div style={{ padding: 15, color: 'white' }}>
       <TransitionGroup>
         <CSSTransition
           key={selected }
@@ -79,14 +78,26 @@ export default function MiniGamesPage({ currentUser }) {
             </div>
           ) : (
             <div>
-              <h2 style={{ textAlign: 'center', marginBottom: 10 }}>
-                Мини‑игры
-              </h2>
+              <div style={{display: "flex",
+        flexDirection: "column",
+        gap: "19px", position: 'fixed', width: '100%', background: 'rgb(17, 17, 19)', left: '0', top: '0', padding: '20px 20px 20px 20px', zIndex: 100}}>
+      <div style={{display: 'flex', width: "100%", gap: "10px", alignItems: "center"}}>
+      <BackButton
+        label="Назад"
+        style={{}}
+      />
+      <span style={{ color: 'white', fontSize: '18px'}}>
+          Мини-игры
+        </span>
+      </div>
+      
+      </div>
               <div
                 style={{
                   display: 'flex',
                   flexWrap: 'wrap',
                   justifyContent: 'center',
+                  marginTop: '60px'
                 }}
               >
                 <GameCard
@@ -96,8 +107,8 @@ export default function MiniGamesPage({ currentUser }) {
                   onClick={onSelectWordle}
                 />
                 <GameCard
-                  title="F1 Wordle"
-                  description="Угадайте фамилию чемпиона F1 за 3 попытки."
+                  title="Monza Racing"
+                  description="Наберите как можно больше очков на опасной прямой в Монце"
                   record={null}
                   onClick={onSelectLane}
                 />

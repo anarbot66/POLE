@@ -173,6 +173,33 @@ export const driverTranslations = {
     "Qatar Grand Prix": "Катар",
     "Abu Dhabi Grand Prix": "Абу-Даби"
   };
+
+  export const RACE_NAME_ADAPTATION = {
+    "Bahrain Grand Prix": "Гран-при Бахрейна",
+    "Saudi Arabian Grand Prix": "Гран-при Саудовской Аравии",
+    "Australian Grand Prix": "Гран-при Австралии",
+    "Japanese Grand Prix": "Гран-при Японии",
+    "Chinese Grand Prix": "Гран-при Китая",
+    "Miami Grand Prix": "Гран-при Майами",
+    "Emilia Romagna Grand Prix": "Гран-при Эмилии-Романьи",
+    "Monaco Grand Prix": "Гран-при Монако",
+    "Canadian Grand Prix": "Гран-при Канады",
+    "Spanish Grand Prix": "Гран-при Испании",
+    "Austrian Grand Prix": "Гран-при Австрии",
+    "British Grand Prix": "Гран-при Великобритании",
+    "Hungarian Grand Prix": "Гран-при Венгрии",
+    "Belgian Grand Prix": "Гран-при Бельгии",
+    "Dutch Grand Prix": "Гран-при Нидерландов",
+    "Italian Grand Prix": "Гран-при Италии",
+    "Azerbaijan Grand Prix": "Гран-при зербайджана",
+    "Singapore Grand Prix": "Гран-при Сингапура",
+    "United States Grand Prix": "Гран-при США",
+    "Mexico City Grand Prix": "Гран-при Мексики",
+    "São Paulo Grand Prix": "Гран-при Бразилии",
+    "Las Vegas Grand Prix": "Гран-при Лас-Вегаса",
+    "Qatar Grand Prix": "Гран-при Катара",
+    "Abu Dhabi Grand Prix": "Гран-при Абу-Даби"
+  };
   
   // Функция форматирования даты в "7 марта"
   export const formatRaceWeekend = (firstPracticeDate, raceDate) => {

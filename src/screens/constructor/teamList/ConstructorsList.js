@@ -21,7 +21,7 @@ const ConstructorsList = ({ }) => {
         width: "calc(100% - 30px)",
         margin: "0 auto",
         height: "100%",
-        marginBottom: "100px",
+        marginBottom: "60px",
         overflowY: "auto",
         display: "flex",
         flexDirection: "column",

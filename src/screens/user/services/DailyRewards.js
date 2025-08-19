@@ -1,5 +1,5 @@
 // src/components/DailyRewardsGrid.jsx
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useMemo } from "react";
 import {
   collection,
   doc,
@@ -41,6 +41,29 @@ export default function DailyRewardsGrid({ currentUser }) {
   const today = new Date();
   const uid = currentUser?.uid;
   const tabs = ['daily','quests'];
+
+  const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
+
+  const dailyRef = useRef(null);
+  const questsRef = useRef(null);
+  const circuitRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const updateUnderline = () => {
+      let ref;
+      if (activeTab === "daily") ref = dailyRef;
+      if (activeTab === "quests") ref = questsRef;
+  
+      if (ref?.current) {
+        const { offsetLeft, offsetWidth } = ref.current;
+        setUnderlineStyle({ left: offsetLeft, width: offsetWidth });
+      }
+    };
+  
+    requestAnimationFrame(updateUnderline); // ждем, пока браузер нарисует DOM
+    window.addEventListener("resize", updateUnderline);
+    return () => window.removeEventListener("resize", updateUnderline);
+  }, [activeTab, dailyRef.current, questsRef.current]);
   const goPrev = () => {
     const i = tabs.indexOf(activeTab);
     const prev = tabs[(i - 1 + tabs.length) % tabs.length];
@@ -147,57 +170,68 @@ export default function DailyRewardsGrid({ currentUser }) {
 
 
   return (
-    <div style={{ padding: 20, color: 'white', marginBottom: '150px' }}>
-      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: 15, zIndex: 999}}>
-
-      <div
-          style={{
-            display: 'flex',
-            borderRadius: '20px',
-            flexDirection: 'column',
-            gap: '10px'
-          }}
-        >
-          <BackButton
+    <div style={{ padding: 20, color: 'white', marginBottom: '60px' }}>
+      <div style={{display: "flex",
+        flexDirection: "column",
+        gap: "19px", position: 'fixed', width: '100%', background: 'rgb(17, 17, 19)', left: '0', top: '0', padding: '20px 20px 0px 20px', zIndex: 100}}>
+      <div style={{display: 'flex', width: "100%", gap: "10px", alignItems: "center"}}>
+      <BackButton
         label="Назад"
         style={{}}
       />
-          <div style={{
-            display: 'flex',
-            borderRadius: '20px'
-          }}>
-          <button
-            onClick={() => setActiveTab('daily')}
-            style={{
-              padding: '10px 20px',
-              width: '100%',
-              boxShadow: activeTab === 'daily' ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
-              color: 'white',
-              borderRadius: '10px',
-              cursor: 'pointer',
-              transition: 'box-shadow 0.3s ease',
-              fontSize: 14
-            }}
-          >
-            Daily
-          </button>
-          <button
-            onClick={() => setActiveTab('quests')}
-            style={{
-              padding: '10px 20px',
-              width: '100%',
-              boxShadow: activeTab === 'quests' ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
-              color: 'white',
-              borderRadius: '10px',
-              cursor: 'pointer',
-              transition: 'box-shadow 0.3s ease',
-              fontSize: 14
-            }}
-          >
-            Квесты
-          </button>
-          </div>
-        </div>
+      <span style={{ color: 'white', fontSize: '18px'}}>
+          Награды
+        </span>
+      </div>
+      
+      <div style={{ position: "relative", display: "flex", borderRadius: "20px", gap: "19px" }}>
+      <button
+        ref={dailyRef}
+        onClick={() => setActiveTab("daily")}
+        style={{
+          padding: "10px 5px",
+          color: activeTab === "daily" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "daily" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Ежедневные
+      </button>
+
+      <button
+        ref={questsRef}
+        onClick={() => setActiveTab("quests")}
+        style={{
+          padding: "10px 5px",
+          color: activeTab === "quests" ? "white" : "var(--col-darkGray)",
+          background: activeTab === "quests" ? "rgb(17, 17, 19)" : "transparent",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "color 0.3s ease, background 0.3s ease",
+          fontSize: 14,
+        }}
+      >
+        Квесты
+      </button>
+
+      {/* Полоска */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: underlineStyle.left,
+          height: "3px",
+          width: underlineStyle.width,
+          backgroundColor: "blue",
+          borderRadius: "2px",
+          transition: "left 0.3s ease, width 0.3s ease",
+          pointerEvents: "none",
+        }}
+      />
+    </div>
       </div>
         <TransitionGroup>
           <CSSTransition
@@ -209,14 +243,12 @@ export default function DailyRewardsGrid({ currentUser }) {
               display: "flex",
               gap: "15px",
               flexDirection: 'column',
-              marginTop: '120px'
+              marginTop: '110px'
             }} className="">
               
         {activeTab === "daily" && (
-        // ======== DailyRewardsGrid ========
         <div>
 
-          {/* Грид 5 колонок */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(5, 1fr)',
@@ -248,8 +280,8 @@ export default function DailyRewardsGrid({ currentUser }) {
                           : '#fff',
                     cursor: isToday && !claimed ? 'pointer' : 'default',
                     position: 'relative',
-                    borderRadius: 6,
-                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: 10,
+                    background: '#141416',
                     userSelect: 'none',
                     display: 'flex',
                     flexDirection: 'column',
@@ -367,9 +399,9 @@ export default function DailyRewardsGrid({ currentUser }) {
                 }
               }}
               style={{
-                padding: 15,
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                borderRadius: 25,
+                padding: 20,
+                background: '#141416',
+                borderRadius: 15,
                 display: 'inline-flex',
                 flexDirection: 'column',
                 gap: 3,

@@ -14,6 +14,7 @@ import BackButton from "../../components/BackButton";
 import { countryToFlag } from "./constants";
 import { raceNameTranslations } from "./constants";
 import { normalizeName } from "./constants";
+import DriverAchievements from "./DriverAchievements";
 
 const convertToMoscowTime = (utcDate, utcTime) => {
   if (!utcDate || !utcTime) return "—";
@@ -70,10 +71,49 @@ const PilotDetails = ({ currentUser }) => {
   const labels = {
     biography: 'Биография',
     seasons:  'Сезоны',
-    results:  'Результаты'
+    results:  'Результаты',
+    achievements:  'Достижения'
   };
   const [driverResults, setDriverResults] = useState([]);
   const [resultsLoading, setResultsLoading] = useState(false);
+  const tabsContainerRef = useRef(null);
+  const tabsOrder = ["biography", "seasons", "results", "achievements"];
+
+  useEffect(() => {
+    if (!tabsContainerRef.current) return;
+  
+    // словарь с рефами (используем твои рефы)
+    const tabRefs = {
+      biography: bioRef,
+      seasons: seasonsRef,
+      results: resultsRef,
+      achievements: achievementsRef
+    };
+  
+    const currentRef = tabRefs[activeTab];
+    if (!currentRef || !currentRef.current) return;
+  
+    const idx = tabsOrder.indexOf(activeTab);
+    const isLast = idx === tabsOrder.length - 1;
+  
+    // Для последней — прижать к правой границе контейнера,
+    // для остальных — к левой (чтобы "блок сдвигался влево" когда выбирают последний)
+    const inlineOpt = isLast ? "end" : "start";
+  
+    // smooth прокрутка
+    try {
+      currentRef.current.scrollIntoView({ behavior: "smooth", inline: inlineOpt, block: "nearest" });
+    } catch (e) {
+      // fallback для старых браузеров: ручной подсчёт
+      const btnRect = currentRef.current.getBoundingClientRect();
+      const contRect = tabsContainerRef.current.getBoundingClientRect();
+      if (btnRect.right > contRect.right) {
+        tabsContainerRef.current.scrollLeft += btnRect.right - contRect.right;
+      } else if (btnRect.left < contRect.left) {
+        tabsContainerRef.current.scrollLeft -= contRect.left - btnRect.left;
+      }
+    }
+  }, [activeTab]); // запускается при изменении activeTab
 
   const [tipOpen, setTipOpen] = useState(false);
 
@@ -119,6 +159,7 @@ const PilotDetails = ({ currentUser }) => {
   const bioRef = useRef(null);
   const seasonsRef = useRef(null);
   const resultsRef = useRef(null);
+  const achievementsRef = useRef(null);
 
   useLayoutEffect(() => {
     const updateUnderline = () => {
@@ -126,6 +167,7 @@ const PilotDetails = ({ currentUser }) => {
       if (activeTab === "biography") ref = bioRef;
       if (activeTab === "seasons") ref = seasonsRef;
       if (activeTab === "results") ref = resultsRef;
+      if (activeTab === "achievements") ref = achievementsRef;
   
       if (ref?.current) {
         const { offsetLeft, offsetWidth } = ref.current;
@@ -136,7 +178,7 @@ const PilotDetails = ({ currentUser }) => {
     requestAnimationFrame(updateUnderline); // ждем, пока браузер нарисует DOM
     window.addEventListener("resize", updateUnderline);
     return () => window.removeEventListener("resize", updateUnderline);
-  }, [activeTab, bioRef.current, seasonsRef.current, resultsRef.current]);
+  }, [activeTab, bioRef.current, seasonsRef.current, achievementsRef.current, ]);
   
 
   
@@ -335,70 +377,104 @@ const PilotDetails = ({ currentUser }) => {
         </div>
       </div>
 
-      <div style={{ position: "relative", display: "flex", borderRadius: "20px", gap: "19px" }}>
-      <button
-        ref={bioRef}
-        onClick={() => setActiveTab("biography")}
-        style={{
-          padding: "10px 5px",
-          color: activeTab === "biography" ? "white" : "var(--col-darkGray)",
-          background: activeTab === "biography" ? "rgb(17, 17, 19)" : "transparent",
-          borderRadius: "10px",
-          cursor: "pointer",
-          transition: "color 0.3s ease, background 0.3s ease",
-          fontSize: 14,
-        }}
-      >
-        Биография
-      </button>
-
-      <button
-        ref={seasonsRef}
-        onClick={() => setActiveTab("seasons")}
-        style={{
-          padding: "10px 5px",
-          color: activeTab === "seasons" ? "white" : "var(--col-darkGray)",
-          background: activeTab === "seasons" ? "rgb(17, 17, 19)" : "transparent",
-          borderRadius: "10px",
-          cursor: "pointer",
-          transition: "color 0.3s ease, background 0.3s ease",
-          fontSize: 14,
-        }}
-      >
-        Сезоны
-      </button>
-
-      <button
-        ref={resultsRef}
-        onClick={() => setActiveTab("results")}
-        style={{
-          padding: "10px 5px",
-          color: activeTab === "results" ? "white" : "var(--col-darkGray)",
-          background: activeTab === "results" ? "rgb(17, 17, 19)" : "transparent",
-          borderRadius: "10px",
-          cursor: "pointer",
-          transition: "color 0.3s ease, background 0.3s ease",
-          fontSize: 14,
-        }}
-      >
-        Результаты
-      </button>
-
-      {/* Полоска */}
       <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: underlineStyle.left,
-          height: "3px",
-          width: underlineStyle.width,
-          backgroundColor: "blue",
-          borderRadius: "2px",
-          transition: "left 0.3s ease, width 0.3s ease",
-          pointerEvents: "none",
-        }}
-      />
-    </div>
+  ref={tabsContainerRef}
+  style={{
+    position: "relative",
+    display: "flex",
+    gap: "19px",
+    overflowX: "auto",           // главное: делаем контейнер скроллируемым
+    WebkitOverflowScrolling: "touch",
+    whiteSpace: "nowrap",        // чтобы
+    overflowX: "auto",
+    scrollbarWidth: "none", // Firefox
+    msOverflowStyle: "none", // IE/Edge
+  }}
+>
+  <button
+    ref={bioRef}
+    onClick={() => setActiveTab("biography")}
+    style={{
+      padding: "10px 5px",
+      color: activeTab === "biography" ? "white" : "var(--col-darkGray)",
+      background: activeTab === "biography" ? "rgb(17, 17, 19)" : "transparent",
+      borderRadius: "10px",
+      cursor: "pointer",
+      transition: "color 0.3s ease, background 0.3s ease",
+      fontSize: 14,
+      whiteSpace: "nowrap"
+    }}
+  >
+    Биография
+  </button>
+
+  <button
+    ref={seasonsRef}
+    onClick={() => setActiveTab("seasons")}
+    style={{
+      padding: "10px 5px",
+      color: activeTab === "seasons" ? "white" : "var(--col-darkGray)",
+      background: activeTab === "seasons" ? "rgb(17, 17, 19)" : "transparent",
+      borderRadius: "10px",
+      cursor: "pointer",
+      transition: "color 0.3s ease, background 0.3s ease",
+      fontSize: 14,
+      whiteSpace: "nowrap"
+    }}
+  >
+    Сезоны
+  </button>
+
+  <button
+    ref={resultsRef}
+    onClick={() => setActiveTab("results")}
+    style={{
+      padding: "10px 5px",
+      color: activeTab === "results" ? "white" : "var(--col-darkGray)",
+      background: activeTab === "results" ? "rgb(17, 17, 19)" : "transparent",
+      borderRadius: "10px",
+      cursor: "pointer",
+      transition: "color 0.3s ease, background 0.3s ease",
+      fontSize: 14,
+      whiteSpace: "nowrap"
+    }}
+  >
+    Результаты
+  </button>
+
+  <button
+    ref={achievementsRef}
+    onClick={() => setActiveTab("achievements")}
+    style={{
+      padding: "10px 5px",
+      color: activeTab === "achievements" ? "white" : "var(--col-darkGray)",
+      background: activeTab === "achievements" ? "rgb(17, 17, 19)" : "transparent",
+      borderRadius: "10px",
+      cursor: "pointer",
+      transition: "color 0.3s ease, background 0.3s ease",
+      fontSize: 14,
+      whiteSpace: "nowrap"
+    }}
+  >
+    Достижения
+  </button>
+
+  {/* Полоска underline (оставляем как у тебя) */}
+  <div
+    style={{
+      position: "absolute",
+      bottom: 0,
+      left: underlineStyle.left,
+      height: "3px",
+      width: underlineStyle.width,
+      backgroundColor: "blue",
+      borderRadius: "2px",
+      transition: "left 0.3s ease, width 0.3s ease",
+      pointerEvents: "none",
+    }}
+  />
+</div>
+
       </div>
 
 <TransitionGroup>
@@ -606,7 +682,7 @@ const PilotDetails = ({ currentUser }) => {
             </div>
           </div>
           <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
-            +{pts} очк.
+            +{pts} PTS
           </span>
         </div>
       );
@@ -624,22 +700,9 @@ const PilotDetails = ({ currentUser }) => {
   <div style={{
     padding: '15px',
   }}>
-    <p style={{
-    textAlign: "center",
-    marginTop: 20,
-    lineHeight: "1.4em",
-    display: 'flex',
-    gap: '0px',
-    flexDirection: 'column'
-  }}>
-    <span style={{ color: "white", fontSize: 15}}>
-      Этот раздел еще в разработке
-    </span>
-    <br/>
-    <span style={{ color: "lightgray", fontSize: 11}}>
-      Следите за обновлениями в Telegram канале проекта
-    </span>
-  </p>
+    <DriverAchievements
+  driverName={lastName}
+/>
   </div>
 )}
 

@@ -18,7 +18,8 @@ import FavoriteConstructorButton from "./FavoriteConstructorButton";
 import { useSwipeable } from 'react-swipeable';
 import SeasonPickerModal from "../../components/SeasonPickerModal";
 import BackButton from "../../components/BackButton";
-import BiographyTab from "../../pilots/driverDetails/BiographyTab";
+import ConstructorBiography from "./ConstructorBiography";
+import ConstructorAchievements from "./ConstructorAchievements";
 
 /**
  * Helpers
@@ -78,7 +79,7 @@ const ConstructorDetails = ({ constructor: constructorProp, currentUser }) => {
   const [activeTab, setActiveTab] = useState("biography");
   const [selectedYear, setSelectedYear] = useState("2024");
   const [seasons, setSeasons] = useState([]);
-  const tabs = ['biography','seasons', 'social'];
+  const tabs = ['biography','seasons', 'social', 'achievements'];
   const labels = { biography: 'Биография', seasons: 'Сезоны', social: 'Соц.Сети' };
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -87,6 +88,7 @@ const ConstructorDetails = ({ constructor: constructorProp, currentUser }) => {
   const bioRef = useRef(null);
   const seasonsRef = useRef(null);
   const socialRef = useRef(null);
+  const achievementsRef = useRef(null);
 
   useLayoutEffect(() => {
     const updateUnderline = () => {
@@ -94,6 +96,7 @@ const ConstructorDetails = ({ constructor: constructorProp, currentUser }) => {
       if (activeTab === "biography") ref = bioRef;
       if (activeTab === "seasons") ref = seasonsRef;
       if (activeTab === "social") ref = socialRef;
+      if (activeTab === "achievements") ref = achievementsRef;
   
       if (ref?.current) {
         const { offsetLeft, offsetWidth } = ref.current;
@@ -104,7 +107,46 @@ const ConstructorDetails = ({ constructor: constructorProp, currentUser }) => {
     requestAnimationFrame(updateUnderline); // ждем, пока браузер нарисует DOM
     window.addEventListener("resize", updateUnderline);
     return () => window.removeEventListener("resize", updateUnderline);
-  }, [activeTab, bioRef.current, seasonsRef.current, socialRef.current]);
+  }, [activeTab, bioRef.current, seasonsRef.current, socialRef.current, achievementsRef.current]);
+
+  const tabsContainerRef = useRef(null);
+  const tabsOrder = ['biography','seasons', 'social', 'achievements'];
+
+  useEffect(() => {
+    if (!tabsContainerRef.current) return;
+  
+    // словарь с рефами (используем твои рефы)
+    const tabRefs = {
+      biography: bioRef,
+      seasons: seasonsRef,
+      social: socialRef,
+      achievements: achievementsRef
+    };
+  
+    const currentRef = tabRefs[activeTab];
+    if (!currentRef || !currentRef.current) return;
+  
+    const idx = tabsOrder.indexOf(activeTab);
+    const isLast = idx === tabsOrder.length - 1;
+  
+    // Для последней — прижать к правой границе контейнера,
+    // для остальных — к левой (чтобы "блок сдвигался влево" когда выбирают последний)
+    const inlineOpt = isLast ? "end" : "start";
+  
+    // smooth прокрутка
+    try {
+      currentRef.current.scrollIntoView({ behavior: "smooth", inline: inlineOpt, block: "nearest" });
+    } catch (e) {
+      // fallback для старых браузеров: ручной подсчёт
+      const btnRect = currentRef.current.getBoundingClientRect();
+      const contRect = tabsContainerRef.current.getBoundingClientRect();
+      if (btnRect.right > contRect.right) {
+        tabsContainerRef.current.scrollLeft += btnRect.right - contRect.right;
+      } else if (btnRect.left < contRect.left) {
+        tabsContainerRef.current.scrollLeft -= contRect.left - btnRect.left;
+      }
+    }
+  }, [activeTab]); // запускается при изменении activeTab
 
   // избранное
   const [isFavorite, setIsFavorite] = useState(false);
@@ -349,7 +391,14 @@ const ConstructorDetails = ({ constructor: constructorProp, currentUser }) => {
   const ctorName = safeNameFromCtor(effectiveConstructor) || "unknown_constructor";
   const socialLinks = TEAM_SOCIAL[ctorName] || TEAM_SOCIAL[effectiveConstructor?.Constructor?.name] || null;
   const teamColor = TEAM_COLORS[ctorName] || TEAM_COLORS[effectiveConstructor?.Constructor?.name] || "#000000";
-  const biography = TEAM_BIOGRAPHIES[ctorName] || TEAM_BIOGRAPHIES[effectiveConstructor?.Constructor?.name] || "Биография команды не найдена.";
+  const biography = TEAM_BIOGRAPHIES[ctorName] 
+  || TEAM_BIOGRAPHIES[effectiveConstructor?.Constructor?.name] 
+  || null;
+
+// Теперь вытаскиваем части отдельно
+const create = biography?.childhood || biography?.create || "Данных не найдено";
+const peak = biography?.waytoformula || biography?.peak || "Данных не найдено";
+const now = biography?.career || biography?.now || "Данных не найдено";
 
   return (
     <div>
@@ -407,7 +456,20 @@ const ConstructorDetails = ({ constructor: constructorProp, currentUser }) => {
         <StatsCard label="ПОУЛОВ" value={statsCurrent?.poles ?? 0} />
       </div>
 
-      <div style={{ position: "relative", display: "flex", borderRadius: "20px", gap: "19px" }}>
+      <div
+  ref={tabsContainerRef}
+  style={{
+    position: "relative",
+    display: "flex",
+    gap: "19px",
+    overflowX: "auto",           // главное: делаем контейнер скроллируемым
+    WebkitOverflowScrolling: "touch",
+    whiteSpace: "nowrap",        // чтобы
+    overflowX: "auto",
+    scrollbarWidth: "none", // Firefox
+    msOverflowStyle: "none", // IE/Edge
+  }}
+>
       <button
         ref={bioRef}
         onClick={() => setActiveTab("biography")}
@@ -456,6 +518,23 @@ const ConstructorDetails = ({ constructor: constructorProp, currentUser }) => {
         Ссылки
       </button>
 
+      <button
+    ref={achievementsRef}
+    onClick={() => setActiveTab("achievements")}
+    style={{
+      padding: "10px 5px",
+      color: activeTab === "achievements" ? "white" : "var(--col-darkGray)",
+      background: activeTab === "achievements" ? "rgb(17, 17, 19)" : "transparent",
+      borderRadius: "10px",
+      cursor: "pointer",
+      transition: "color 0.3s ease, background 0.3s ease",
+      fontSize: 14,
+      whiteSpace: "nowrap"
+    }}
+  >
+    Достижения
+  </button>
+
       {/* Полоска */}
       <div
         style={{
@@ -481,8 +560,10 @@ const ConstructorDetails = ({ constructor: constructorProp, currentUser }) => {
           <div style={{marginTop: '200px'}} {...swipeHandlers} className="">
               {activeTab === "biography" && (
                 <div style={{padding: '15px'}}>
-                <BiographyTab
-                biography={biography}
+                <ConstructorBiography
+                create={create}
+                peak={peak}
+                now={now}
               />
                 </div>
               )}
@@ -540,6 +621,15 @@ const ConstructorDetails = ({ constructor: constructorProp, currentUser }) => {
                 </div>
                 </div>
               )}
+              {activeTab === "achievements" && (
+  <div style={{
+    padding: '15px',
+  }}>
+    <ConstructorAchievements
+  constructorName={id}
+/>
+  </div>
+)}
             </div>
           </CSSTransition>
         </TransitionGroup>

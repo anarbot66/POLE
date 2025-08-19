@@ -20,10 +20,17 @@ function hexToRgba(hex, alpha = 1) {
 }
 
 const SeasonPickerModal = ({ seasons = {}, isOpen, onClose, onSelect, type }) => {
-  // seasons ожидается как объект { "2024": "Red Bull", "2023": "McLaren", ... }
-  const entries = Object.entries(seasons || {}).map(([y, t]) => [String(y), t]);
+  let entries = [];
 
-  // Сортируем по убыванию года (последние сезоны сверху)
+  if (type === "driver") {
+    // Для пилотов seasons — объект {год: команда/команды}
+    entries = Object.entries(seasons || {}).map(([y, t]) => [String(y), t]);
+  } else if (type === "constructor") {
+    // Для конструкторов seasons — массив годов
+    entries = (seasons || []).map(y => [String(y), null]);
+  }
+
+  // Сортировка по убыванию года
   entries.sort((a, b) => Number(b[0]) - Number(a[0]));
 
   return ReactDOM.createPortal(
@@ -63,59 +70,48 @@ const SeasonPickerModal = ({ seasons = {}, isOpen, onClose, onSelect, type }) =>
               <div className="modal-empty">Сезоны не найдены</div>
             )}
 
-{entries.map(([year, team]) => {
-  // team может быть строкой или null
-  const teamStr = team || "";
-  // Разбиваем по "/", убираем лишние пробелы
-  const teamParts = teamStr.split("/").map(t => t.trim()).filter(Boolean);
+            {entries.map(([year, team]) => {
+              const teamStr = team || "";
+              const teamParts = teamStr.split("/").map(t => t.trim()).filter(Boolean);
 
-  return (
-    <button
-      key={year}
-      onClick={() => {
-        onSelect && onSelect(year, team);
-        onClose && onClose();
-      }}
-      className="modal-item"
-      type="button"
-    >
-      <div style={{display: 'flex', alignItems: 'center', gap: 10, width: '100%'}}>
-        <div style={{flex: 1, display: 'flex', alignItems: 'center', gap: 8}}>
-          <span className="season-year">{year}</span>
+              return (
+                <button
+                  key={year}
+                  onClick={() => {
+                    onSelect && onSelect(year, team);
+                    onClose && onClose();
+                  }}
+                  className="modal-item"
+                  type="button"
+                >
+                  <div style={{display: 'flex', alignItems: 'center', gap: 10, width: '100%'}}>
+                    <div style={{flex: 1, display: 'flex', alignItems: 'center', gap: 8}}>
+                      <span className="season-year">{year}</span>
 
-          {type === "driver" && teamParts.length > 0 && (
-  <div className="team-badges" aria-hidden>
-    {teamParts.map((t, i) => {
-      const color = TEAM_COLORS[t] || "#999"; // fallback
-      return (
-        <React.Fragment key={t}>
-          <span
-            className="team-badge"
-            title={t}
-            style={{
-              borderColor: color,
-              color: color,
-            }}
-          >
-            {t}
-          </span>
-          {i < teamParts.length - 1 && (
-            <span className="team-separator"> & </span>
-          )}
-        </React.Fragment>
-      );
-    })}
-  </div>
-)}
-
-        </div>
-
-        {/* можно показать иконку стрелки/чек справа, если нужно */}
-      </div>
-    </button>
-  );
-})}
-
+                      {type === "driver" && teamParts.length > 0 && (
+                        <div className="team-badges" aria-hidden>
+                          {teamParts.map((t, i) => {
+                            const color = TEAM_COLORS[t] || "#999";
+                            return (
+                              <React.Fragment key={t}>
+                                <span
+                                  className="team-badge"
+                                  title={t}
+                                  style={{ borderColor: color, color: color }}
+                                >
+                                  {t}
+                                </span>
+                                {i < teamParts.length - 1 && <span className="team-separator"> & </span>}
+                              </React.Fragment>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </CSSTransition>

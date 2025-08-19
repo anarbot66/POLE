@@ -241,7 +241,7 @@ const Profile = ({ currentUser }) => {
   }
 
   return (
-    <div style={{ color: "white", padding: "0 15px", marginBottom: "130px", marginTop: '90px' }}>
+    <div style={{ color: "white", padding: "0 15px", marginBottom: "130px", marginTop: '10px' }}>
       
       <div
         style={{
@@ -274,6 +274,8 @@ const Profile = ({ currentUser }) => {
               display: "flex",
               alignItems: "center",
               gap: "10px",
+              background: "#141416",
+              width: 'fit-content'
             }}
             onClick={() => navigate(`/userprofile/${profileUser.username}/followers`)}
           >
@@ -311,41 +313,6 @@ const Profile = ({ currentUser }) => {
           height={100}
           style={{ borderRadius: "50%", background: "#D9D9D9" }}
         />
-      </div>
-
-      <button
-        onClick={() => navigate("/create-post")}
-        style={{
-          marginTop: "10px",
-          width: "100%",
-          padding: "10px",
-          color: "white",
-          borderRadius: "12px",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          cursor: "pointer",
-          fontSize: "16px",
-        }}
-      >
-        Новый пост
-      </button>
-
-      {/* Вкладки */}
-      <div style={{ display: "flex", borderRadius: "20px", marginTop: "10px" }}>
-        <button
-          onClick={() => handleTabChange('posts')}
-          style={{
-            padding: "10px 20px",
-            boxShadow: activeTab === 'posts' ? '0 0 0 1px rgba(255,255,255,0.2)' : '0 0 0 0 rgba(255,255,255,0)',
-            color: "white",
-            border: "none",
-            borderRadius: "10px",
-            cursor: "pointer",
-            transition: 'box-shadow 0.3s ease',
-            fontSize: 14
-          }}
-        >
-          Посты
-        </button>
       </div>
 
       <div style={{ position: "relative", overflow: "hidden" }}>

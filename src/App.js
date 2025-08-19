@@ -217,7 +217,6 @@ function App() {
       {loading && <LoadingScreen progress={progress} fadeOut={fadeOut} />}
       {!loading && (
         <>
-        
           <div className="content-container">
             <TransitionGroup>
               <CSSTransition key={location.pathname} classNames="page" timeout={500}>

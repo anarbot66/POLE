@@ -8,6 +8,11 @@
             "nationality": "Dutch",
             "team": "Red Bull"
         },
+        "gp": 24,
+        "wins": 9,
+        "poles": 8,
+        "podiums": 14,
+        "retirements": 1,
         "points": 437
         },
         {
@@ -18,6 +23,11 @@
           "nationality": "Dutch",
           "team": "Red Bull"
         },
+        "gp": 22,
+        "wins": 19,
+        "poles": 12,
+        "podiums": 21,
+        "retirements": 1,
         "points": 575
       },
       {
@@ -28,6 +38,11 @@
           "nationality": "Dutch",
           "team": "Red Bull"
         },
+        "gp": 22,
+        "wins": 15,
+        "poles": 7,
+        "podiums": 17,
+        "retirements": 2,
         "points": 454
       },
       {
@@ -38,6 +53,11 @@
           "nationality": "Dutch",
           "team": "Red Bull"
         },
+        "gp": 22,
+        "wins": 10,
+        "poles": 10,
+        "podiums": 18,
+        "retirements": 3,
         "points": 395.5
       },
       {
@@ -48,6 +68,11 @@
           "nationality": "British",
           "team": "Mercedes"
         },
+        "gp": 16,
+        "wins": 11,
+        "poles": 10,
+        "podiums": 14,
+        "retirements": 0,
         "points": 347
       },
       {
@@ -58,6 +83,11 @@
             "nationality": "British",
             "team": "Mercedes"
         },
+        "gp": 21,
+        "wins": 11,
+        "poles": 5,
+        "podiums": 17,
+        "retirements": 0,
         "points": 413
       },
       {
@@ -68,6 +98,11 @@
             "nationality": "British",
             "team": "Mercedes"
         },
+        "gp": 21,
+        "wins": 11,
+        "poles": 11,
+        "podiums": 17,
+        "retirements": 1,
         "points": 408
       },
       {
@@ -78,6 +113,11 @@
         "nationality": "British",
         "team": "Mercedes"
         },
+        "gp": 20,
+        "wins": 9,
+        "poles": 11,
+        "podiums": 13,
+        "retirements": 0,
         "points": 363
       },
       {
@@ -88,6 +128,11 @@
           "nationality": "German",
           "team": "Mercedes"
         },
+        "gp": 21,
+        "wins": 9,
+        "poles": 8,
+        "podiums": 16,
+        "retirements": 1,
         "points": 385
       },
       {
@@ -98,6 +143,11 @@
             "nationality": "British",
             "team": "Mercedes"
         },
+        "gp": 19,
+        "wins": 10,
+        "poles": 11,
+        "podiums": 17,
+        "retirements": 1,
         "points": 381
         },
         {
@@ -108,6 +158,11 @@
             "nationality": "British",
             "team": "Mercedes"
         },
+        "gp": 19,
+        "wins": 11,
+        "poles": 7,
+        "podiums": 16,
+        "retirements": 3,
         "points": 384
       },
       {
@@ -118,6 +173,11 @@
           "nationality": "German",
           "team": "Red Bull"
         },
+        "gp": 19,
+        "wins": 13,
+        "poles": 9,
+        "podiums": 16,
+        "retirements": 1,
         "points": 397
       },
       {
@@ -128,6 +188,11 @@
             "nationality": "German",
             "team": "Red Bull"
         },
+        "gp": 20,
+        "wins": 5,
+        "poles": 6,
+        "podiums": 10,
+        "retirements": 2,
         "points": 281
       },
       {
@@ -138,6 +203,11 @@
             "nationality": "German",
             "team": "Red Bull"
         },
+        "gp": 19,
+        "wins": 11,
+        "poles": 15,
+        "podiums": 17,
+        "retirements": 1,
         "points": 392
       },
       {
@@ -148,6 +218,11 @@
             "nationality": "German",
             "team": "Red Bull"
         },
+        "gp": 19,
+        "wins": 5,
+        "poles": 10,
+        "podiums": 10,
+        "retirements": 3,
         "points": 256
       },
       {
@@ -158,6 +233,11 @@
             "nationality": "British",
             "team": "BrawnGP"
         },
+        "gp": 17,
+        "wins": 6,
+        "poles": 4,
+        "podiums": 9,
+        "retirements": 1,
         "points": 95
       },
       {
@@ -168,6 +248,11 @@
             "nationality": "British",
             "team": "McLaren"
         },
+        "gp": 18,
+        "wins": 5,
+        "poles": 7,
+        "podiums": 10,
+        "retirements": 1,
         "points": 98
       },
       {
@@ -178,6 +263,11 @@
           "nationality": "Finnish",
           "team": "Ferrari"
         },
+        "gp": 17,
+        "wins": 6,
+        "poles": 3,
+        "podiums": 12,
+        "retirements": 2,
         "points": 110
       },
       {
@@ -188,6 +278,11 @@
             "nationality": "Spanish",
             "team": "Renault"
         },
+        "gp": 18,
+        "wins": 7,
+        "poles": 6,
+        "podiums": 14,
+        "retirements": 2,
         "points": 134
         },
         {
@@ -198,6 +293,11 @@
             "nationality": "Spanish",
             "team": "Renault"
         },
+        "gp": 18,
+        "wins": 7,
+        "poles": 6,
+        "podiums": 15,
+        "retirements": 1,
         "points": 133
       },
       {
@@ -208,6 +308,11 @@
           "nationality": "German",
           "team": "Ferrari"
         },
+        "gp": 18,
+        "wins": 13,
+        "poles": 8,
+        "podiums": 15,
+        "retirements": 1,
         "points": 148
       },
       {
@@ -218,6 +323,11 @@
             "nationality": "German",
             "team": "Ferrari"
         },
+        "gp": 16,
+        "wins": 6,
+        "poles": 5,
+        "podiums": 8,
+        "retirements": 1,
         "points": 93
       },
       {
@@ -228,6 +338,11 @@
             "nationality": "German",
             "team": "Ferrari"
         },
+        "gp": 17,
+        "wins": 11,
+        "poles": 7,
+        "podiums": 17,
+        "retirements": 0,
         "points": 144
       },
       {
@@ -238,6 +353,11 @@
             "nationality": "German",
             "team": "Ferrari"
         },
+        "gp": 17,
+        "wins": 9,
+        "poles": 11,
+        "podiums": 14 ,
+        "retirements": 2,
         "points": 123
       },
       {
@@ -248,46 +368,71 @@
             "nationality": "German",
             "team": "Ferrari"
         },
+        "gp": 17,
+        "wins": 9,
+        "poles": 9,
+        "podiums": 12,
+        "retirements": 4,
         "points": 108
       },
       {
         "year": 1999,
         "driver": {
-        "firstName": "Мика",
-        "lastName": "Хаккиен",
-        "nationality": "Finnish",
-        "team": "McLaren"
+          "firstName": "Мика",
+          "lastName": "Хаккиен",
+          "nationality": "Finnish",
+          "team": "McLaren"
         },
+        "gp": 16,
+        "wins": 5,
+        "poles": 11,
+        "podiums": 10,
+        "retirements": 5,
         "points": 76
       },
       {
         "year": 1998,
         "driver": {
-            "firstName": "Мика",
-            "lastName": "Хаккиен",
-            "nationality": "Finnish",
-            "team": "McLaren"
+          "firstName": "Мика",
+          "lastName": "Хаккиен",
+          "nationality": "Finnish",
+          "team": "McLaren"
         },
+        "gp": 16,
+        "wins": 8,
+        "poles": 9,
+        "podiums": 11,
+        "retirements": 3,
         "points": 100
       },
       {
         "year": 1997,
         "driver": {
-            "firstName": "Жак",
-            "lastName": "Вильнёв",
-            "nationality": "Canadian",
-            "team": "Williams"
+          "firstName": "Жак",
+          "lastName": "Вильнёв",
+          "nationality": "Canadian",
+          "team": "Williams"
         },
+        "gp": 17,
+        "wins": 7,
+        "poles": 10,
+        "podiums": 8,
+        "retirements": 5,
         "points": 81
-        },
-        {
+      },
+      {
         "year": 1996,
         "driver": {
-            "firstName": "Дэймон",
-            "lastName": "Хилл",
-            "nationality": "British",
-            "team": "Williams"
+          "firstName": "Дэймон",
+          "lastName": "Хилл",
+          "nationality": "British",
+          "team": "Williams"
         },
+        "gp": 16,
+        "wins": 8,
+        "poles": 9,
+        "podiums": 10,
+        "retirements": 4,
         "points": 97
       },
       {
@@ -298,79 +443,119 @@
           "nationality": "German",
           "team": "Benetton"
         },
+        "gp": 17,
+        "wins": 9,
+        "poles": 4,
+        "podiums": 11,
+        "retirements": 5,
         "points": 102
       },
       {
         "year": 1994,
         "driver": {
-            "firstName": "Михаэль",
-            "lastName": "Шумахер",
-            "nationality": "German",
-            "team": "Benetton"
+          "firstName": "Михаэль",
+          "lastName": "Шумахер",
+          "nationality": "German",
+          "team": "Benetton"
         },
+        "gp": 14,
+        "wins": 8,
+        "poles": 6,
+        "podiums": 10,
+        "retirements": 2,
         "points": 92
       },
       {
         "year": 1993,
         "driver": {
-            "firstName": "Ален",
-            "lastName": "Прост",
-            "nationality": "French",
-            "team": "Williams"
+          "firstName": "Ален",
+          "lastName": "Прост",
+          "nationality": "French",
+          "team": "Williams"
         },
+        "gp": 16,
+        "wins": 7,
+        "poles": 13,
+        "podiums": 12,
+        "retirements": 2,
         "points": 99
       },
       {
         "year": 1992,
         "driver": {
-            "firstName": "Найджел",
-            "lastName": "Мэнселл",
-            "nationality": "British",
-            "team": "Williams"
+          "firstName": "Найджел",
+          "lastName": "Мэнселл",
+          "nationality": "British",
+          "team": "Williams"
         },
+        "gp": 16,
+        "wins": 9,
+        "poles": 14,
+        "podiums": 12,
+        "retirements": 4,
         "points": 108
       },
       {
         "year": 1991,
         "driver": {
-        "firstName": "Айртон",
-        "lastName": "Сенна",
-        "nationality": "Brazilian",
-        "team": "McLaren"
+          "firstName": "Айртон",
+          "lastName": "Сенна",
+          "nationality": "Brazilian",
+          "team": "McLaren"
         },
+        "gp": 16,
+        "wins": 7,
+        "poles": 8,
+        "podiums": 12,
+        "retirements": 3,
         "points": 96
       },
       {
         "year": 1990,
         "driver": {
-            "firstName": "Айртон",
-            "lastName": "Сенна",
-            "nationality": "Brazilian",
-            "team": "McLaren"
+          "firstName": "Айртон",
+          "lastName": "Сенна",
+          "nationality": "Brazilian",
+          "team": "McLaren"
         },
+        "gp": 16,
+        "wins": 6,
+        "poles": 10,
+        "podiums": 11,
+        "retirements": 5,
         "points": 78
       },
       {
         "year": 1989,
         "driver": {
-            "firstName": "Ален",
-            "lastName": "Прост",
-            "nationality": "French",
-            "team": "McLaren"
+          "firstName": "Ален",
+          "lastName": "Прост",
+          "nationality": "French",
+          "team": "McLaren"
         },
+        "gp": 16,
+        "wins": 4,
+        "poles": 2,
+        "podiums": 11,
+        "retirements": 3,
         "points": 76
       },
       {
         "year": 1988,
         "driver": {
-            "firstName": "Айртон",
-            "lastName": "Сенна",
-            "nationality": "Brazilian",
-            "team": "McLaren"
+          "firstName": "Айртон",
+          "lastName": "Сенна",
+          "nationality": "Brazilian",
+          "team": "McLaren"
         },
+        "gp": 16,
+        "wins": 8,
+        "poles": 13,
+        "podiums": 11,
+        "retirements": 2,
         "points": 90
-        },
-        {
+      },
+      {
         "year": 1987,
         "driver": {
           "firstName": "Нельсон",
@@ -378,6 +563,11 @@
           "nationality": "Brazilian",
           "team": "Williams"
         },
+        "gp": 15,
+        "wins": 3,
+        "poles": 4,
+        "podiums": 11,
+        "retirements": 3,
         "points": 73
       },
       {
@@ -388,57 +578,87 @@
           "nationality": "French",
           "team": "McLaren"
         },
+        "gp": 16,
+        "wins": 4,
+        "poles": 1,
+        "podiums": 11,
+        "retirements": 3,
         "points": 72
       },
       {
         "year": 1985,
         "driver": {
-            "firstName": "Ален",
-            "lastName": "Прост",
-            "nationality": "French",
-            "team": "McLaren"
-          },
-          "points": 73
+          "firstName": "Ален",
+          "lastName": "Прост",
+          "nationality": "French",
+          "team": "McLaren"
+        },
+        "gp": 16,
+        "wins": 5,
+        "poles": 2,
+        "podiums": 11,
+        "retirements": 3,
+        "points": 73
       },
       {
         "year": 1984,
         "driver": {
-            "firstName": "Ники",
-            "lastName": "Лауда",
-            "nationality": "Austrian",
-            "team": "McLaren"
-          },
-          "points": 72
+          "firstName": "Ники",
+          "lastName": "Лауда",
+          "nationality": "Austrian",
+          "team": "McLaren"
+        },
+        "gp": 16,
+        "wins": 5,
+        "poles": 0,
+        "podiums": 9,
+        "retirements": 6,
+        "points": 72
       },
       {
         "year": 1983,
         "driver": {
-            "firstName": "Нельсон",
-            "lastName": "Пике",
-            "nationality": "Brazilian",
-            "team": "Brabham"
-          },
-          "points": 59
+          "firstName": "Нельсон",
+          "lastName": "Пике",
+          "nationality": "Brazilian",
+          "team": "Brabham"
+        },
+        "gp": 15,
+        "wins": 3,
+        "poles": 1,
+        "podiums": 8,
+        "retirements": 5,
+        "points": 59
       },
       {
         "year": 1982,
         "driver": {
-            "firstName": "Кеке",
+          "firstName": "Кеке",
           "lastName": "Росберг",
-            "nationality": "Finnish",
-            "team": "Williams"
+          "nationality": "Finnish",
+          "team": "Williams"
         },
+        "gp": 15,
+        "wins": 1,
+        "poles": 1,
+        "podiums": 6,
+        "retirements": 3,
         "points": 44
       },
       {
         "year": 1981,
         "driver": {
-            "firstName": "Нельсон",
-            "lastName": "Пике",
-            "nationality": "Brazilian",
-            "team": "Brabham"
-          },
-          "points": 50
+          "firstName": "Нельсон",
+          "lastName": "Пике",
+          "nationality": "Brazilian",
+          "team": "Brabham"
+        },
+        "gp": 15,
+        "wins": 3,
+        "poles": 4,
+        "podiums": 7,
+        "retirements": 5,
+        "points": 50
       },
       {
         "year": 1980,
@@ -448,26 +668,41 @@
           "nationality": "Australian",
           "team": "Williams"
         },
+        "gp": 14,
+        "wins": 5,
+        "poles": 3,
+        "podiums": 10,
+        "retirements": 3,
         "points": 67
       },
       {
         "year": 1979,
         "driver": {
-            "firstName": "Джоди",
-            "lastName": "Шектер",
-            "nationality": "South African",
-            "team": "Ferrari"
+          "firstName": "Джоди",
+          "lastName": "Шектер",
+          "nationality": "South African",
+          "team": "Ferrari"
         },
+        "gp": 15,
+        "wins": 3,
+        "poles": 1,
+        "podiums": 6,
+        "retirements": 2,
         "points": 51
-        },
-        {
+      },
+      {
         "year": 1978,
         "driver": {
-            "firstName": "Марио",
-            "lastName": "Андретти",
-            "nationality": "American",
-            "team": "Lotus"
+          "firstName": "Марио",
+          "lastName": "Андретти",
+          "nationality": "American",
+          "team": "Lotus"
         },
+        "gp": 16,
+        "wins": 6,
+        "poles": 8,
+        "podiums": 7,
+        "retirements": 4,
         "points": 64
       },
       {
@@ -478,86 +713,131 @@
           "nationality": "Austrian",
           "team": "Ferrari"
         },
+        "gp": 14,
+        "wins": 3,
+        "poles": 2,
+        "podiums": 10,
+        "retirements": 2,
         "points": 72
       },
       {
         "year": 1976,
         "driver": {
-            "firstName": "Джеймс",
-            "lastName": "Хант",
-            "nationality": "British",
-            "team": "McLaren"
+          "firstName": "Джеймс",
+          "lastName": "Хант",
+          "nationality": "British",
+          "team": "McLaren"
         },
+        "gp": 16,
+        "wins": 6,
+        "poles": 8,
+        "podiums": 8,
+        "retirements": 5,
         "points": 69
       },
       {
         "year": 1975,
         "driver": {
-            "firstName": "Ники",
-            "lastName": "Лауда",
-            "nationality": "Austrian",
-            "team": "Ferrari"
-          },
-          "points": 64.5
+          "firstName": "Ники",
+          "lastName": "Лауда",
+          "nationality": "Austrian",
+          "team": "Ferrari"
+        },
+        "gp": 14,
+        "wins": 5,
+        "poles": 9,
+        "podiums": 8,
+        "retirements": 1,
+        "points": 64.5
       },
       {
         "year": 1974,
         "driver": {
-            "firstName": "Эмерсон",
-            "lastName": "Фиттипальди",
-            "nationality": "Brazilian",
-            "team": "McLaren"
+          "firstName": "Эмерсон",
+          "lastName": "Фиттипальди",
+          "nationality": "Brazilian",
+          "team": "McLaren"
         },
+        "gp": 15,
+        "wins": 3,
+        "poles": 2,
+        "podiums": 7,
+        "retirements": 3,
         "points": 55
       },
       {
         "year": 1973,
         "driver": {
-            "firstName": "Джеки",
-            "lastName": "Стюарт",
-            "nationality": "British",
-            "team": "Tyrell"
+          "firstName": "Джеки",
+          "lastName": "Стюарт",
+          "nationality": "British",
+          "team": "Tyrell"
         },
+        "gp": 14,
+        "wins": 5,
+        "poles": 3,
+        "podiums": 8,
+        "retirements": 1,
         "points": 71
       },
       {
         "year": 1972,
         "driver": {
-            "firstName": "Эмерсон",
-            "lastName": "Фиттипальди",
-            "nationality": "Brazilian",
-            "team": "McLaren"
+          "firstName": "Эмерсон",
+          "lastName": "Фиттипальди",
+          "nationality": "Brazilian",
+          "team": "McLaren"
         },
+        "gp": 12,
+        "wins": 5,
+        "poles": 3,
+        "podiums": 8,
+        "retirements": 3,
         "points": 61
       },
       {
         "year": 1971,
         "driver": {
-            "firstName": "Джеки",
-            "lastName": "Стюарт",
-            "nationality": "British",
-            "team": "Tyrell"
+          "firstName": "Джеки",
+          "lastName": "Стюарт",
+          "nationality": "British",
+          "team": "Tyrell"
         },
+        "gp": 11,
+        "wins": 6,
+        "poles": 6,
+        "podiums": 7,
+        "retirements": 2,
         "points": 62
       },
       {
         "year": 1970,
         "driver": {
-            "firstName": "Йохен",
-            "lastName": "Риндт",
-            "nationality": "Austrian",
-            "team": "Lotus"
+          "firstName": "Йохен",
+          "lastName": "Риндт",
+          "nationality": "Austrian",
+          "team": "Lotus"
         },
+        "gp": 9,
+        "wins": 5,
+        "poles": 3,
+        "podiums": 5,
+        "retirements": 4,
         "points": 45
-        },
-        {
+      },
+      {
         "year": 1969,
         "driver": {
-            "firstName": "Джеки",
-            "lastName": "Стюарт",
-            "nationality": "British",
-            "team": "Matra"
+          "firstName": "Джеки",
+          "lastName": "Стюарт",
+          "nationality": "British",
+          "team": "Matra"
         },
+        "gp": 11,
+        "wins": 6,
+        "poles": 2,
+        "podiums": 7,
+        "retirements": 3,
         "points": 63
       },
       {
@@ -568,106 +848,161 @@
           "nationality": "British",
           "team": "Lotus"
         },
+        "gp": 12,
+        "wins": 3,
+        "poles": 2,
+        "podiums": 6,
+        "retirements": 4,
         "points": 48
       },
       {
         "year": 1967,
         "driver": {
-            "firstName": "Денни",
-            "lastName": "Халм",
-            "nationality": "New Zealander",
-            "team": "Brabham"
+          "firstName": "Денни",
+          "lastName": "Халм",
+          "nationality": "New Zealander",
+          "team": "Brabham"
         },
+        "gp": 11,
+        "wins": 2,
+        "poles": 0,
+        "podiums": 8,
+        "retirements": 2,
         "points": 51
       },
       {
         "year": 1966,
         "driver": {
-            "firstName": "Джек",
-            "lastName": "Брэбем",
-            "nationality": "Australian",
-            "team": "Brabham"
+          "firstName": "Джек",
+          "lastName": "Брэбем",
+          "nationality": "Australian",
+          "team": "Brabham"
         },
+        "gp": 9,
+        "wins": 4,
+        "poles": 3,
+        "podiums": 5,
+        "retirements": 3,
         "points": 42
       },
       {
         "year": 1965,
         "driver": {
-            "firstName": "Джим",
-            "lastName": "Кларк",
-            "nationality": "British",
-            "team": "Lotus"
+          "firstName": "Джим",
+          "lastName": "Кларк",
+          "nationality": "British",
+          "team": "Lotus"
         },
+        "gp": 9,
+        "wins": 6,
+        "poles": 6,
+        "podiums": 6,
+        "retirements": 2,
         "points": 54
       },
       {
         "year": 1964,
         "driver": {
-            "firstName": "Джон",
-            "lastName": "Сёртис",
-            "nationality": "British",
-            "team": "Ferrari"
+          "firstName": "Джон",
+          "lastName": "Сёртис",
+          "nationality": "British",
+          "team": "Ferrari"
         },
+        "gp": 10,
+        "wins": 2,
+        "poles": 2,
+        "podiums": 6,
+        "retirements": 4,
         "points": 40
       },
       {
         "year": 1963,
         "driver": {
-            "firstName": "Джим",
-            "lastName": "Кларк",
-            "nationality": "British",
-            "team": "Lotus"
+          "firstName": "Джим",
+          "lastName": "Кларк",
+          "nationality": "British",
+          "team": "Lotus"
         },
+        "gp": 10,
+        "wins": 7,
+        "poles": 7,
+        "podiums": 9,
+        "retirements": 1,
         "points": 54
       },
       {
         "year": 1962,
         "driver": {
-            "firstName": "Грэм",
-            "lastName": "Хилл",
-            "nationality": "British",
-            "team": "BRM"
-          },
-          "points": 42
+          "firstName": "Грэм",
+          "lastName": "Хилл",
+          "nationality": "British",
+          "team": "BRM"
+        },
+        "gp": 9,
+        "wins": 3,
+        "poles": 6,
+        "podiums": 3,
+        "retirements": 2,
+        "points": 42
       },
       {
         "year": 1961,
         "driver": {
-            "firstName": "Фил",
-            "lastName": "Хилл",
-            "nationality": "American",
-            "team": "Ferrari"
+          "firstName": "Фил",
+          "lastName": "Хилл",
+          "nationality": "American",
+          "team": "Ferrari"
         },
+        "gp": 7,
+        "wins": 2,
+        "poles": 5,
+        "podiums": 6,
+        "retirements": 0,
         "points": 34
-        },
-        {
+      },
+      {
         "year": 1960,
         "driver": {
-            "firstName": "Джек",
-            "lastName": "Брэбем",
-            "nationality": "Australian",
-            "team": "Cooper"
+          "firstName": "Джек",
+          "lastName": "Брэбем",
+          "nationality": "Australian",
+          "team": "Cooper"
         },
+        "gp": 8,
+        "wins": 5,
+        "poles": 3,
+        "podiums": 5,
+        "retirements": 1,
         "points": 43
       },
       {
         "year": 1959,
         "driver": {
-            "firstName": "Джек",
-            "lastName": "Брэбем",
-            "nationality": "Australian",
-            "team": "Cooper"
+          "firstName": "Джек",
+          "lastName": "Брэбем",
+          "nationality": "Australian",
+          "team": "Cooper"
         },
+        "gp": 8,
+        "wins": 2,
+        "poles": 1,
+        "podiums": 5,
+        "retirements": 2,
         "points": 31
       },
       {
         "year": 1958,
         "driver": {
-            "firstName": "Майк",
-            "lastName": "Хоторн",
-            "nationality": "British",
-            "team": "Ferrari"
+          "firstName": "Майк",
+          "lastName": "Хоторн",
+          "nationality": "British",
+          "team": "Ferrari"
         },
+        "gp": 10,
+        "wins": 1,
+        "poles": 4,
+        "podiums": 7,
+        "retirements": 2,
         "points": 42
       },
       {
@@ -678,6 +1013,11 @@
             "nationality": "Argentinian",
             "team": "Maserati"
         },
+        "gp": 7,
+        "wins": 4,
+        "poles": 4,
+        "podiums": 6,
+        "retirements": 1,
         "points": 40
       },
       {
@@ -688,6 +1028,11 @@
             "nationality": "Argentinian",
             "team": "Ferrari"
         },
+        "gp": 7,
+        "wins": 3,
+        "poles": 6,
+        "podiums": 5,
+        "retirements": 2,
         "points": 30
       },
       {
@@ -698,16 +1043,26 @@
             "nationality": "Argentinian",
             "team": "Mercedes"
         },
+        "gp": 6,
+        "wins": 4,
+        "poles": 3,
+        "podiums": 5,
+        "retirements": 1,
         "points": 40
       },
       {
-        "year": 1955,
+        "year": 1954,
         "driver": {
             "firstName": "Хуан Мануэль",
             "lastName": "Фанхио",
             "nationality": "Argentinian",
             "team": "Mercedes"
         },
+        "gp": 8,
+        "wins": 6,
+        "poles": 5,
+        "podiums": 7,
+        "retirements": 0,
         "points": 42
       },
       {
@@ -718,6 +1073,11 @@
             "nationality": "Italian",
             "team": "Ferrari"
         },
+        "gp": 8,
+        "wins": 5,
+        "poles": 6,
+        "podiums": 5,
+        "retirements": 2,
         "points": 34.5
       },
       {
@@ -728,6 +1088,11 @@
             "nationality": "Italian",
             "team": "Ferrari"
         },
+        "gp": 7,
+        "wins": 6,
+        "poles": 5,
+        "podiums": 6,
+        "retirements": 1,
         "points": 36
       },
       {
@@ -738,6 +1103,11 @@
             "nationality": "Argentinian",
             "team": "Alfa Romeo"
         },
+        "gp": 7,
+        "wins": 3,
+        "poles": 4,
+        "podiums": 3,
+        "retirements": 1,
         "points": 42
       },
       {
@@ -748,6 +1118,11 @@
             "nationality": "Italian",
             "team": "Alfa Romeo"
         },
+        "gp": 6,
+        "wins": 3,
+        "poles": 2,
+        "podiums": 3,
+        "retirements": 2,
         "points": 30
       }
     ]

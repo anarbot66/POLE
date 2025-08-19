@@ -85,9 +85,9 @@ const UserSearch = ({ currentUser }) => {
 
   return (
     <div
-    style={{ padding: "10px 15px", marginBottom: 90 }}>
+    style={{ marginBottom: 90 }}>
       
-      <div className="topNavigateGlass" style={{borderRadius: '15px', position: 'fixed', width: "calc(100% - 30px)", top: 10, left: 15, right: 15, padding: "15px 0px 10px 0px", zIndex: 999, display: 'flex'}}>
+      <div style={{ position: "fixed", width: "100%", padding: "20px 20px 20px 20px", zIndex: 999, display: 'flex', top: 0, background: 'rgb(17, 17, 19)'}}>
       <BackButton
         label="Назад"
         style={{}}
@@ -100,25 +100,26 @@ const UserSearch = ({ currentUser }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
             marginLeft: "10px",
-            background: "transparent",
+            background: '#141416',
             width: "100%",
-            padding: "5px 15px",
+            padding: "6px 15px",
             fontSize: "12px",
-            borderRadius: "20px",
+            borderRadius: "10px",
             color: "white",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
             outline: "none"
           }}
         />
       </div>
-      <div style={{ marginTop: "65px" }}>
+      <div style={{ marginTop: "80px", overflowY: "auto"}}>
+        <div style={{
+                borderRadius: "15px", display: 'flex', flexDirection: 'column', gap: '15px'}}>
         {results.length > 0 ? (
           results.map((user, index) => (
             <div
               key={index}
               onClick={() => navigate(`/userprofile/${user.uid}`, { state: { currentUserUid: currentUser.uid } })}
               style={{
-                padding: "10px",
+                padding: "0px 15px 0px 15px",
                 display: "flex",
                 alignItems: "center",
                 gap: "10px",
@@ -158,6 +159,7 @@ const UserSearch = ({ currentUser }) => {
             <div style={{ color: "white", fontSize: "14px" }}> </div>
           )
         )}
+      </div>
       </div>
     </div>
   );

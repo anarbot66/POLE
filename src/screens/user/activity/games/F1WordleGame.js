@@ -318,13 +318,6 @@ export default function F1WordleGame({ currentUser }) {
         onClose={() => setShowModal(false)}
         message={modalMessage}
       />
-
-      <GameRulesModal
-        show={showRules}
-        onClose={() => setShowRules(false)}
-        gameType="wordle"      // ключ из gameRules
-        buttonText="Понятно"   // опционально
-      />
     </div>
   );
 }

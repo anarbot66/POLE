@@ -16,7 +16,7 @@ const PilotsList = () => {
       style={{
         width: "calc(100% - 30px)",
         margin: "0 auto",
-        marginBottom: "50px",
+        marginBottom: "60px",
         height: "100%",
         overflowY: "auto",
         display: "flex",

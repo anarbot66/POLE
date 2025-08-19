@@ -576,12 +576,6 @@ export default function LaneRunnerGame({ currentUser }) {
       )}
   
       <Modal show={showModal} onClose={() => setShowModal(false)} message={modalMessage} />
-      <GameRulesModal
-        show={showRules}
-        onClose={() => setShowRules(false)}
-        gameType="race"
-        buttonText="Понятно"
-      />
     </div>
   );
   
