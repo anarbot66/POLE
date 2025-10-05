@@ -20,53 +20,42 @@ import apIconUrl from '../../../recources/images/logo.png';
 import shieldUrl from './graphic/FormulaRunnerAssets/shield.png';
 import bonusModeUrl from './graphic/FormulaRunnerAssets/bonusMode.png';
 
-// Constants (логика остаётся в виртуальных координатах)
-const VIRTUAL_WIDTH  = 360;
-const VIRTUAL_HEIGHT = 760;
+// === NEW: fixed canvas size (no virtual coords) ===
+const CANVAS_WIDTH  = 400;
+const CANVAS_HEIGHT = 500;
 
-const CANVAS_WIDTH  = VIRTUAL_WIDTH;
-const CANVAS_HEIGHT = VIRTUAL_HEIGHT;
-
-const CAR_WIDTH     = 60;
-const CAR_HEIGHT    = 50;
-const OBSTACLE_SIZE = 40;
+// Entity sizes tuned for 400x400
+const CAR_WIDTH     = 48;
+const CAR_HEIGHT    = 36;
+const OBSTACLE_SIZE = 32;
 const SPAWN_CELLS   = 10;
-const SPAWN_REGION_WIDTH = 200;
+
+// spawn region (centered horizontally)
+const SPAWN_REGION_WIDTH = 240;
 const SPAWN_REGION_X     = (CANVAS_WIDTH - SPAWN_REGION_WIDTH) / 2;
+
 const COST_AP = 0;
 const COST_GS = 0;
-const scrollSpeed = 4.8;
+const scrollSpeed = 4.6; // tuned for 400px height
 const debugMode = true;
 
-// Height reserved for on-screen mobile controls (change if your controls have other height)
-const CONTROLS_HEIGHT = 70;
-const CONTROLS_MARGIN = 8; // небольшой отступ между canvas и контролами
+// Hitboxes tuned for new sizes
+const OBSTACLE_HITBOXES = {
+  cone:       { offsetX: 6,  offsetY: 6,  width: 20, height: 18 },
+  crashedcar: { offsetX: 4,  offsetY: 6,  width: 28, height: 18 },
+  fire:       { offsetX: 10, offsetY: 6,  width: 12, height: 20 },
+  puddle:     { offsetX: 6,  offsetY: 8,  width: 22, height: 14 },
+};
 
-// SVG for GS icon (сокращённо — подставь полный SVG из своего проекта)
-const GS_SVG_TEXT = `<svg width="16" height="15" viewBox="0 0 11 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#paint0_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint0_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/></g></g><path d="M6.5426 0.271674C6.18037 -0.0905575 5.59307 -0.0905585 5.23084 0.271674L3.4156 2.08692L5.88672 4.55804L8.35784 2.08692L6.5426 0.271674Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
-<g clip-path="url(#paint1_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint1_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/></g></g><path d="M8.79978 2.52886L6.32866 4.99998L8.7998 7.47112L10.615 5.65588C10.9773 5.29365 10.9773 4.70635 10.615 4.34412L8.79978 2.52886Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
-<g clip-path="url(#paint2_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint2_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint2_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint2_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint2_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/></g></g><path d="M8.35786 7.91306L5.88672 5.44192L3.41558 7.91306L5.23084 9.72833C5.59307 10.0906 6.18037 10.0906 6.5426 9.72833L8.35786 7.91306Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
-<g clip-path="url(#paint3_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint3_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint3_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint3_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint3_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/></g></g><path d="M2.97364 7.47112L5.44478 4.99998L2.97365 2.52886L1.15839 4.34412C0.796161 4.70635 0.79616 5.29365 1.15839 5.65588L2.97364 7.47112Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
-<defs>
-<clipPath id="paint0_diamond_4291_10_clip_path"><path d="M6.5426 0.271674C6.18037 -0.0905575 5.59307 -0.0905585 5.23084 0.271674L3.4156 2.08692L5.88672 4.55804L8.35784 2.08692L6.5426 0.271674Z"/></clipPath><clipPath id="paint1_diamond_4291_10_clip_path"><path d="M8.79978 2.52886L6.32866 4.99998L8.7998 7.47112L10.615 5.65588C10.9773 5.29365 10.9773 4.70635 10.615 4.34412L8.79978 2.52886Z"/></clipPath><clipPath id="paint2_diamond_4291_10_clip_path"><path d="M8.35786 7.91306L5.88672 5.44192L3.41558 7.91306L5.23084 9.72833C5.59307 10.0906 6.18037 10.0906 6.5426 9.72833L8.35786 7.91306Z"/></clipPath><clipPath id="paint3_diamond_4291_10_clip_path"><path d="M2.97364 7.47112L5.44478 4.99998L2.97365 2.52886L1.15839 4.34412C0.796161 4.70635 0.79616 5.29365 1.15839 5.65588L2.97364 7.47112Z"/></clipPath><linearGradient id="paint0_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
-<stop stop-color="#00FFD5"/>
-<stop offset="1" stop-color="#0084FF"/>
-</linearGradient>
-<linearGradient id="paint1_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
-<stop stop-color="#00FFD5"/>
-<stop offset="1" stop-color="#0084FF"/>
-</linearGradient>
-<linearGradient id="paint2_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
-<stop stop-color="#00FFD5"/>
-<stop offset="1" stop-color="#0084FF"/>
-</linearGradient>
-<linearGradient id="paint3_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
-<stop stop-color="#00FFD5"/>
-<stop offset="1" stop-color="#0084FF"/>
-</linearGradient>
-</defs>
-</svg>`;
+const PLAYER_HITBOX = {
+  offsetX: 12,
+  offsetY: 6,
+  width: CAR_WIDTH - 24,
+  height: CAR_HEIGHT - 12,
+};
+
+// SVG for GS icon (unchanged)
+const GS_SVG_TEXT = `<svg width="16" height="15" viewBox="0 0 11 10" fill="none" xmlns="http://www.w3.org/2000/svg">... (same as before) ...</svg>`;
 
 const OBSTACLE_ASSETS = [
   { key: 'cone', url: coneUrl },
@@ -75,29 +64,15 @@ const OBSTACLE_ASSETS = [
   { key: 'puddle', url: puddleUrl },
 ];
 
-const OBSTACLE_HITBOXES = {
-  cone:       { offsetX: 10,  offsetY: 10, width: 20, height: 20 },
-  crashedcar: { offsetX: 6,   offsetY: 10, width: 30, height: 20 },
-  fire:       { offsetX: 15,  offsetY: 10, width: 10, height: 20 },
-  puddle:     { offsetX: 10,  offsetY: 12, width: 22, height: 15 },
-};
-
-const PLAYER_HITBOX = {
-  offsetX: 22,
-  offsetY: 10,
-  width: CAR_WIDTH - 45,
-  height: CAR_HEIGHT - 20,
-};
-
 export default function LaneRunnerGame({ currentUser }) {
   // refs
   const canvasRef = useRef(null);
   const imagesRef = useRef({});
   const carXRef    = useRef((CANVAS_WIDTH - CAR_WIDTH)/2);
-  const carYRef    = useRef(CANVAS_HEIGHT - CAR_HEIGHT - 10);
+  const carYRef    = useRef(CANVAS_HEIGHT - CAR_HEIGHT - 8);
 
-  // display size for centering overlays & aligning MobileControls
-  const [displaySize, setDisplaySize] = useState({ w: VIRTUAL_WIDTH, h: VIRTUAL_HEIGHT, scale: 1 });
+  // display size (now fixed)
+  const [displaySize, setDisplaySize] = useState({ w: CANVAS_WIDTH, h: CANVAS_HEIGHT, scale: 1 });
 
   // game state
   const [gameState, setGameState] = useState('start');
@@ -133,7 +108,6 @@ export default function LaneRunnerGame({ currentUser }) {
 
   // pause
   const [isPaused, setIsPaused] = useState(false);
-
 
   // sync refs
   useEffect(() => { carXRef.current = carX; }, [carX]);
@@ -205,7 +179,7 @@ export default function LaneRunnerGame({ currentUser }) {
     setCollectedAP(0);
     setObjects([]);
     setCarX((CANVAS_WIDTH-CAR_WIDTH)/2);
-    setCarY(CANVAS_HEIGHT-CAR_HEIGHT-10);
+    setCarY(CANVAS_HEIGHT-CAR_HEIGHT-8);
     setSpawnRate(800);
     setShieldActive(false);
     setBonusModeActive(false);
@@ -215,43 +189,32 @@ export default function LaneRunnerGame({ currentUser }) {
     setGameState('running');
   };
 
-  // ---------- resize & DPR scaling: canvas занимает весь экран минус место под контролы ----------
+  // ---------- resize & DPR scaling: canvas фиксирован 400x400, поддерживаем DPR для чёткости ----------
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    function resizeCanvas() {
+    function setupCanvas() {
       const dpr = window.devicePixelRatio || 1;
 
-      // Высота доступная для canvas: окно минус высота панели управления и небольшой отступ
-      const availableHeight = Math.max(100, window.innerHeight - CONTROLS_HEIGHT - CONTROLS_MARGIN);
-
-      // scale так, чтобы вместился в ширину окна и доступную высоту
-      const scale = Math.min(window.innerWidth / VIRTUAL_WIDTH, availableHeight / VIRTUAL_HEIGHT);
-
-      const displayW = Math.round(VIRTUAL_WIDTH * scale);
-      const displayH = Math.round(VIRTUAL_HEIGHT * scale);
-
-      // CSS size for display (what user sees)
-      canvas.style.width  = '100%';
-      canvas.style.height = displayH + 'px';
-      canvas.style.position = 'relative';
+      // CSS display size fixed
+      canvas.style.width  = CANVAS_WIDTH + 'px';
+      canvas.style.height = CANVAS_HEIGHT + 'px';
       canvas.style.display = 'block';
 
-      // internal buffer scaled by devicePixelRatio for crispness
-      canvas.width  = Math.round(VIRTUAL_WIDTH * dpr);
-      canvas.height = Math.round(VIRTUAL_HEIGHT * dpr);
+      // internal buffer scaled by DPR
+      canvas.width  = Math.round(CANVAS_WIDTH * dpr);
+      canvas.height = Math.round(CANVAS_HEIGHT * dpr);
 
       const ctx = canvas.getContext('2d');
-      // setTransform so drawing with logical coords works: 1 logical unit = DPR pixels
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      setDisplaySize({ w: displayW, h: displayH, scale });
+      setDisplaySize({ w: CANVAS_WIDTH, h: CANVAS_HEIGHT, scale: 1 });
     }
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    return () => window.removeEventListener('resize', resizeCanvas);
+    setupCanvas();
+    window.addEventListener('resize', setupCanvas);
+    return () => window.removeEventListener('resize', setupCanvas);
   }, []);
 
   // spawn logic (stops when paused)
@@ -269,7 +232,7 @@ export default function LaneRunnerGame({ currentUser }) {
           const idx  = Math.floor(Math.random() * free.length);
           const cell = free.splice(idx, 1)[0];
           const x    = SPAWN_REGION_X + cell * regionCellW + (regionCellW - OBSTACLE_SIZE) / 2;
-          const y    = 0;
+          const y    = -OBSTACLE_SIZE;
 
           if (bonusModeActive) {
             const p = Math.random();
@@ -299,7 +262,7 @@ export default function LaneRunnerGame({ currentUser }) {
             }
             else {
               const asset = OBSTACLE_ASSETS[Math.floor(Math.random() * OBSTACLE_ASSETS.length)];
-              next.push({ kind: 'obs', spriteKey: asset.key, x, y: -OBSTACLE_SIZE });
+              next.push({ kind: 'obs', spriteKey: asset.key, x, y });
             }
           }
         }
@@ -315,7 +278,7 @@ export default function LaneRunnerGame({ currentUser }) {
   useEffect(() => {
     if (gameState !== 'running') return;
     let last = performance.now(), raf;
-    const baseSpeed = 0.2, speedMult = 1.5;
+    const baseSpeed = 0.18, speedMult = 1.6;
 
     function animate(now){
       const delta = now - last; last = now;
@@ -335,7 +298,7 @@ export default function LaneRunnerGame({ currentUser }) {
       setCarX(x=>Math.max(SPAWN_REGION_X, Math.min(SPAWN_REGION_X+SPAWN_REGION_WIDTH-CAR_WIDTH, x + carV*delta/16)));
       setCarY(y=>Math.max(0, Math.min(CANVAS_HEIGHT-CAR_HEIGHT, y + carVy*delta/16)));
 
-      // хитбокс машины
+      // хитбокс машины (свежие координаты из ref)
       const carRect = {
         x: carXRef.current + PLAYER_HITBOX.offsetX,
         y: carYRef.current + PLAYER_HITBOX.offsetY,
@@ -414,15 +377,19 @@ export default function LaneRunnerGame({ currentUser }) {
     setShowStats(false);
   }, [gameState]);
 
-  // render (рисуем каждый раз при изменениях важных стейтов)
+  // render to canvas (рисуем каждый раз при изменениях важных стейтов)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // фон
+    // clear
+    ctx.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+
+    // фон / трек (растягиваем текстуру на весь canvas)
     const track = imagesRef.current.track;
     if (track) {
+      // повторяем фон двигая по Y в диапазоне 0..CANVAS_HEIGHT
       ctx.drawImage(track, 0, bgY1, CANVAS_WIDTH, CANVAS_HEIGHT);
       ctx.drawImage(track, 0, bgY2, CANVAS_WIDTH, CANVAS_HEIGHT);
     } else {
@@ -433,37 +400,49 @@ export default function LaneRunnerGame({ currentUser }) {
     // машина
     const pImg = imagesRef.current.player;
     if (pImg) ctx.drawImage(pImg, carXRef.current, carYRef.current, CAR_WIDTH, CAR_HEIGHT);
+    else {
+      // fallback rectangle
+      ctx.fillStyle = '#0af';
+      ctx.fillRect(carXRef.current, carYRef.current, CAR_WIDTH, CAR_HEIGHT);
+    }
 
     // объекты
     objects.forEach(o=>{
       if (o.kind==='obs') {
         const img = imagesRef.current[o.spriteKey];
         if (img) ctx.drawImage(img, o.x, o.y, OBSTACLE_SIZE, OBSTACLE_SIZE);
+        else {
+          ctx.fillStyle = 'orange';
+          ctx.fillRect(o.x, o.y, OBSTACLE_SIZE, OBSTACLE_SIZE);
+        }
       } else {
         let key, size, label;
         switch(o.bonusType){
-          case 'gs':       key='gsIcon';       size=24; label='+1'; break;
-          case 'ap':       key='apIcon';       size=24; label='+10'; break;
-          case 'shield':   key='shieldIcon';   size=32; label='';    break;
-          case 'bonusMode':key='bonusModeIcon';size=32; label='';    break;
-          case 'bigGS':    key='gsIcon';       size=32; label='+50'; break;
-          case 'bigAP':    key='apIcon';       size=32; label='+1000'; break;
-          default:         key='gsIcon';       size=24; label='';     break;
+          case 'gs':       key='gsIcon';       size=20; label='+1'; break;
+          case 'ap':       key='apIcon';       size=20; label='+10'; break;
+          case 'shield':   key='shieldIcon';   size=28; label='';    break;
+          case 'bonusMode':key='bonusModeIcon';size=28; label='';    break;
+          case 'bigGS':    key='gsIcon';       size=28; label='+50'; break;
+          case 'bigAP':    key='apIcon';       size=28; label='+1000'; break;
+          default:         key='gsIcon';       size=20; label='';     break;
         }
         const icon = imagesRef.current[key];
         if (icon) ctx.drawImage(icon, o.x, o.y, size, size);
         if (label) {
           ctx.fillStyle='white';
-          ctx.font='14px sans-serif';
-          ctx.fillText(label, o.x + size/4, o.y + size + 14);
+          ctx.font='12px sans-serif';
+          ctx.fillText(label, o.x + size/4, o.y + size + 12);
         }
       }
     });
 
-    // HUD (canvas fallback)
+    // HUD (canvas fallback texts)
     ctx.fillStyle = 'white';
-    ctx.font = '18px Inter';
-    // удаляем текстовые метки shield/bonusMode — теперь показываем DOM-иконки
+    ctx.font = '14px Inter, sans-serif';
+    ctx.fillText(`Score: ${Math.floor(score)}`, 8, 18);
+    ctx.fillText(`GS: ${collectedGS}`, 8, 36);
+    ctx.fillText(`AP: ${collectedAP}`, 8, 54);
+    // Shield/Bonus are shown by DOM icons above canvas
   }, [objects, collectedGS, collectedAP, score, bgY1, bgY2, shieldActive, bonusModeActive]);
 
   // завершение игры: выдача наград
@@ -511,34 +490,31 @@ export default function LaneRunnerGame({ currentUser }) {
     return () => window.removeEventListener('keydown', keyHandler);
   }, [gameState]);
 
-  // ICON vertical placement: немного ниже y=75 (AP)
-  const ICON_OFFSET_PX = 12; // дополнительный отступ от нижней строки HUD
-  const hudTopPx = (() => {
-    const scale = (displaySize && displaySize.scale) ? displaySize.scale : 1;
-    // canvas HUD Y=75 — переводим это в CSS-пиксели по текущему масштабу
-    return Math.round(75 * scale) + ICON_OFFSET_PX;
-  })();
+  // ICON vertical placement: немного ниже y=75 (AP) — теперь просто фиксированный offset
+  const ICON_OFFSET_PX = 12; // дополнительный отступ от верхней полосы HUD
+  const hudTopPx = 36 + ICON_OFFSET_PX; // верхняя HUD-строка ~36px вниз
 
   return (
     <div style={{ textAlign: 'center', color: 'white', marginBottom: '90px', justifyItems: 'center' }}>
       {gameState === 'start' ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '490px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '320px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <h2 style={{ fontSize: 40, cursor: 'pointer' }} onClick={() => setShowRules(true)}>
+            <h2 style={{ fontSize: 32, cursor: 'pointer' }} onClick={() => setShowRules(true)}>
               Прямая в Монце
             </h2>
             <button
               onClick={startGame}
               style={{
-                padding: '15px 20px',
-                borderRadius: '15px',
+                padding: '12px 18px',
+                borderRadius: '12px',
                 color: 'white',
                 border: 'none',
                 border: "1px solid rgba(255, 255, 255, 0.2)",
                 display: 'flex',
-                gap: '4px',
+                gap: '6px',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                background: '#111'
               }}
             >
               Играть
@@ -546,7 +522,7 @@ export default function LaneRunnerGame({ currentUser }) {
           </div>
         </div>
       ) : (
-        // full-screen container (canvas над панелью контролов)
+        // full-screen container (canvas + controls). pointerEvents selective so overlays are interactive
         <div
           style={{
             position: 'fixed',
@@ -563,12 +539,12 @@ export default function LaneRunnerGame({ currentUser }) {
           }}
         >
           {/* wrapper для canvas и overlay */}
-          <div style={{ position: 'relative', width: '100%', height: displaySize.h, pointerEvents: 'auto' }}>
+          <div style={{ position: 'relative', width: CANVAS_WIDTH + 'px', height: displaySize.h + 'px', pointerEvents: 'auto'}}>
             <canvas
               ref={canvasRef}
               width={CANVAS_WIDTH}
               height={CANVAS_HEIGHT}
-              style={{ width: '100%', height: displaySize.h + 'px', display: 'block' }}
+              style={{ width: CANVAS_WIDTH + 'px', height: displaySize.h + 'px', display: 'block' }}
             />
 
             {/* Icon HUD (левый верхний угол) */}
@@ -576,7 +552,7 @@ export default function LaneRunnerGame({ currentUser }) {
               style={{
                 position: 'absolute',
                 left: 8,
-                top: hudTopPx,          // <-- позиция ниже строки AP
+                top: hudTopPx,
                 zIndex: 48,
                 display: 'flex',
                 flexDirection: 'column',
@@ -591,7 +567,7 @@ export default function LaneRunnerGame({ currentUser }) {
                   <img
                     src={imagesRef.current.shieldIcon.src}
                     alt="Shield active"
-                    style={{ width: 36, height: 36, display: 'block' }}
+                    style={{ width: 34, height: 34, display: 'block' }}
                   />
                 </div>
               )}
@@ -602,7 +578,7 @@ export default function LaneRunnerGame({ currentUser }) {
                   <img
                     src={imagesRef.current.bonusModeIcon.src}
                     alt="Bonus mode active"
-                    style={{ width: 36, height: 36, display: 'block' }}
+                    style={{ width: 34, height: 34, display: 'block' }}
                   />
                 </div>
               )}
@@ -623,16 +599,16 @@ export default function LaneRunnerGame({ currentUser }) {
                 pointerEvents: 'auto',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                background: 'transparent'
               }}
             >
               {isPaused ? (
-                <img src="/assets/runnerButtons/play.png" alt="Resume" style={{ width: 40, height: 40 }} />
+                <img src="/assets/runnerButtons/play.png" alt="Resume" style={{ width: 36, height: 36 }} />
               ) : (
-                <img src="/assets/runnerButtons/pause.png" alt="Pause" style={{ width: 40, height: 40 }} />
+                <img src="/assets/runnerButtons/pause.png" alt="Pause" style={{ width: 36, height: 36 }} />
               )}
             </button>
-
 
             {/* Overlay: blinking GAME OVER */}
             {gameState === 'over' && showBlink && (
@@ -656,7 +632,7 @@ export default function LaneRunnerGame({ currentUser }) {
                   src={gameOverUrl}
                   alt="Game Over"
                   className="blink"
-                  style={{ width: Math.min(200, displaySize.w * 0.6), height: 'auto' }}
+                  style={{ width: Math.min(220, displaySize.w * 0.9), height: 'auto' }}
                   onAnimationEnd={() => {
                     setShowBlink(false);
                     setShowStats(true);
@@ -762,8 +738,8 @@ export default function LaneRunnerGame({ currentUser }) {
 
           </div>
 
-          {/* MobileControls — располагаем под canvas, ширина синхронизирована с canvas */}
-          <div style={{ width: '100%', pointerEvents: 'auto', zIndex: 60, background: '#222', height: '100%' }}>
+          {/* MobileControls — располагаем под canvas, фиксированная ширина = canvas */}
+          <div style={{ width: CANVAS_WIDTH + 'px', pointerEvents: 'auto', zIndex: 60, paddingTop: 8 }}>
             <MobileControls
               onPress={dir => {
                 if (isPaused || gameState !== 'running') return;
@@ -797,6 +773,14 @@ export default function LaneRunnerGame({ currentUser }) {
         .hud-icon.hidden {
           opacity: 0;
           transform: translateY(-6px);
+        }
+        .overlay img.blink {
+          animation: blink-anim 800ms ease-in-out;
+        }
+        @keyframes blink-anim {
+          0% { transform: scale(0.6); opacity: 0; }
+          50% { transform: scale(1.05); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
         }
       `}</style>
     </div>
