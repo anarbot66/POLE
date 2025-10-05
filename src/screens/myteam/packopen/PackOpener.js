@@ -106,6 +106,8 @@ function buildCandidatePoolForGuarantee(key, value, allowedOrig, cardsPool, rari
 
 export default function PackOpener({ currentUser }) {
   const navigate = useNavigate();
+  const uid = currentUser?.uid ?? null;
+
 
   // UI state (kept as in original)
   const [loadingPack, setLoadingPack] = useState(null);
@@ -128,6 +130,11 @@ export default function PackOpener({ currentUser }) {
   const [ownedPacks, setOwnedPacks] = useState([]);
   const [loadingMy, setLoadingMy] = useState(false);
   const [busyId, setBusyId] = useState(null);
+
+  // welcome bonus states
+  const [welcomeClaimed, setWelcomeClaimed] = useState(false);
+  const [welcomeLoading, setWelcomeLoading] = useState(false); // loading status when checking
+  const [claimingWelcome, setClaimingWelcome] = useState(false); // true while claiming
 
   // last loaded uid to avoid re-loading on unrelated prop object changes
   const lastLoadedUserIdRef = useRef(null);
@@ -262,6 +269,7 @@ export default function PackOpener({ currentUser }) {
   }, [tab, loadMyPacks]);
 
   // --- Open an owned pack: удалить экземпляр из users/{uid}.ownedPacks и перейти на PackOpeningPage (бесплатно) ---
+  // ВОТ ОНА — openOwnedPack (название сохранено)
   const openOwnedPack = useCallback(async (instanceUid) => {
     setError(null);
     if (!currentUser) {
@@ -300,6 +308,103 @@ export default function PackOpener({ currentUser }) {
       setBusyId(null);
     }
   }, [currentUser, busyId, navigate]);
+
+  // ========== NEW: Welcome bonus logic ==========
+  // constants — можно отредактировать
+  const WELCOME_APEX_AMOUNT = 5000;
+  const WELCOME_GEMS_AMOUNT = 500;
+
+  // load welcome bonus claimed status from Firestore (check on mount, when currentUser changes, and when switching to 'shop')
+  const loadWelcomeStatus = useCallback(async () => {
+    setWelcomeLoading(true);
+    setError(null);
+    if (!uid) {
+      // если already false — не менять, чтобы не вызывать лишний рендер
+      setWelcomeLoading(false);
+      if (welcomeClaimed) setWelcomeClaimed(false); // только если нужно
+      return;
+    }
+    try {
+      const userRef = doc(db, 'users', uid);
+      const snap = await getDoc(userRef);
+      const claimed = snap.exists() ? !!snap.data().welcomeBonusClaimed : false;
+      // обновляем только если значение изменилось
+      setWelcomeClaimed(prev => (prev === claimed ? prev : claimed));
+    } catch (e) {
+      console.error('loadWelcomeStatus', e);
+      setError('Не удалось проверить статус приветственного бонуса');
+    } finally {
+      setWelcomeLoading(false);
+    }
+  }, [uid, welcomeClaimed]);
+  
+
+  // проверяем при монтировании и при смене currentUser, а также при переключении на вкладку shop
+  useEffect(() => {
+    loadWelcomeStatus();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid]);
+
+  useEffect(() => {
+    if (tab === 'shop') {
+      // обновим статус при заходе на вкладку shop: пользователь мог успеть собрать бонус в другом месте
+      loadWelcomeStatus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
+
+  // Claim welcome bonus: атомарно через транзакцию
+  const claimWelcomeBonus = useCallback(async () => {
+    setError(null);
+    if (!uid) {
+      setModalMessage('Требуется войти в аккаунт, чтобы получить приветственный бонус');
+      setModalButtonText('Ок');
+      setShowModal(true);
+      return;
+    }
+    if (welcomeClaimed || claimingWelcome) return;
+  
+    setClaimingWelcome(true);
+    const userRef = doc(db, 'users', uid);
+  
+    try {
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(userRef);
+        if (!snap.exists()) {
+          tx.set(userRef, {
+            apexPoints: Number(WELCOME_APEX_AMOUNT),
+            gsCurrency: Number(WELCOME_GEMS_AMOUNT),
+            welcomeBonusClaimed: true
+          }, { merge: true });
+          return;
+        }
+        const data = snap.data();
+        if (data && data.welcomeBonusClaimed) throw new Error('Бонус уже был получен');
+        const currentApex = Number(data.apexPoints || 0);
+        const currentGems = Number(data.gsCurrency || data.gs_currency || 0);
+        tx.update(userRef, {
+          apexPoints: currentApex + Number(WELCOME_APEX_AMOUNT),
+          gsCurrency: currentGems + Number(WELCOME_GEMS_AMOUNT),
+          welcomeBonusClaimed: true
+        });
+      });
+  
+      setWelcomeClaimed(true);
+      setModalMessage(`Поздравляем! Вы получили ${WELCOME_APEX_AMOUNT} AP и ${WELCOME_GEMS_AMOUNT} Gems.`);
+      setModalButtonText('Отлично');
+      setShowModal(true);
+    } catch (e) {
+      console.error('claimWelcomeBonus error', e);
+      const msg = (e && e.message) ? e.message : 'Не удалось получить приветственный бонус';
+      setError(msg);
+      setModalMessage(msg);
+      setModalButtonText('Понятно');
+      setShowModal(true);
+    } finally {
+      setClaimingWelcome(false);
+    }
+  }, [uid, welcomeClaimed, claimingWelcome]);
+  
 
   // ========== NEW: Compute odds for a pack ==========
   // We will compute per-slot rarity breakdown (in percent) using the same effWeight formula as the server/client draw.
@@ -446,90 +551,118 @@ export default function PackOpener({ currentUser }) {
 
               {/* SHOP: original grid preserved exactly (only triggered when tab === 'shop') */}
               {tab === 'shop' && (
-                <div className="packsRow" style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, minmax(0,1fr))',
-                  gap: 12,
-                  marginTop: 8
-                }}>
-                  {PACKS.map(p => (
-                    <div
-                      key={p.id}
-                      className="packItem"
-                      role="button"
-                      tabIndex={0}
-                      title={p.description}
-                      aria-pressed={loadingPack === p.id}
-                      style={{
-                        cursor: loadingPack ? 'not-allowed' : 'pointer',
-                        opacity: loadingPack && loadingPack !== p.id ? 0.7 : 1, borderRadius: 10,
-                        textAlign: 'center', userSelect: 'none',
-                        position: 'relative',
-                      }}
-                    >
-                      <img src={p.image || '/assets/packs/pack_placeholder.png'} alt={p.title}
-                           style={{ width: '100%', height: 240, objectFit: 'contain', marginBottom: 8 }} />
-                      <div style={{ fontWeight: 500, color: '#fff' }}>{p.title}</div>
-                      
-
-                      <div style={{ marginTop: 5, fontSize: 11, color: '#bbb' }}>{p.description}</div>
-
-                      <button onClick={() => onPackClick(p.id)} style={{background: 'black', marginTop: 10, display: 'flex', gap: '5px', alignItems: 'center', justifyContent: 'center', width: '100%', fontSize: '12px', padding: '10px 0px', borderRadius: '20px' }}>
-                        Открыть за {p.price} <div style={{ width: '16px', height: '16px' }}><svg width="16" height="15" viewBox="0 0 11 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clipPath="url(#paint0_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint0_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/></g></g><path d="M6.5426 0.271674C6.18037 -0.0905575 5.59307 -0.0905585 5.23084 0.271674L3.4156 2.08692L5.88672 4.55804L8.35784 2.08692L6.5426 0.271674Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
-<g clipPath="url(#paint1_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint1_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/></g></g><path d="M8.79978 2.52886L6.32866 4.99998L8.7998 7.47112L10.615 5.65588C10.9773 5.29365 10.9773 4.70635 10.615 4.34412L8.79978 2.52886Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
-<g clipPath="url(#paint2_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint2_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint2_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint2_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint2_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/></g></g><path d="M8.35786 7.91306L5.88672 5.44192L3.41558 7.91306L5.23084 9.72833C5.59307 10.0906 6.18037 10.0906 6.5426 9.72833L8.35786 7.91306Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
-<g clipPath="url(#paint3_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint3_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint3_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint3_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint3_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/></g></g><path d="M2.97364 7.47112L5.44478 4.99998L2.97365 2.52886L1.15839 4.34412C0.796161 4.70635 0.79616 5.29365 1.15839 5.65588L2.97364 7.47112Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
-<defs>
-<clipPath id="paint0_diamond_4291_10_clip_path"><path d="M6.5426 0.271674C6.18037 -0.0905575 5.59307 -0.0905585 5.23084 0.271674L3.4156 2.08692L5.88672 4.55804L8.35784 2.08692L6.5426 0.271674Z"/></clipPath><clipPath id="paint1_diamond_4291_10_clip_path"><path d="M8.79978 2.52886L6.32866 4.99998L8.7998 7.47112L10.615 5.65588C10.9773 5.29365 10.9773 4.70635 10.615 4.34412L8.79978 2.52886Z"/></clipPath><clipPath id="paint2_diamond_4291_10_clip_path"><path d="M8.35786 7.91306L5.88672 5.44192L3.41558 7.91306L5.23084 9.72833C5.59307 10.0906 6.18037 10.0906 6.5426 9.72833L8.35786 7.91306Z"/></clipPath><clipPath id="paint3_diamond_4291_10_clip_path"><path d="M2.97364 7.47112L5.44478 4.99998L2.97365 2.52886L1.15839 4.34412C0.796161 4.70635 0.79616 5.29365 1.15839 5.65588L2.97364 7.47112Z"/></clipPath><linearGradient id="paint0_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
-<stop stopColor="#00FFD5"/>
-<stop offset="1" stopColor="#0084FF"/>
-</linearGradient>
-<linearGradient id="paint1_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
-<stop stopColor="#00FFD5"/>
-<stop offset="1" stopColor="#0084FF"/>
-</linearGradient>
-<linearGradient id="paint2_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
-<stop stopColor="#00FFD5"/>
-<stop offset="1" stopColor="#0084FF"/>
-</linearGradient>
-<linearGradient id="paint3_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
-<stop stopColor="#00FFD5"/>
-<stop offset="1" stopColor="#0084FF"/>
-</linearGradient>
-</defs>
-</svg></div>
+                <div style={{ marginTop: 8 }}>
+                  {/* Welcome bonus button — показываем только если не получен */}
+                  <div style={{ display: 'flex', justifyContent: 'center',}}>
+                    {!welcomeLoading && !welcomeClaimed ? (
+                      <button
+                        onClick={claimWelcomeBonus}
+                        disabled={claimingWelcome}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: 30,
+                          background: claimingWelcome ? 'black' : 'transparent',
+                          color: '#fff',
+                          border: '1px solid rgba(255,255,255,0.06)',
+                          transition: 'background 280ms ease',
+                          width: '100%'
+                        }}
+                        title="Получить приветственный бонус"
+                      >
+                        {claimingWelcome ? 'Обработка...' : `Получить приветственный бонус!`}
                       </button>
+                    ) : (
+                      // либо показываем сообщение что бонус собран, либо пустое место
+                      <div style={{ color: '#9aa4b2' }}>
+                        {welcomeClaimed ? ' ' : ' '}
+                      </div>
+                    )}
+                  </div>
 
-                      {/* NEW: odds button near pack */}
-                      {/* НЕ показываем кнопку шансов для fantasy-паков */}
-  <button
-    onClick={(e) => { e.stopPropagation(); onShowOdds(p); }}
-    style={{
-      position: 'absolute',
-      right: 20,
-      top: 15,
-      padding: '6px 8px',
-      borderRadius: 8,
-      border: 'none',
-      background: 'rgba(0,0,0,0.6)',
-      color: '#fff',
-      cursor: 'pointer',
-      fontSize: 12
-    }}
-    aria-label={`Показать шансы для пака ${p.title}`}
-    title="Посмотреть шансы"
-  >
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 15C4.13401 15 1 11.866 1 8C1 4.13401 4.13401 1 8 1C11.866 1 15 4.13401 15 8C15 11.866 11.866 15 8 15ZM8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z" fill="white"/>
-      <path d="M8.9307 6.58789L6.63969 6.875L6.55766 7.25586L7.00883 7.33789C7.3018 7.4082 7.36039 7.51367 7.29594 7.80664L6.55766 11.2754C6.3643 12.1719 6.66313 12.5938 7.36625 12.5938C7.91117 12.5938 8.54398 12.3418 8.83109 11.9961L8.91898 11.5801C8.71977 11.7559 8.4268 11.8262 8.23344 11.8262C7.95805 11.8262 7.85844 11.6328 7.92875 11.293L8.9307 6.58789Z" fill="white"/>
-      <path d="M9 4.5C9 5.05228 8.55229 5.5 8 5.5C7.44772 5.5 7 5.05228 7 4.5C7 3.94772 7.44772 3.5 8 3.5C8.55229 3.5 9 3.94772 9 4.5Z" fill="white"/>
-    </svg>
-  </button>
+                  <div className="packsRow" style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, minmax(0,1fr))',
+                    gap: 12,
+                    marginTop: 8
+                  }}>
+                    {PACKS.map(p => (
+                      <div
+                        key={p.id}
+                        className="packItem"
+                        role="button"
+                        tabIndex={0}
+                        title={p.description}
+                        aria-pressed={loadingPack === p.id}
+                        style={{
+                          cursor: loadingPack ? 'not-allowed' : 'pointer',
+                          opacity: loadingPack && loadingPack !== p.id ? 0.7 : 1, borderRadius: 10,
+                          textAlign: 'center', userSelect: 'none',
+                          position: 'relative',
+                        }}
+                      >
+                        <img src={p.image || '/assets/packs/pack_placeholder.png'} alt={p.title}
+                             style={{ width: '100%', height: 240, objectFit: 'contain', marginBottom: 8 }} />
+                        <div style={{ fontWeight: 500, color: '#fff' }}>{p.title}</div>
+                        
+
+                        <div style={{ marginTop: 5, fontSize: 11, color: '#bbb' }}>{p.description}</div>
+
+                        <button onClick={() => onPackClick(p.id)} style={{background: 'black', marginTop: 10, display: 'flex', gap: '5px', alignItems: 'center', justifyContent: 'center', width: '100%', fontSize: '12px', padding: '10px 0px', borderRadius: '20px' }}>
+                          Открыть за {p.price} <div style={{ width: '16px', height: '16px' }}><svg width="16" height="15" viewBox="0 0 11 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clipPath="url(#paint0_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint0_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/></g></g><path d="M6.5426 0.271674C6.18037 -0.0905575 5.59307 -0.0905585 5.23084 0.271674L3.4156 2.08692L5.88672 4.55804L8.35784 2.08692L6.5426 0.271674Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+    <g clipPath="url(#paint1_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint1_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/></g></g><path d="M8.79978 2.52886L6.32866 4.99998L8.7998 7.47112L10.615 5.65588C10.9773 5.29365 10.9773 4.70635 10.615 4.34412L8.79978 2.52886Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+    <g clipPath="url(#paint2_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint2_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint2_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint2_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint2_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/></g></g><path d="M8.35786 7.91306L5.88672 5.44192L3.41558 7.91306L5.23084 9.72833C5.59307 10.0906 6.18037 10.0906 6.5426 9.72833L8.35786 7.91306Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+    <g clipPath="url(#paint3_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint3_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint3_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint3_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint3_diamond_4291_10)" opacity="1" shapeRendering="crispEdges"/></g></g><path d="M2.97364 7.47112L5.44478 4.99998L2.97365 2.52886L1.15839 4.34412C0.796161 4.70635 0.79616 5.29365 1.15839 5.65588L2.97364 7.47112Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+    <defs>
+    <clipPath id="paint0_diamond_4291_10_clip_path"><path d="M6.5426 0.271674C6.18037 -0.0905575 5.59307 -0.0905585 5.23084 0.271674L3.4156 2.08692L5.88672 4.55804L8.35784 2.08692L6.5426 0.271674Z"/></clipPath><clipPath id="paint1_diamond_4291_10_clip_path"><path d="M8.79978 2.52886L6.32866 4.99998L8.7998 7.47112L10.615 5.65588C10.9773 5.29365 10.9773 4.70635 10.615 4.34412L8.79978 2.52886Z"/></clipPath><clipPath id="paint2_diamond_4291_10_clip_path"><path d="M8.35786 7.91306L5.88672 5.44192L3.41558 7.91306L5.23084 9.72833C5.59307 10.0906 6.18037 10.0906 6.5426 9.72833L8.35786 7.91306Z"/></clipPath><clipPath id="paint3_diamond_4291_10_clip_path"><path d="M2.97364 7.47112L5.44478 4.99998L2.97365 2.52886L1.15839 4.34412C0.796161 4.70635 0.79616 5.29365 1.15839 5.65588L2.97364 7.47112Z"/></clipPath><linearGradient id="paint0_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
+    <stop stopColor="#00FFD5"/>
+    <stop offset="1" stopColor="#0084FF"/>
+    </linearGradient>
+    <linearGradient id="paint1_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
+    <stop stopColor="#00FFD5"/>
+    <stop offset="1" stopColor="#0084FF"/>
+    </linearGradient>
+    <linearGradient id="paint2_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
+    <stop stopColor="#00FFD5"/>
+    <stop offset="1" stopColor="#0084FF"/>
+    </linearGradient>
+    <linearGradient id="paint3_diamond_4291_10" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
+    <stop stopColor="#00FFD5"/>
+    <stop offset="1" stopColor="#0084FF"/>
+    </linearGradient>
+    </defs>
+    </svg></div>
+                        </button>
+
+                        {/* NEW: odds button near pack */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onShowOdds(p); }}
+        style={{
+          position: 'absolute',
+          right: 20,
+          top: 15,
+          padding: '6px 8px',
+          borderRadius: 8,
+          border: 'none',
+          background: 'rgba(0,0,0,0.6)',
+          color: '#fff',
+          cursor: 'pointer',
+          fontSize: 12
+        }}
+        aria-label={`Показать шансы для пака ${p.title}`}
+        title="Посмотреть шансы"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 15C4.13401 15 1 11.866 1 8C1 4.13401 4.13401 1 8 1C11.866 1 15 4.13401 15 8C15 11.866 11.866 15 8 15ZM8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z" fill="white"/>
+          <path d="M8.9307 6.58789L6.63969 6.875L6.55766 7.25586L7.00883 7.33789C7.3018 7.4082 7.36039 7.51367 7.29594 7.80664L6.55766 11.2754C6.3643 12.1719 6.66313 12.5938 7.36625 12.5938C7.91117 12.5938 8.54398 12.3418 8.83109 11.9961L8.91898 11.5801C8.71977 11.7559 8.4268 11.8262 8.23344 11.8262C7.95805 11.8262 7.85844 11.6328 7.92875 11.293L8.9307 6.58789Z" fill="white"/>
+          <path d="M9 4.5C9 5.05228 8.55229 5.5 8 5.5C7.44772 5.5 7 5.05228 7 4.5C7 3.94772 7.44772 3.5 8 3.5C8.55229 3.5 9 3.94772 9 4.5Z" fill="white"/>
+        </svg>
+      </button>
 
 
-                    </div>
-                  ))}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -603,6 +736,22 @@ export default function PackOpener({ currentUser }) {
                   </div>
                 </div>
               ))}
+
+              {/* combined overview */}
+              {oddsData.combined && oddsData.combined.length > 0 && (
+                <div style={{ marginTop: 6 }}>
+                  <div style={{ fontSize: 13, color: '#bbb', marginBottom: 6 }}>Обзор (усреднённо по слотам):</div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    {oddsData.combined.map(c => (
+                      <div key={c.rarity} style={{ minWidth: 120, background: 'rgba(255,255,255,0.02)', padding: 8, borderRadius: 8 }}>
+                        <div style={{ fontSize: 12, color: '#ccc' }}>{rarityTextMap[c.rarity] || c.rarity}</div>
+                        <div style={{ fontSize: 14, color: '#fff' }}>{c.pct.toFixed(2)}%</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           }
         />
