@@ -250,7 +250,6 @@ const styles = {
     outline: "none",
     resize: "none",
     overflow: "hidden",
-    fontFamily: "inherit",
     fontSize: "14px",
   },
   sendButton: {

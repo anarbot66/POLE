@@ -44,7 +44,7 @@ const raceNameTranslations = {
   "Canadian Grand Prix": "Канада",
   "Spanish Grand Prix": "Испания",
   "Austrian Grand Prix": "Австрия",
-  "British Grand Prix": "Великобритания",
+  "British Grand Prix": "ВеликоВеликобритания",
   "Hungarian Grand Prix": "Венгрия",
   "Belgian Grand Prix": "Бельгия",
   "Dutch Grand Prix": "Нидерланды",
@@ -372,7 +372,7 @@ const RaceDetails = () => {
             timeout={400}
           >
             <div {...swipeHandlers}
-  style={{ position: 'relative', marginTop: '190px', padding: '15px'}}>
+  style={{ position: 'relative', marginTop: '180px', padding: '15px'}}>
             {activeTab === "schedule" && (
             <div style={{background: '#141416', padding: '20px', borderRadius: '15px', display: 'flex', flexDirection: "column", gap: "10px"}}>
           {sessions.map((session, index) => (
@@ -417,8 +417,8 @@ const RaceDetails = () => {
         </div>
       )}
 
-    {activeTab === "results" && (
-  <div style={{ display: "flex", flexDirection: "column", gap: '10px', overflowY: "auto", overflowX: "hidden", padding: "20px", background: '#141416', borderRadius: "15px" }}>
+    {activeTab === "results" && ( 
+  <div style={{ display: "flex", flexDirection: "column", gap: '10px', overflowY: "auto", overflowX: "hidden", padding: "15px 20px", background: '#141416', borderRadius: "15px" }}>
     {resultsLoading && <p style={{ color: "white" }}> </p>}
     {!resultsLoading && results.map((r, i) => {
   const driverName = driverSurnames[r.Driver.familyName] || r.Driver.familyName;
@@ -456,7 +456,7 @@ const RaceDetails = () => {
             justifyContent: "center"
           }}
         >
-          <span style={{ color: "white", fontSize: 15, fontWeight: 500 }}>
+          <span style={{ color: "white", fontSize: 15, fontWeight: 500, width: "17px" }}>
             {r.position}
           </span>
         </div>

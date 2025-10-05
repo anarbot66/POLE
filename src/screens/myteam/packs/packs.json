@@ -1,0 +1,80 @@
+{
+  "packs": [
+    {
+      "id": "T1",
+      "title": "Набор T1",
+      "price": 350,
+      "count": 1,
+      "description": "Выпадет один пилот. Минимум новичок",
+      "allowedRarities": ["rookie", "common", "rare"],
+      "guarantee": {},
+      "image": "/assets/packs/packs_t1.png",
+      "type" : "gems"
+    },
+    {
+      "id": "T2",
+      "title": "Набор T2",
+      "price": 850,
+      "count": 1,
+      "description": "Выпадет один пилот. Минимум редкий",
+      "allowedRarities": ["rare", "epic"],
+      "guarantee": { "rareOrEpic": 1 },
+      "image": "/assets/packs/packs_t2.png",
+      "type" : "gems"
+    },
+    {
+      "id": "T3",
+      "title": "Набор T3",
+      "price": 1750,
+      "count": 1,
+      "description": "Выпадет один пилот. Минимум герой",
+      "allowedRarities": ["hero", "epic", "legendary"],
+      "guarantee": { },
+      "image": "/assets/packs/packs_t3.png",
+      "type" : "gems"
+    },
+    
+    {
+      "id": "T-PLUS",
+      "title": "Набор T-PLUS",
+      "price": 3200,
+      "count": 1,
+      "description": "Выпадет один пилот. Минимум прайм герой",
+      "allowedRarities": ["prime_hero", "icon", "prime_icon"],
+      "image": "/assets/packs/packs_t_plus.png"
+    },
+    {
+      "id": "R80_PLUS",
+      "title": "Набор 80+",
+      "price": 1300,
+      "count": 1,
+      "description": "Выпадет один пилот с рейтингом больше 80",
+      "guarantee": { "minRtg": 80 },
+      "image": "/assets/packs/pack80plus.png",
+      "type" : "gems"
+    },
+    {
+      "id": "R85_PLUS",
+      "title": "Набор 85+",
+      "price": 1700,
+      "count": 1,
+      "description": "Выпадет один пилот с рейтингом больше 85",
+      "guarantee": { "minRtg": 85 },  
+      "image": "/assets/packs/pack85plus.png",
+      "type" : "gems"
+    },
+    {
+      "id": "R90_PLUS",
+      "title": "Набор 90+",
+      "price": 3500,
+      "count": 1,
+      "description": "Выпадет один пилот с рейтингом больше 90",
+      "guarantee": { "minRtg": 90 },
+      "image": "/assets/packs/pack90plus.png",
+      "type" : "gems"
+    }
+    
+    
+  ]
+}
+

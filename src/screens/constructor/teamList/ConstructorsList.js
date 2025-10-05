@@ -27,6 +27,9 @@ const ConstructorsList = ({ }) => {
         flexDirection: "column",
         justifyContent: "flex-start",
         gap: "15px",
+        background: '#141416',
+        borderRadius: '15px',
+        padding: '15px 0px 15px 0px'
       }}
     >
       

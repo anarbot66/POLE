@@ -1,3 +1,4 @@
+// src/myteam/runner/LaneRunnerGame.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { doc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../../../../firebase';
@@ -6,6 +7,7 @@ import GameRulesModal from './components/GameRulesModal';
 import MobileControls from './components/MobileControls';
 import './graphic/FormulaRunnerAssets/runner.css';
 import gameOverUrl from './graphic/FormulaRunnerAssets/gameover.png';
+import BackButton from '../../../components/BackButton';
 
 // Asset URLs
 import coneUrl from './graphic/FormulaRunnerAssets/cone.png';
@@ -14,26 +16,33 @@ import fireUrl from './graphic/FormulaRunnerAssets/fire.png';
 import puddleUrl from './graphic/FormulaRunnerAssets/puddle.png';
 import playerUrl from './graphic/FormulaRunnerAssets/player.png';
 import trackUrl from './graphic/FormulaRunnerAssets/track2.png';
-import apIconUrl from '../../../recources/images/racehub-logo.png';
-import shieldUrl from './graphic/FormulaRunnerAssets/shield.png';         
-import bonusModeUrl from './graphic/FormulaRunnerAssets/bonusMode.png';   
+import apIconUrl from '../../../recources/images/logo.png';
+import shieldUrl from './graphic/FormulaRunnerAssets/shield.png';
+import bonusModeUrl from './graphic/FormulaRunnerAssets/bonusMode.png';
 
-// Constants
-const CANVAS_WIDTH  = 360;
-const CANVAS_HEIGHT = 500;
+// Constants (логика остаётся в виртуальных координатах)
+const VIRTUAL_WIDTH  = 360;
+const VIRTUAL_HEIGHT = 760;
+
+const CANVAS_WIDTH  = VIRTUAL_WIDTH;
+const CANVAS_HEIGHT = VIRTUAL_HEIGHT;
+
 const CAR_WIDTH     = 60;
 const CAR_HEIGHT    = 50;
 const OBSTACLE_SIZE = 40;
 const SPAWN_CELLS   = 10;
 const SPAWN_REGION_WIDTH = 200;
 const SPAWN_REGION_X     = (CANVAS_WIDTH - SPAWN_REGION_WIDTH) / 2;
-const MAX_ATTEMPTS_PER_DAY = 3;
 const COST_AP = 0;
 const COST_GS = 0;
 const scrollSpeed = 4.8;
-const debugMode = false;
+const debugMode = true;
 
-// SVG for GS icon
+// Height reserved for on-screen mobile controls (change if your controls have other height)
+const CONTROLS_HEIGHT = 70;
+const CONTROLS_MARGIN = 8; // небольшой отступ между canvas и контролами
+
+// SVG for GS icon (сокращённо — подставь полный SVG из своего проекта)
 const GS_SVG_TEXT = `<svg width="16" height="15" viewBox="0 0 11 10" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#paint0_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint0_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint0_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/></g></g><path d="M6.5426 0.271674C6.18037 -0.0905575 5.59307 -0.0905585 5.23084 0.271674L3.4156 2.08692L5.88672 4.55804L8.35784 2.08692L6.5426 0.271674Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
 <g clip-path="url(#paint1_diamond_4291_10_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.005 -0.005 0 5.88672 5)"><rect x="0" y="0" width="1200" height="1200" fill="url(#paint1_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(1 -1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1 1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/><rect x="0" y="0" width="1200" height="1200" transform="scale(-1)" fill="url(#paint1_diamond_4291_10)" opacity="1" shape-rendering="crispEdges"/></g></g><path d="M8.79978 2.52886L6.32866 4.99998L8.7998 7.47112L10.615 5.65588C10.9773 5.29365 10.9773 4.70635 10.615 4.34412L8.79978 2.52886Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_DIAMOND&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.83333331346511841,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.51666665077209473,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:6.1232350570192273e-16,&#34;m01&#34;:-10.000000953674316,&#34;m02&#34;:10.886719703674316,&#34;m10&#34;:10.000000953674316,&#34;m11&#34;:6.1232350570192273e-16,&#34;m12&#34;:-6.1232350570192273e-16},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
@@ -87,12 +96,15 @@ export default function LaneRunnerGame({ currentUser }) {
   const carXRef    = useRef((CANVAS_WIDTH - CAR_WIDTH)/2);
   const carYRef    = useRef(CANVAS_HEIGHT - CAR_HEIGHT - 10);
 
+  // display size for centering overlays & aligning MobileControls
+  const [displaySize, setDisplaySize] = useState({ w: VIRTUAL_WIDTH, h: VIRTUAL_HEIGHT, scale: 1 });
+
   // game state
   const [gameState, setGameState] = useState('start');
   const [score, setScore] = useState(0);
   const [collectedGS,   setCollectedGS] = useState(0);
   const [collectedAP,   setCollectedAP] = useState(0);
-  const [record,        setRecord] = useState(currentUser.bestRunner || 0);
+  const [record,        setRecord] = useState(currentUser?.bestRunner || 0);
   const [usedAttempts,  setUsedAttempts] = useState(0);
   const [showModal,     setShowModal] = useState(false);
   const [modalMessage,  setModalMessage] = useState('');
@@ -119,7 +131,9 @@ export default function LaneRunnerGame({ currentUser }) {
   const [objects,   setObjects]   = useState([]);
   const [spawnRate, setSpawnRate] = useState(800);
 
-  const attemptsLeft = Math.max(0, MAX_ATTEMPTS_PER_DAY - usedAttempts);
+  // pause
+  const [isPaused, setIsPaused] = useState(false);
+
 
   // sync refs
   useEffect(() => { carXRef.current = carX; }, [carX]);
@@ -138,11 +152,13 @@ export default function LaneRunnerGame({ currentUser }) {
     ];
     Promise.all(assets.map(({key,url,dataUri}) => new Promise(res=>{
       const img = new Image();
+      img.crossOrigin = 'anonymous';
       img.src = url || dataUri;
       img.onload = () => {
         imagesRef.current[key] = img;
         res();
       };
+      img.onerror = () => res();
     })));
   }, []);
 
@@ -155,14 +171,11 @@ export default function LaneRunnerGame({ currentUser }) {
         ? currentUser.runnerAttempts
         : 0
     );
+    setRecord(currentUser?.bestRunner || 0);
   }, [currentUser]);
 
   // start game
   const startGame = async () => {
-    if (attemptsLeft <= 0) {
-      setModalMessage(`Попытки сегодня исчерпаны (${MAX_ATTEMPTS_PER_DAY})`);
-      return setShowModal(true);
-    }
     if (currentUser.apexPoints < COST_AP || currentUser.gsCurrency < COST_GS) {
       setModalMessage('Недостаточно ресурсов.');
       return setShowModal(true);
@@ -196,12 +209,54 @@ export default function LaneRunnerGame({ currentUser }) {
     setSpawnRate(800);
     setShieldActive(false);
     setBonusModeActive(false);
+    setIsPaused(false);
+    setShowBlink(false);
+    setShowStats(false);
     setGameState('running');
   };
 
-  // spawn logic
+  // ---------- resize & DPR scaling: canvas занимает весь экран минус место под контролы ----------
   useEffect(() => {
-    if (gameState !== 'running') return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+
+      // Высота доступная для canvas: окно минус высота панели управления и небольшой отступ
+      const availableHeight = Math.max(100, window.innerHeight - CONTROLS_HEIGHT - CONTROLS_MARGIN);
+
+      // scale так, чтобы вместился в ширину окна и доступную высоту
+      const scale = Math.min(window.innerWidth / VIRTUAL_WIDTH, availableHeight / VIRTUAL_HEIGHT);
+
+      const displayW = Math.round(VIRTUAL_WIDTH * scale);
+      const displayH = Math.round(VIRTUAL_HEIGHT * scale);
+
+      // CSS size for display (what user sees)
+      canvas.style.width  = '100%';
+      canvas.style.height = displayH + 'px';
+      canvas.style.position = 'relative';
+      canvas.style.display = 'block';
+
+      // internal buffer scaled by devicePixelRatio for crispness
+      canvas.width  = Math.round(VIRTUAL_WIDTH * dpr);
+      canvas.height = Math.round(VIRTUAL_HEIGHT * dpr);
+
+      const ctx = canvas.getContext('2d');
+      // setTransform so drawing with logical coords works: 1 logical unit = DPR pixels
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      setDisplaySize({ w: displayW, h: displayH, scale });
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    return () => window.removeEventListener('resize', resizeCanvas);
+  }, []);
+
+  // spawn logic (stops when paused)
+  useEffect(() => {
+    if (gameState !== 'running' || isPaused) return;
     const id = setInterval(() => {
       setObjects(prev => {
         const regionCellW = SPAWN_REGION_WIDTH / SPAWN_CELLS;
@@ -209,15 +264,14 @@ export default function LaneRunnerGame({ currentUser }) {
         const free       = Array.from({ length: SPAWN_CELLS }, (_, i) => i).filter(i => !occupied.has(i));
         const count      = spawnRate <= 500 ? 2 : 1;
         const next       = [];
-  
+
         for (let k = 0; k < count && free.length; k++) {
           const idx  = Math.floor(Math.random() * free.length);
           const cell = free.splice(idx, 1)[0];
           const x    = SPAWN_REGION_X + cell * regionCellW + (regionCellW - OBSTACLE_SIZE) / 2;
           const y    = 0;
-  
+
           if (bonusModeActive) {
-            // только бонусы, чуть больше шансов на редкие
             const p = Math.random();
             if (p < 0.01) {
               const rare = Math.random();
@@ -231,10 +285,8 @@ export default function LaneRunnerGame({ currentUser }) {
               next.push({ kind: 'bonus', bonusType: Math.random() < 0.5 ? 'gs' : 'ap', x, y });
             }
           } else {
-            // обычный режим: бонусы или препятствие
             const rnd = Math.random();
             if (rnd < 0.01) {
-              // очень редкие
               if (rnd < 0.005) {
                 if (!shieldActive) next.push({ kind: 'bonus', bonusType: 'shield', x, y });
               }
@@ -243,26 +295,23 @@ export default function LaneRunnerGame({ currentUser }) {
               else                   next.push({ kind: 'bonus', bonusType: 'bigAP', x, y });
             }
             else if (rnd < 0.17) {
-              // обычные бонусы
               next.push({ kind: 'bonus', bonusType: Math.random() < 0.5 ? 'gs' : 'ap', x, y });
             }
             else {
-              // препятствие
               const asset = OBSTACLE_ASSETS[Math.floor(Math.random() * OBSTACLE_ASSETS.length)];
               next.push({ kind: 'obs', spriteKey: asset.key, x, y: -OBSTACLE_SIZE });
             }
           }
         }
-  
+
         return [...prev, ...next];
       });
     }, spawnRate);
-  
-    return () => clearInterval(id);
-  }, [gameState, spawnRate, bonusModeActive, shieldActive]);
-  
 
-  // main loop: движение, столкновения, счёт
+    return () => clearInterval(id);
+  }, [gameState, spawnRate, bonusModeActive, shieldActive, isPaused]);
+
+  // main loop: движение, столкновения, счёт (при паузе не обновляем позицию/объекты/счёт)
   useEffect(() => {
     if (gameState !== 'running') return;
     let last = performance.now(), raf;
@@ -270,6 +319,12 @@ export default function LaneRunnerGame({ currentUser }) {
 
     function animate(now){
       const delta = now - last; last = now;
+
+      if (isPaused) {
+        raf = requestAnimationFrame(animate);
+        return;
+      }
+
       const dy = scrollSpeed * (delta/16);
       let y1 = bgY1+dy, y2 = bgY2+dy;
       if (y1 >= CANVAS_HEIGHT) y1 = y2 - CANVAS_HEIGHT;
@@ -293,7 +348,6 @@ export default function LaneRunnerGame({ currentUser }) {
         list
           .map(o => ({...o, y: o.y + baseSpeed*speedMult*delta}))
           .filter(o => {
-            // хитбокс объекта
             const hb = o.kind==='obs'
               ? OBSTACLE_HITBOXES[o.spriteKey]
               : { offsetX:0, offsetY:0, width:OBSTACLE_SIZE, height:OBSTACLE_SIZE };
@@ -303,7 +357,6 @@ export default function LaneRunnerGame({ currentUser }) {
               w: hb.width,
               h: hb.height
             };
-            // проверка пересечения
             const collided = !(
               carRect.x > objRect.x + objRect.w ||
               carRect.x + carRect.w < objRect.x ||
@@ -313,14 +366,13 @@ export default function LaneRunnerGame({ currentUser }) {
             if (collided) {
               if (o.kind==='obs') {
                 if (shieldActive) {
-                  setShieldActive(false); 
-                  return false; // удаляем препятствие, без конца игры
+                  setShieldActive(false);
+                  return false;
                 } else {
                   setGameState('over');
                   return false;
                 }
               } else {
-                // бонус
                 switch(o.bonusType){
                   case 'gs':       setCollectedGS(g=>g+1);    break;
                   case 'ap':       setCollectedAP(a=>a+1);    break;
@@ -330,8 +382,7 @@ export default function LaneRunnerGame({ currentUser }) {
                     setTimeout(()=>setBonusModeActive(false),10000);
                     break;
                   case 'bigGS':    setCollectedGS(g=>g+5);   break;
-                  case 'bigAP':    setCollectedAP(a=>a+10);  break; 
-                  // (обратите внимание: collectedAP*10 выводит AP, так что +100 здесь даст +1000)
+                  case 'bigAP':    setCollectedAP(a=>a+10);  break;
                 }
                 return false;
               }
@@ -344,7 +395,7 @@ export default function LaneRunnerGame({ currentUser }) {
       setScore(s => {
         const n = s + delta*0.05;
         if (Math.floor(n)%300===0) {
-          setSpawnRate(r=>Math.max(300, r*0.98));
+          setSpawnRate(r=>Math.max(300, Math.round(r*0.98)));
         }
         return n;
       });
@@ -354,16 +405,16 @@ export default function LaneRunnerGame({ currentUser }) {
 
     raf = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(raf);
-  }, [gameState, carV, carVy, bgY1, bgY2, shieldActive]);
+  }, [gameState, carV, carVy, bgY1, bgY2, shieldActive, isPaused]);
 
+  // when game over
   useEffect(() => {
-    if (gameState === 'over') {
-      setShowBlink(true);
-      setShowStats(false);
-    }
+    if (gameState !== 'over') return;
+    setShowBlink(true);
+    setShowStats(false);
   }, [gameState]);
 
-  // рендер
+  // render (рисуем каждый раз при изменениях важных стейтов)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -389,7 +440,6 @@ export default function LaneRunnerGame({ currentUser }) {
         const img = imagesRef.current[o.spriteKey];
         if (img) ctx.drawImage(img, o.x, o.y, OBSTACLE_SIZE, OBSTACLE_SIZE);
       } else {
-        // бонус
         let key, size, label;
         switch(o.bonusType){
           case 'gs':       key='gsIcon';       size=24; label='+1'; break;
@@ -398,6 +448,7 @@ export default function LaneRunnerGame({ currentUser }) {
           case 'bonusMode':key='bonusModeIcon';size=32; label='';    break;
           case 'bigGS':    key='gsIcon';       size=32; label='+50'; break;
           case 'bigAP':    key='apIcon';       size=32; label='+1000'; break;
+          default:         key='gsIcon';       size=24; label='';     break;
         }
         const icon = imagesRef.current[key];
         if (icon) ctx.drawImage(icon, o.x, o.y, size, size);
@@ -409,18 +460,10 @@ export default function LaneRunnerGame({ currentUser }) {
       }
     });
 
-    // HUD
+    // HUD (canvas fallback)
     ctx.fillStyle = 'white';
-    ctx.font = '18px sans-serif';
-    ctx.fillText(`Счёт: ${Math.floor(score)}`, 10, 25);
-    ctx.fillText(`GS: ${collectedGS}`, 10, 50);
-    ctx.fillText(`AP: ${collectedAP*10}`, 10, 75);
-    if (shieldActive) {
-      ctx.fillText(`Safety Car`, 260, 25);
-    }
-    if (bonusModeActive) {
-      ctx.fillText(`Без препятствий!`, 200, 50);
-    }
+    ctx.font = '18px Inter';
+    // удаляем текстовые метки shield/bonusMode — теперь показываем DOM-иконки
   }, [objects, collectedGS, collectedAP, score, bgY1, bgY2, shieldActive, bonusModeActive]);
 
   // завершение игры: выдача наград
@@ -434,12 +477,12 @@ export default function LaneRunnerGame({ currentUser }) {
       updateDoc(userDoc, { bestRunner: Math.floor(score) });
     }
     updateDoc(userDoc, { gsCurrency: increment(totalGS), apexPoints: increment(totalAP) });
-  }, [gameState]);
+  }, [gameState]); // eslint-disable-line
 
-  // управление с клавиатуры
+  // управление с клавиатуры (стрелки)
   useEffect(() => {
     const down = e => {
-      if (gameState !== 'running') return;
+      if (gameState !== 'running' || isPaused) return;
       if (e.key === 'ArrowLeft')  setCarV(-5);
       if (e.key === 'ArrowRight') setCarV(5);
       if (e.key === 'ArrowUp')    setCarVy(-5);
@@ -455,7 +498,26 @@ export default function LaneRunnerGame({ currentUser }) {
       window.removeEventListener('keydown', down);
       window.removeEventListener('keyup', up);
     };
+  }, [gameState, isPaused]);
+
+  // Escape toggles pause when running
+  useEffect(() => {
+    const keyHandler = (e) => {
+      if (e.key === 'Escape' && gameState === 'running') {
+        setIsPaused(p => !p);
+      }
+    };
+    window.addEventListener('keydown', keyHandler);
+    return () => window.removeEventListener('keydown', keyHandler);
   }, [gameState]);
+
+  // ICON vertical placement: немного ниже y=75 (AP)
+  const ICON_OFFSET_PX = 12; // дополнительный отступ от нижней строки HUD
+  const hudTopPx = (() => {
+    const scale = (displaySize && displaySize.scale) ? displaySize.scale : 1;
+    // canvas HUD Y=75 — переводим это в CSS-пиксели по текущему масштабу
+    return Math.round(75 * scale) + ICON_OFFSET_PX;
+  })();
 
   return (
     <div style={{ textAlign: 'center', color: 'white', marginBottom: '90px', justifyItems: 'center' }}>
@@ -465,118 +527,278 @@ export default function LaneRunnerGame({ currentUser }) {
             <h2 style={{ fontSize: 40, cursor: 'pointer' }} onClick={() => setShowRules(true)}>
               Прямая в Монце
             </h2>
-            <p>Попыток сегодня: {usedAttempts} / {MAX_ATTEMPTS_PER_DAY}</p>
             <button
               onClick={startGame}
-              disabled={attemptsLeft <= 0}
               style={{
                 padding: '15px 20px',
                 borderRadius: '15px',
-                color: attemptsLeft ? 'white' : 'gray',
+                color: 'white',
                 border: 'none',
-                border: attemptsLeft ? "1px solid rgba(255, 255, 255, 0.2)" : 'none',
+                border: "1px solid rgba(255, 255, 255, 0.2)",
                 display: 'flex',
                 gap: '4px',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}
             >
-            
               Играть
             </button>
           </div>
         </div>
       ) : (
+        // full-screen container (canvas над панелью контролов)
         <div
-          className="game-wrapper"
           style={{
-            position: 'relative',
-            width: CANVAS_WIDTH,
-            maxWidth: '100%',
-            margin: '0 auto'
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            zIndex: 20,
+            pointerEvents: 'none',
           }}
         >
-          <canvas
-            ref={canvasRef}
-            width={CANVAS_WIDTH}
-            height={CANVAS_HEIGHT}
-            style={{ width: '100%', height: 'auto', borderRadius: '15px', marginTop: '10px'}}
-          />
-          <MobileControls
-            onPress={dir => {
-              if (dir === 'left') setCarV(-5);
-              if (dir === 'right') setCarV(5);
-              if (dir === 'up') setCarVy(-5);
-              if (dir === 'down') setCarVy(5);
-            }}
-            onRelease={dir => {
-              if (dir === 'left' || dir === 'right') setCarV(0);
-              if (dir === 'up' || dir === 'down') setCarVy(0);
-            }}
-          />
-  
-          {/* Overlay: blinking GAME OVER */}
-          {gameState === 'over' && showBlink && (
+          {/* wrapper для canvas и overlay */}
+          <div style={{ position: 'relative', width: '100%', height: displaySize.h, pointerEvents: 'auto' }}>
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
+              style={{ width: '100%', height: displaySize.h + 'px', display: 'block' }}
+            />
+
+            {/* Icon HUD (левый верхний угол) */}
             <div
-              className="overlay"
               style={{
                 position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                background: 'rgba(0,0,0,0.6)',
+                left: 8,
+                top: hudTopPx,          // <-- позиция ниже строки AP
+                zIndex: 48,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                alignItems: 'flex-start',
+                pointerEvents: 'none',
+              }}
+            >
+              {/* Shield icon */}
+              {shieldActive && imagesRef.current.shieldIcon && (
+                <div className="hud-icon" style={{ display: 'flex', gap: 8, pointerEvents: 'auto', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <img
+                    src={imagesRef.current.shieldIcon.src}
+                    alt="Shield active"
+                    style={{ width: 36, height: 36, display: 'block' }}
+                  />
+                </div>
+              )}
+
+              {/* BonusMode icon */}
+              {bonusModeActive && imagesRef.current.bonusModeIcon && (
+                <div className="hud-icon" style={{ display: 'flex', gap: 8, pointerEvents: 'auto', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <img
+                    src={imagesRef.current.bonusModeIcon.src}
+                    alt="Bonus mode active"
+                    style={{ width: 36, height: 36, display: 'block' }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Pause button (вверху справа внутри wrapper) */}
+            <button
+              onClick={() => setIsPaused(p => !p)}
+              style={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                zIndex: 40,
+                borderRadius: 10,
+                border: 'none',
+                color: 'white',
+                cursor: 'pointer',
+                pointerEvents: 'auto',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}
             >
-              <img
-                src={gameOverUrl}
-                alt="Game Over"
-                className="blink"
-                style={{ width: 200, height: 'auto' }}
-                onAnimationEnd={() => {
-                  setShowBlink(false);
-                  setShowStats(true);
+              {isPaused ? (
+                <img src="/assets/runnerButtons/play.png" alt="Resume" style={{ width: 40, height: 40 }} />
+              ) : (
+                <img src="/assets/runnerButtons/pause.png" alt="Pause" style={{ width: 40, height: 40 }} />
+              )}
+            </button>
+
+
+            {/* Overlay: blinking GAME OVER */}
+            {gameState === 'over' && showBlink && (
+              <div
+                className="overlay"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  background: 'rgba(0,0,0,0.6)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 45,
+                  pointerEvents: 'auto'
                 }}
-              />
-            </div>
-          )}
-  
-          {/* Overlay: final stats */}
-          {gameState === 'over' && showStats && (
-            <div
-            className="overlay fade-in gameOverGlass"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                background: 'rgba(0,0,0,0.6)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                padding: 20,
-                color: 'white',
-                borderRadius: '15px',
-                maxHeight: "500px"
+              >
+                <img
+                  src={gameOverUrl}
+                  alt="Game Over"
+                  className="blink"
+                  style={{ width: Math.min(200, displaySize.w * 0.6), height: 'auto' }}
+                  onAnimationEnd={() => {
+                    setShowBlink(false);
+                    setShowStats(true);
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Overlay: final stats */}
+            {gameState === 'over' && showStats && (
+              <div
+                className="overlay fade-in gameOverGlass"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  background: 'rgba(0,0,0,0.8)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  padding: 20,
+                  color: 'white',
+                  zIndex: 46,
+                  pointerEvents: 'auto'
+                }}
+              >
+                <h3>Вы проиграли</h3>
+                <p>Очки: {Math.floor(score)}</p>
+                <p>GS получено: {collectedGS + Math.floor(score / 100)}</p>
+                <p>Apex получено: {collectedAP * 10 + Math.floor(score / 100) * 10}</p>
+                <p>Рекорд: {Math.max(record, Math.floor(score))}</p>
+                <button onClick={() => {
+                      setIsPaused(false);
+                      setGameState('start');
+                      setObjects([]);
+                      setScore(0);
+                      setShowBlink(false);
+                      setShowStats(false);
+                    }} style={{ padding: '8px 12px', borderRadius: 8 }}>Выйти</button>
+              </div>
+            )}
+
+            {/* Paused menu overlay */}
+            {isPaused && gameState === 'running' && (
+  <div
+    style={{
+      position: 'fixed', // фиксируем на весь экран
+      left: 0,
+      top: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 50,
+      pointerEvents: 'auto',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}
+  >
+    {/* затемнение */}
+    <div
+      style={{
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: '100%',
+        height: '100%',
+        background: 'rgba(0,0,0,0.6)', // прозрачный чёрный фон
+        zIndex: 61
+      }}
+    />
+
+    {/* сам блок паузы */}
+    <div
+      style={{
+        position: 'relative', // чтобы быть поверх оверлея
+        background: '#222',
+        padding: 20,
+        borderRadius: 12,
+        textAlign: 'center',
+        color: 'white',
+        minWidth: 220,
+        zIndex: 62 // выше оверлея
+      }}
+    >
+      <h3>Пауза</h3>
+      <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 12 }}>
+        <button onClick={() => setIsPaused(false)} style={{ padding: '8px 12px', borderRadius: 8, minWidth: '130px' }}>Продолжить</button>
+        <button onClick={() => {
+          setIsPaused(false);
+          setGameState('start');
+          setObjects([]);
+          setScore(0);
+          setShowBlink(false);
+          setShowStats(false);
+        }} style={{ padding: '8px 12px', borderRadius: 8, minWidth: '130px' }}>Выйти</button>
+      </div>
+    </div>
+  </div>
+)}
+
+          </div>
+
+          {/* MobileControls — располагаем под canvas, ширина синхронизирована с canvas */}
+          <div style={{ width: '100%', pointerEvents: 'auto', zIndex: 60, background: '#222', height: '100%' }}>
+            <MobileControls
+              onPress={dir => {
+                if (isPaused || gameState !== 'running') return;
+                if (dir === 'left') setCarV(-5);
+                if (dir === 'right') setCarV(5);
+                if (dir === 'up') setCarVy(-5);
+                if (dir === 'down') setCarVy(5);
               }}
-            >
-              <h3>Вы проиграли</h3>
-              <p>Очки: {Math.floor(score)}</p>
-              <p>GS получено: {collectedGS + Math.floor(score / 100)}</p>
-              <p>Apex получено: {collectedAP * 10 + Math.floor(score / 100) * 10}</p>
-              <p>Рекорд: {Math.max(record, Math.floor(score))}</p>
-            </div>
-          )}
+              onRelease={dir => {
+                if (dir === 'left' || dir === 'right') setCarV(0);
+                if (dir === 'up' || dir === 'down') setCarVy(0);
+              }}
+            />
+          </div>
         </div>
       )}
-  
+
       <Modal show={showModal} onClose={() => setShowModal(false)} message={modalMessage} />
+      {showRules && <GameRulesModal onClose={() => setShowRules(false)} />}
+
+      {/* Local CSS for HUD icons (вставлено в компонент для простоты) */}
+      <style>{`
+        .hud-icon {
+          pointer-events: auto;
+          opacity: 1;
+          transform: translateY(0);
+          transition: opacity 220ms ease, transform 220ms ease;
+          display: inline-flex;
+          align-items: center;
+        }
+        .hud-icon.hidden {
+          opacity: 0;
+          transform: translateY(-6px);
+        }
+      `}</style>
     </div>
   );
-  
 }

@@ -1,0 +1,68 @@
+{
+  "id": "raikkonen",
+  "title": "Kimi Räikkönen — первые сезоны (rookie → борьба с Schumacher)",
+  "startDate": "2025-09-20T00:00:00Z",
+  "durationDays": 14,
+  "chapters": [
+    {
+      "id": "ch0",
+      "title": "Глава 1 — Вход в Формулу-1",
+      "type": "read",
+      "dayOffset": 0,
+      "teaser": "Как Кими попал в Sauber — первые впечатления",
+      "storyPath": "/events/raikkonen/stories/ch0.md"
+    },
+    {
+      "id": "ch1",
+      "title": "Глава 2 — Адаптация и первые гонки",
+      "type": "quiz",
+      "dayOffset": 1,
+      "teaser": "Вопросы по чтению — проверим память",
+      "questionKey": "ch1",
+      "storyPath": "/events/raikkonen/stories/ch1.md"
+    },
+    {
+      "id": "ch2",
+      "title": "Глава 3 — Риск или осторожность на трассе",
+      "type": "decision",
+      "dayOffset": 2,
+      "teaser": "Сделай выбор в ключевых моментах.",
+      "decisionKey": "ch2",
+      "storyPath": "/events/raikkonen/stories/ch2.md"
+    },
+    {
+      "id": "ch3",
+      "title": "Глава 4 — Первые очки и уроки",
+      "type": "read",
+      "dayOffset": 3,
+      "teaser": "Как пришли первые очки и что они значили",
+      "storyPath": "/events/raikkonen/stories/ch3.md"
+    },
+    {
+      "id": "ch4",
+      "title": "Глава 5 — Прорыв и внимание топ-команд",
+      "type": "quiz",
+      "dayOffset": 4,
+      "teaser": "Викторина: ключевые моменты прогресса",
+      "questionKey": "ch4",
+      "storyPath": "/events/raikkonen/stories/ch4.md"
+    },
+    {
+      "id": "ch5",
+      "title": "Глава 6 — Соперничество с Шумахером: решения",
+      "type": "decision",
+      "dayOffset": 5,
+      "teaser": "Как бы ты поступил в ситуации против Шумахера?",
+      "decisionKey": "ch5",
+      "storyPath": "/events/raikkonen/stories/ch5.md"
+    },
+    {
+      "id": "ch6",
+      "title": "Глава 7 — Итог первых сезонов",
+      "type": "read",
+      "dayOffset": 6,
+      "teaser": "Резюме: от новичка до бойца",
+      "storyPath": "/events/raikkonen/stories/ch6.md"
+    }
+  ]
+}

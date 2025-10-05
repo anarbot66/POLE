@@ -159,7 +159,7 @@ export const driverTranslations = {
     "Canadian Grand Prix": "Канада",
     "Spanish Grand Prix": "Испания",
     "Austrian Grand Prix": "Австрия",
-    "British Grand Prix": "Великобритания",
+    "British Grand Prix": "ВеликоВеликобритания",
     "Hungarian Grand Prix": "Венгрия",
     "Belgian Grand Prix": "Бельгия",
     "Dutch Grand Prix": "Нидерланды",

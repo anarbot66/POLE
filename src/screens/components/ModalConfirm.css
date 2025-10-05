@@ -1,0 +1,72 @@
+/* Modal.css */
+.fade-enter {
+    opacity: 0;
+  }
+  .fade-enter-active {
+    opacity: 1;
+    transition: opacity 300ms ease-in;
+  }
+  .fade-exit {
+    opacity: 1;
+  }
+  .fade-exit-active {
+    opacity: 0;
+    transition: opacity 300ms ease-out;
+  }
+  
+  .modal-bak {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+  
+  .commentGlass {
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    max-width: 300px;
+    background: #141416;
+    backdrop-filter: blur(10px);
+  }
+  
+  .modal-message {
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: gray;
+  }
+  
+  .modal-button {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 100%;
+    background: transparent;
+    font-size: 14px;
+  }
+  
+  .modal-remember {
+    display: flex;
+    align-items: center;
+    gap: 6px;             /* уменьшили промежуток между чекбоксом и текстом */
+    margin-bottom: 8px;   /* уменьшили нижний отступ */
+    font-size: 0.63rem;   /* примерно 1.5 раза меньше 0.95rem */
+    color: #dcdcdc;
+  }
+  
+  .modal-remember input[type="checkbox"] {
+    width: 13px;           /* уменьшили размер чекбокса */
+    height: 13px;
+    accent-color: auto;
+    cursor: pointer;
+  }
+  

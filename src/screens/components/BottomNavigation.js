@@ -1,12 +1,19 @@
+// src/components/BottomNavigation.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./BottomNav.css";
+
+// Firebase imports — поправьте путь если нужно
+import { doc, getDoc, setDoc } from "firebase/firestore";
+
+import { db } from "../../firebase";
 
 const pages = [
   { path: "/standings", label: "Таблица" },
   { path: "/races", label: "Гонки" },
   { path: "/services", label: "Сервисы" },
   { path: "/favorites", label: "Слежу" },
+  { path: "/my-team", label: "Фэнтези" },
 ];
 
 const buttons = [
@@ -79,17 +86,39 @@ const buttons = [
         <path d="M4.96689 21.2337C4.43553 21.5068 3.83388 21.0296 3.94086 20.4198L5.08173 13.9167L0.238525 9.30135C-0.214099 8.87002 0.0202014 8.08138 0.626562 7.99524L7.36197 7.03841L10.3651 1.08942C10.6357 0.553527 11.3685 0.553527 11.639 1.08942L14.6422 7.03841L21.3776 7.99524C21.9839 8.08138 22.2182 8.87002 21.7656 9.30135L16.9224 13.9167L18.0633 20.4198C18.1703 21.0296 17.5686 21.5068 17.0373 21.2337L11.0021 18.1318L4.96689 21.2337Z" />
       </svg>
     ),
-  }
+  },
+  {
+    id: 4,
+    label: "Фэнтези",
+    path: "/my-team",
+    icon: (
+      <svg width="25" height="25" viewBox="0 0 25 25" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.5803 0.105947C17.8944 0.288631 18.0411 0.663742 17.9342 1.01103L15.1203 10.1563H20.3125C20.6242 10.1563 20.9061 10.3415 21.0297 10.6277C21.1533 10.9138 21.095 11.246 20.8814 11.473L8.38142 24.7542C8.13239 25.0188 7.73382 25.0768 7.41973 24.8941C7.10564 24.7114 6.95896 24.3363 7.06582 23.989L9.87974 14.8438H4.68752C4.37583 14.8438 4.09397 14.6585 3.97035 14.3724C3.84672 14.0863 3.90499 13.7541 4.11861 13.5271L16.6186 0.245833C16.8676 -0.0187615 17.2662 -0.0767375 17.5803 0.105947Z" fill="currentColor" />
+      </svg>
+    ),
+  },
 ];
 
 const BottomNavigation = ({ setActivePage }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeIndex, setActiveIndex] = useState(() =>
-    pages.findIndex((p) => p.path === window.location.pathname) >= 0
-      ? pages.findIndex((p) => p.path === window.location.pathname)
-      : 0
-  );
+
+  const getInitialIndex = () => {
+    const idx = pages.findIndex((p) => p.path === window.location.pathname);
+    return idx >= 0 ? idx : 0;
+  };
+
+  const [activeIndex, setActiveIndex] = useState(getInitialIndex);
+  const [visible, setVisible] = useState(true);
+
+  // Восстанавливаем BottomNav при переходе, если в localStorage есть флаг
+  useEffect(() => {
+    const show = localStorage.getItem("showBottomNav");
+    if (show === "true") {
+      setVisible(true);
+      localStorage.removeItem("showBottomNav");
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const idx = pages.findIndex((p) => p.path === location.pathname);
@@ -97,11 +126,22 @@ const BottomNavigation = ({ setActivePage }) => {
   }, [location.pathname]);
 
   const handleSelect = (idx) => {
-    const btn = pages[idx];
+    const btn = buttons[idx];
     if (!btn) return;
+
+    // Если это Фэнтези — скрываем BottomNav и переходим
+    if (btn.id === 4) {
+      setVisible(false);
+      setActivePage?.(idx);
+      navigate(btn.path);
+      return;
+    }
+
     setActivePage?.(idx);
     navigate(btn.path);
   };
+
+  if (!visible) return null;
 
   return (
     <div className="navGlass">

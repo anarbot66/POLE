@@ -2,7 +2,6 @@
   "name": "telegram-pole-app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://api.jolpi.ca",
   "dependencies": {
     "@use-gesture/react": "^10.3.1",
     "autoprefixer": "^10.4.20",
@@ -13,7 +12,7 @@
     "date-fns": "^4.1.0",
     "express": "^4.21.2",
     "firebase": "^11.3.1",
-    "framer-motion": "^12.4.7",
+    "framer-motion": "^12.23.16",
     "jsonwebtoken": "^9.0.2",
     "node-telegram-bot-api": "^0.66.0",
     "postcss": "^8.5.1",

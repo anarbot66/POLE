@@ -1,0 +1,13 @@
+[
+    {
+      "id": "special",
+      "title": "Fantasy",
+      "description": "Собери свою команду!",
+      "durationDays": 365,
+      "rewardCard": "noreward",
+      "startDate": "2025-09-01T00:00:00Z",
+      "endDate": "2026-09-01T00:00:00Z",
+      "type": "special"
+    }
+  ]
+  

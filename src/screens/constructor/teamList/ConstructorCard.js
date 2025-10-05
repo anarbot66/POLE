@@ -48,12 +48,12 @@ const ConstructorCard = ({ constructor, drivers }) => {
           justifyContent: "space-between",
           alignItems: "center",
           gap: "12px",
-          padding: "10px"
+          padding: "0px 15px"
         }}
       >
         <div
           style={{
-            width: "65px",
+            width: "45px",
             height: "65px",
             borderRadius: "20px",
             display: "flex",
@@ -65,7 +65,6 @@ const ConstructorCard = ({ constructor, drivers }) => {
             style={{
               color: teamColor,
               fontSize: "24px",
-              fontWeight: "600"
             }}
           >
             {constructor.position}
@@ -89,11 +88,10 @@ const ConstructorCard = ({ constructor, drivers }) => {
           </div>
         </div>
 
-        <div style={{ textAlign: "center", minWidth: "60px" }}>
+        <div style={{ textAlign: "center", minWidth: "60px", display: 'flex', flexDirection: 'column'}}>
           <span style={{ color: "white", fontSize: "16px" }}>
             {constructor.points}
           </span>
-          <br />
           <span style={{ color: "white", fontSize: "10px" }}>PTS</span>
         </div>
       </div>

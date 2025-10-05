@@ -417,12 +417,8 @@ const now = biography?.career || biography?.now || "Данных не найде
 <div style={{display: "flex",
         flexDirection: "column",
         gap: "19px", position: 'fixed', width: '100%', background: 'rgb(17, 17, 19)', left: '0', top: '0', padding: '20px 20px 0px 20px'}}>
-      <div style={{display: 'flex', width: "100%"}}>
-      <BackButton
-        label="Назад"
-        style={{width: '100%'}}
-      />
-
+      <div style={{display: 'flex', width: "100%", justifyContent: 'space-between'}}>
+      <BackButton></BackButton>
       <FavoriteConstructorButton
           currentUser={currentUser}
           constructor={effectiveConstructor}
@@ -579,7 +575,6 @@ const now = biography?.career || biography?.now || "Данных не найде
         color: "#fff",
         fontSize: "13px",
         fontFamily: "Inter",
-        fontWeight: 500,
         cursor: "pointer",
         borderBottom: "1px solid #242424",
         display: 'flex',

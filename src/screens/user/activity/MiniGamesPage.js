@@ -57,7 +57,7 @@ export default function MiniGamesPage({ currentUser }) {
   const goBack = useCallback(() => setSelected(null), []);
 
   return (
-    <div style={{ padding: 15, color: 'white' }}>
+    <div style={{ padding: '15px', color: 'white', height: '100vh', width: '100%' }}>
       <TransitionGroup>
         <CSSTransition
           key={selected }

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSwipeable } from 'react-swipeable';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import UserStats from "../user/components/UserStats";
-import logo from "../recources/images/racehub-logo.png";
+import logo from "../recources/images/logo.png";
 
 
 const countryToFlag = {
@@ -30,7 +30,7 @@ const raceNameTranslations = {
   "Canadian Grand Prix": "Канада",
   "Spanish Grand Prix": "Испания",
   "Austrian Grand Prix": "Австрия",
-  "British Grand Prix": "Великобритания",
+  "British Grand Prix": "ВеликоВеликобритания",
   "Hungarian Grand Prix": "Венгрия",
   "Belgian Grand Prix": "Бельгия",
   "Dutch Grand Prix": "Нидерланды",
@@ -89,7 +89,10 @@ const RacesList = ({ currentUser }) => {
 
   const today = new Date();
   const upcomingRaces = races.filter(r => new Date(r.FirstPractice.date) >= today);
-  const pastRaces     = races.filter(r => new Date(r.FirstPractice.date) <  today);
+  const pastRaces = races
+  .filter(r => new Date(r.FirstPractice.date) < today)
+  .sort((a, b) => new Date(b.FirstPractice.date) - new Date(a.FirstPractice.date));
+
 
   const nextRace = upcomingRaces.find(r => new Date(r.FirstPractice.date) > today);
 
@@ -310,7 +313,11 @@ const RacesList = ({ currentUser }) => {
               display: "flex",
               gap: "15px",
               flexDirection: 'column',
-              marginTop: '90px'
+              margin: "90px auto 10px auto",
+              background: '#141416',
+              borderRadius: '15px',
+              width: "calc(100% - 30px)",
+              padding: '15px'
             }}>
               
       {activeTab === 'upcoming' && nextRace && (
@@ -320,14 +327,13 @@ const RacesList = ({ currentUser }) => {
               flexDirection: "column",
               alignItems: "flex-start",
               gap: 10,
-              margin: '0px 15px 0px 15px'
             }}
           >
             <div
               style={{
                 width: "100%",
                 height: "100%",
-                padding: 20,
+                padding: '5px 10px 0px 10px',
                 borderRadius: 15,
                 display: "flex",
                 flexDirection: "column",
@@ -400,14 +406,11 @@ const RacesList = ({ currentUser }) => {
             key={index}
             onClick={() => handleRaceSelect(race)}
             style={{
-              width: "calc(100% - 30px)",
-              margin: "0px 15px",
               display: "flex",
               borderRadius: "15px",
               justifyContent: "space-between",
               alignItems: "center",
               gap: "15px",
-              padding: "10px",
               cursor: "pointer"
             }}
           >

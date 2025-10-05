@@ -1,0 +1,132 @@
+.packOpenPage {
+  padding: 18px;
+  font-family: 'Inter', sans-serif;
+  color: #eee;
+  min-height: calc(100vh - 60px);
+  box-sizing: border-box;
+}
+
+.topBar {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom: 12px;
+}
+.topBar h2 { margin: 0; font-size:18px; color:#fff; }
+
+.backBtn {
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+}
+
+/* Cinema area centers everything */
+.cinemaOnlyWrap {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.cinema {
+  width: 100%;
+  min-height: 70vh;
+  border-radius: 12px;
+  overflow: visible;
+  padding: 20px 0;
+  box-sizing: border-box;
+}
+
+/* center all cinematic elements absolutely at the page center */
+.flagWrapper,
+.teamWrapper,
+.topCardWrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 60; /* high so visible above background */
+  pointer-events: none; /* avoid accidental clicks when layers overlap */
+  text-align: center;
+}
+
+/* ensure topCardWrap buttons are clickable */
+.topCardWrap { pointer-events: auto; z-index: 50; }
+
+/* flag */
+.bigFlagImg {
+  width: 160px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* team label */
+.teamLabel {
+  font-weight:700;
+  font-size: 20px;
+  color:#fff;
+  padding:10px 18px;
+  border-radius: 999px;
+  display:inline-block;
+  min-width: 120px;
+}
+
+/* big card reveal */
+.topCardWrap {
+  width: 100%;
+  max-width: 720px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.bigCardImg {
+  width: 420px;
+  max-width: 86vw;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+  object-fit: contain;
+  margin: 0 auto 12px;
+  /* NOTE: transition removed - Framer Motion controls animation */
+  /* transition: opacity 0.3s ease, transform 0.3s ease; */
+}
+
+.bigCardInfo {
+  margin-top: 6px;
+  text-align: center;
+  color: #fff;
+}
+
+.bigCardName { font-size: 18px; font-weight:700; }
+.bigCardMeta { font-size: 13px; color: #ddd; margin-top:6px; }
+
+/* other layout */
+.contentGridWrap { margin-top: 14px; width: 92%; max-width: 920px; margin-left: auto; margin-right: auto; }
+.contentGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; justify-content: center; }
+.contentCard { padding:8px; border-radius:10px; text-align:center; color:#fff; }
+.contentCardImg { width:100%; object-fit:cover; border-radius:8px; height: 180px; object-fit: contain; }
+.contentCardName { margin-top:8px; font-weight:700; font-size:13px; }
+.contentCardMeta { font-size:12px; color:#ddd; margin-top:4px; }
+
+.closeButtonWrap { display: flex; justify-content: center;  }
+
+.hintBox {
+  background: #222;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* responsiveness */
+@media (max-width: 900px) {
+  .bigCardImg { width: 260px; max-width: 92vw; }
+  .teamLabel { font-size: 16px; padding: 8px 12px; min-width: auto; }
+}

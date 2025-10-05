@@ -22,14 +22,13 @@ const PilotCard = ({ pilot, onClick }) => {
         justifyContent: "space-between",
         alignItems: "center",
         gap: "12px",
-        padding: "10px",
+        padding: "0px 15px",
         cursor: "pointer",
-        paddingTop: "10px",
       }}
     >
       <div
         style={{
-          width: "65px",
+          width: "45px",
           height: "65px",
           borderRadius: "20px",
           display: "flex",
@@ -77,11 +76,10 @@ const PilotCard = ({ pilot, onClick }) => {
         </div>
       </div>
 
-      <div style={{ textAlign: "center", minWidth: "60px" }}>
+      <div style={{ textAlign: "center", minWidth: "60px", display: 'flex', flexDirection: 'column'}}>
         <span style={{ color: "white", fontSize: "16px" }}>
           {pilot.points}
         </span>
-        <br />
         <span style={{ color: "white", fontSize: "10px" }}>PTS</span>
       </div>
     </div>

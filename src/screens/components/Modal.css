@@ -1,18 +1,18 @@
 /* Modal.css */
 .fade-enter {
-    opacity: 0;
-  }
-  .fade-enter-active {
-    opacity: 1;
-    transition: opacity 300ms ease-in;
-  }
-  .fade-exit {
-    opacity: 1;
-  }
-  .fade-exit-active {
-    opacity: 0;
-    transition: opacity 300ms ease-out;
-  }
+  opacity: 0;
+}
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
   
   .modal-bak {
     position: fixed;
@@ -53,3 +53,17 @@
     font-size: 14px;
   }
   
+  .modal-remember {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    color: #dcdcdc;
+  }
+  .modal-remember input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: auto;
+    cursor: pointer;
+  }

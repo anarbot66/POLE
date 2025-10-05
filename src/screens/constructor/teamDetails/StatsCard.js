@@ -8,7 +8,6 @@ const StatsCard = ({ label, value }) => (
         color: "white",
         fontSize: "16px",
         fontFamily: "Inter",
-        fontWeight: "600"
       }}
     >
       {value}

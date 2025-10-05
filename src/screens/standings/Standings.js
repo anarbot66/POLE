@@ -5,7 +5,7 @@ import PilotsList from '../pilots/driverList/PilotsList';
 import ConstructorsList from '../constructor/teamList/ConstructorsList';
 import { useSwipeable } from 'react-swipeable';
 import UserStats from '../user/components/UserStats';
-import logo from "../recources/images/racehub-logo.png";
+import logo from "../recources/images/logo.png";
 
 const Standings = ({ onConstructorSelect, currentUser }) => {
   const [activeTab, setActiveTab] = useState('pilots');

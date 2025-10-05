@@ -14,11 +14,11 @@ export default function MobileControls({ onPress, onRelease }) {
       right: 0,
       display: 'flex',
       gap: '10px',
-      padding: '0 20px',
       pointerEvents: 'none',
       zIndex: 10,
       justifyContent: 'center',
-      marginTop: '10px'
+      marginTop: '10px',
+      width: '100%'
     },
     column: {
       display: 'flex',

@@ -131,7 +131,6 @@ const styles = {
     background: "rgba(0,0,0,0.02)"
   },
   champTitle: {
-    fontWeight: 700,
     marginBottom: 8,
     fontSize: 14,
     color: 'white'
@@ -157,7 +156,6 @@ const styles = {
   },
   placeStatus: {
     fontSize: 13,
-    fontWeight: 600
   },
   placeYears: {
     fontSize: 13,

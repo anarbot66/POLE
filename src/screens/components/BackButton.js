@@ -21,7 +21,6 @@ const BackButton = ({
         color: "white",
         fontSize: "10px",
         display: "flex",
-        alignItems: "center",
         gap: "2px",
         ...style,
       }}

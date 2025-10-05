@@ -194,7 +194,7 @@ const FavoritesDashboard = ({ currentUser }) => {
       backgroundColor: "blue",
       transition: "left 0.3s ease",
       pointerEvents: "none",
-      borderRadius: '3px'
+      borderRadius: '3px',
     }}
   />
     </div>
@@ -207,14 +207,15 @@ const FavoritesDashboard = ({ currentUser }) => {
         <CSSTransition key={activeTab} classNames="tab" timeout={400}>
           <div
             {...swipeHandlers}
-            style={{ padding: 15, marginTop: 105, marginBottom: 100 }}
+            style={{ padding: 15, marginBottom: 100, background: '#141416',
+            borderRadius: '15px', width: 'calc(100% - 30px)', margin: '125px auto 0px auto' }}
           >
             {activeTab === "pilots" && (
               <div
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-                  gap: 10
+                  gap: 30
                 }}
               >
                 {pilotResults.map(p => (
@@ -232,7 +233,7 @@ const FavoritesDashboard = ({ currentUser }) => {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-                  gap: 10
+                  gap: 30
                 }}
               >
                 {teamResults.map(t => (
