@@ -5,12 +5,12 @@ import { getAuth } from "firebase/auth";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBPoyLmh0O7hK8SVghXcYal0SlDcPMUuzg",
-  authDomain: "telegram-formula.firebaseapp.com",
-  projectId: "telegram-formula",
-  storageBucket: "telegram-formula.firebasestorage.app",
-  messagingSenderId: "471526452772",
-  appId: "1:471526452772:web:9940ac9db0104e05ad32b1"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
