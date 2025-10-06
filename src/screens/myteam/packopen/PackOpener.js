@@ -736,22 +736,6 @@ export default function PackOpener({ currentUser }) {
                   </div>
                 </div>
               ))}
-
-              {/* combined overview */}
-              {oddsData.combined && oddsData.combined.length > 0 && (
-                <div style={{ marginTop: 6 }}>
-                  <div style={{ fontSize: 13, color: '#bbb', marginBottom: 6 }}>Обзор (усреднённо по слотам):</div>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    {oddsData.combined.map(c => (
-                      <div key={c.rarity} style={{ minWidth: 120, background: 'rgba(255,255,255,0.02)', padding: 8, borderRadius: 8 }}>
-                        <div style={{ fontSize: 12, color: '#ccc' }}>{rarityTextMap[c.rarity] || c.rarity}</div>
-                        <div style={{ fontSize: 14, color: '#fff' }}>{c.pct.toFixed(2)}%</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
             </div>
           }
         />
